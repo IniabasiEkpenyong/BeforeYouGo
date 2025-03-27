@@ -24,7 +24,7 @@ class Bucket (Base):
     item = sqlalchemy.Column(sqlalchemy.String)
     contact = sqlalchemy.Column(sqlalchemy.String)
     area = sqlalchemy.Column(sqlalchemy.String)
-    description = sqlalchemy.Column(sqlalchemy.String)
+    descrip = sqlalchemy.Column(sqlalchemy.String)
     category = sqlalchemy.Column(sqlalchemy.String)
     cloudinary_id = sqlalchemy.Column(sqlalchemy.String)
 
@@ -42,7 +42,7 @@ def get_events(category):
             Bucket.category.ilike(category+'%'))
         table = query.all()
         for row in table:
-            event = {'id': row.bucket_id, 'title': row.title,
+            event = {'id': row.bucket_id, 'item': row.item,
                 'contact': row.contact, 'area': row.area,
                 'description': row.descrip, 'category': row.category,
                 'cloudinary_id': row.cloudinary_id}
@@ -55,7 +55,7 @@ def _test():
     events = get_events('athletic')
     for event in events:
         print(event['id'])
-        print(event['title'])
+        print(event['item'])
         print(event['contact'])
         print(event['area'])
         print(event['description'])

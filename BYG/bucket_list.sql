@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE bucket_list (
     bucket_id SERIAL PRIMARY KEY,
-    title TEXT,
+    item TEXT,
     contact TEXT,
     area TEXT,
     descrip TEXT, 
