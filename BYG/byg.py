@@ -11,6 +11,8 @@ import database as database
 from flask import Flask, session, redirect, render_template, request, make_response
 import sqlalchemy
 import sqlalchemy.orm
+import auth
+import os
 
 from models import User, UserBucket
 
@@ -20,8 +22,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 #-----------------------------------------------------------------------
 
-app = flask.Flask(__name__, template_folder='.')
-app.secret_key = 'your_secret_key_here'
+# app = flask.Flask(__name__, template_folder='.')
+from top import app 
+
+
+# app.secret_key = 'secret_key_here'
+app.secret_key = os.environ['APP_SECRET_KEY']
 
 #-----------------------------------------------------------------------
 
@@ -38,9 +44,17 @@ def get_current_time():
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def home_page():
+
+    user_info = auth.authenticate()
+    # print(user_info['attributes']['givenname'][0])
+    username = user_info['user']
+    given_name = user_info['attributes']['givenname'][0]
+
     html_code = flask.render_template('index.html',
         ampm=get_ampm(),
-        current_time=get_current_time()
+        current_time=get_current_time(),
+        username = username,
+        given_name = given_name
     )
 
     response = flask.make_response(html_code)
@@ -49,7 +63,7 @@ def home_page():
 
 
 @app.route('/global', methods = ['GET'])
-def search_form():
+def global_page():
     prev_title = flask.request.cookies.get('prev_title')
     if prev_title is None:
         prev_title= ''
@@ -85,13 +99,19 @@ def search_form():
     err_msg, events = database.get_events(
         title=title, cat = cat,
         loc = loc, descrip = descrip)
-
+    
+    user_info = auth.authenticate()
+    username = user_info['user']
+    given_name = user_info['attributes']['givenname'][0]
+    
     html_code = flask.render_template('global.html',
         ampm=get_ampm(),
         current_time=get_current_time(),
         err_msg = err_msg,
         events = events,
-        prev_cat = prev_cat
+        prev_cat = prev_cat,
+        username = username,
+        given_name = given_name
     )
 
     response = flask.make_response(html_code)
@@ -104,24 +124,24 @@ def search_form():
 
 #-----------------------------------------------------------------------
 
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if flask.request.method == 'POST':
-        username = flask.request.form['username']
-        password = flask.request.form['password']
-        email = flask.request.form['email']
-        # Hash the password before storing (use werkzeug.security.generate_password_hash)
-        password_hash = generate_password_hash(password)
-        # Create the user and commit to the database
-        with sqlalchemy.orm.Session(database._engine) as session_db:
-            new_user = User(username=username, password_hash=password_hash, email=email)
-            session_db.add(new_user)
-            session_db.commit()
-        return flask.redirect('/login')
-    response = flask.render_template('signup.html',
-                                     ampm=get_ampm(),
-                    current_time=get_current_time(),)
-    return response
+# @app.route('/signup', methods=['GET', 'POST'])
+# def signup():
+#     if flask.request.method == 'POST':
+#         username = flask.request.form['username']
+#         password = flask.request.form['password']
+#         email = flask.request.form['email']
+#         # Hash the password before storing (use werkzeug.security.generate_password_hash)
+#         password_hash = generate_password_hash(password)
+#         # Create the user and commit to the database
+#         with sqlalchemy.orm.Session(database._engine) as session_db:
+#             new_user = User(username=username, password_hash=password_hash, email=email)
+#             session_db.add(new_user)
+#             session_db.commit()
+#         return flask.redirect('/login')
+#     response = flask.render_template('signup.html',
+#                                      ampm=get_ampm(),
+#                     current_time=get_current_time(),)
+#     return response
 
 
 
@@ -160,8 +180,6 @@ def search_results():
             prev_num = prev_num,
             prev_area = prev_area,
             prev_title = prev_title
-            # author=prev_author,
-            # books=books
         )
 
     except Exception as ex:
@@ -172,8 +190,5 @@ def search_results():
         response = flask.make_response(html_code)
 
     response = flask.make_response(html_code)
-
-    # Do dept, num, area, title
-    # response.set_cookie('prev_', prev_author)
 
     return response

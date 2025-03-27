@@ -3,6 +3,7 @@
  # models.py
  # Author: Judah Guggenheim
  # NOTE that this particular file was made with the help of chatgpt
+ # Also as of now, it's not being used
  #-----------------------------------------------------------------------
 
 import os
