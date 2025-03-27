@@ -7,7 +7,7 @@
 
 import time
 import flask
-import BYG.database as database
+import BYG.database2 as database2
 # import sys
 
 #-----------------------------------------------------------------------
@@ -76,7 +76,7 @@ def search_form():
     if title is None:
         title = ''
 
-    err_msg, courses = database.get_courses(
+    err_msg, courses = database2.get_courses(
         dept, num, area, title)
 
 
@@ -120,7 +120,7 @@ def search_results():
             class_info = []
         else:
             # prev_classid = classid
-            error_msg, class_info = database.get_class_info(
+            error_msg, class_info = database2.get_class_info(
                 classid) # Exception handling omitted
 
         html_code = flask.render_template('searchresults.html',

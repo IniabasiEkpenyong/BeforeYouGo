@@ -9,7 +9,7 @@ import os
 import html # html.escape() is used to thwart CSS attacks
 import parseargs
 import common
-import BYG.database as database
+import BYG.database2 as database2
 
 #-----------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ def main():
         category = '(None)'
         events = []
     else:
-        events = database.get_events(category) # Exception handling omitted
+        events = database2.get_events(category) # Exception handling omitted
 
     # Print HTTP headers.
     print('Content-type: text/html; charset=utf-8')

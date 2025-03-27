@@ -7,7 +7,7 @@
 
 import time
 import flask
-import database
+import BYG.database as database
 # import sys
 
 #-----------------------------------------------------------------------
