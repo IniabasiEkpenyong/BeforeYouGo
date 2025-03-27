@@ -1,0 +1,35 @@
+Name: Judah Guggenheim
+
+Contribution: I worked alone, and therefore contributed the
+entirety of the code.
+
+I received no help from other people (other than looking at
+public ed posts and instructor responses).
+
+Sources:
+- https://docs.python.org/3/library/functions.html#isinstance
+(to determine if classid was an integer or not)
+- Course-provided lectures and handouts; especially the
+  Penny Flask handouts.
+
+Time spent on the assignment: ~5 hours to code, ~4 more hours 
+to test and improve style.
+
+Assesment of assignment:
+It was really exciting to see things come together, and to
+actually create the basics of a webpage with evident
+usefulness. It helped me learn what went into that, and
+how to make use of existing tools to that effect.
+
+
+Further information about my work:
+I adapted my code from the basics of the Penny modules.
+I probably should have changed the names of files early on,
+but by the time I went back to it, I was nervous to break
+something and therefore left the filenames as is.
+
+Additionally, the smarter way to do error handling would 
+probably be to make a seperate 'errmsg.html' file, and 
+have penny.py decide which html file to make depending on
+whether err_msg is empty or not. I'll aim to
+incorportate that for the next assignment.

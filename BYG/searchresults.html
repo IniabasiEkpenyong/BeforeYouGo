@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Registrar's Office</title>
+   </head>
+   <body>
+      <!-- {% include 'header.html' %} -->
+      <h1>Registrar's Office </h1>
+        {% if error_msg != '': %} 
+            <p>{{error_msg}}</p>
+            <hr>
+        {% else: %}
+      {% if classid == "" %}
+            <p>missing classid</p>
+            <hr>
+      {% else %}
+      <hr>
+        <h2>Class Details</h2>
+
+        <table border="1" cellpadding="1" cellspacing="2"
+                            id="classDetailsTable">
+            <tr>
+                <td><strong>Class Id</strong></td>
+                <td>{{classid}}</td>
+            </tr>
+
+            <tr>
+                <td><strong>Days</strong></td>
+                <td>{{class_info[0][1]}}</td>
+            </tr>
+
+            <tr>
+                <td><strong>Start time</strong></td>
+                <td>{{class_info[0][2]}}</td>
+            </tr>
+
+            <tr>
+                <td><strong>End time</strong></td>
+                <td>{{class_info[0][3]}}</td>
+            </tr>
+
+            <tr>
+                <td><strong>Building</strong></td>
+                <td>{{class_info[0][4]}}</td>
+            </tr>
+
+            <tr>
+                <td><strong>Room</strong></td>
+                <td>{{class_info[0][5]}}</td>
+            </tr>            
+        </table>
+
+
+        <h2>Course Details</h2>
+
+        <table border="1" cellpadding="1" cellspacing="2"
+                        id = "courseDetailsTable">
+            <tr>
+                <td><strong>Course Id</strong></td>
+                <td>{{class_info[0][0]}}</td>
+            </tr>
+
+            {% for deptnum in class_info[2]: %}
+                <tr>
+                    <td><strong>Dept and Number</strong></td>
+                    <td>{{deptnum[0]}} {{deptnum[1]}}</td>
+                </tr>
+            {% endfor %}
+
+            <tr>
+                <td><strong>Area</strong></td>
+                <td>{{class_info[1][0]}}</td>
+            </tr>
+
+            <tr>
+                <td><strong>Title</strong></td>
+                <td>{{class_info[1][1]}}</td>
+            </tr>
+
+            <tr>
+                <td><strong>Description</strong></td>
+                <td>{{class_info[1][2]}}</td>
+            </tr>
+
+            <tr>
+                <td><strong>Prerequisites</strong></td>
+                <td>{{class_info[1][3]}}</td>
+            </tr>
+
+            {% if class_info[3]|length == 0: %}
+                <hr>
+            {% else: %}
+                {% for prof in class_info[3]: %}
+                    <tr>
+                        <td><strong>Professor</strong></td>
+                        <td>{{prof[0]}}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+
+        <hr>
+      {% endif %}
+      {% endif %}
+      Click here to do
+      <a href="/index?dept={{prev_dept}}&num={{prev_num}}&area={{prev_area}}&title={{prev_title}}">another class search</a>.
+      <hr>
+      Created by Judah Guggenheim.
+      <hr>
+       <!-- {% include 'footer.html' %} -->
+   </body>
+</html>
+

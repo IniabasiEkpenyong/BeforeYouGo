@@ -1,26 +1,90 @@
 <!DOCTYPE html>
-
-<!-- =============================================================== -->
-<!-- index.html -->
-<!-- Author: Judah Guggenheim-->
-<!-- =============================================================== -->
-
 <html>
-    <head>
-        <title>BeforeYouGo.com</title>
-    </head>
-    <body>
-        <hr>
-        Welcome to <strong>Before You Go</strong>.
-        <hr>
-        <br>
-        Click here to <a href="/cgi-bin/searchform.py">begin</a>.<br>
-        <br>
-        <hr>
-        Created by <a href="https://www.linkedin.com/in/iniabasi-ekpenyong-5715ba26a/"> Ini</a>, 
-            <a href="https://www.linkedin.com/in/judah-guggenheim-6b1a39208/"> Judah</a>, 
-            and <a href="https://www.linkedin.com/in/itoro-ekpenyong-a561a5335/"> Itoro</a>.
-        <hr>
-    </body>
-    
+   <head>
+      <title>Registrar</title>
+   </head>
+   <body>
+      <!-- {% include 'header.html' %} -->
+      <h1>Registrar's Office</h1>
+      {% if err_msg != '': %} 
+            <p> {{ err_msg }}</p>
+      {% else %}
+      <h2> Class Search</h2>
+      <hr>
+      <form action="/index" method="get">
+        <table>
+            <tr>
+                <td align="right"><label for="dept">Dept:</label></td>
+                <td><input type="text" id="deptInput" name="dept" 
+                    value="{{ request.args.get('dept', prev_dept) }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right"><label for="num" >Number:</label></td>
+                <td><input type="text" name="num" id = "coursenumInput"
+                value = "{{ request.args.get('num', prev_num) }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right"><label for="area" >Area:</label></td>
+                <td><input type="text" name="area" id = "areaInput"
+                value = "{{ request.args.get('area', prev_area) }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right"><label for="title" >Title:</label></td>
+                <td><input type="text" name="title" id = titleInput
+                value = "{{ request.args.get('title', prev_title) }}">
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Go" id = "submitButton"></td>
+            </tr>
+        </table>
+      </form>
+
+      <hr>
+      <table border="1" cellpadding="1" cellspacing="2" id = "overviewsTable">
+        <thead>
+            <tr>
+                <td><strong>ClassId</strong></td>
+                <td><strong>Dept</strong></td>
+                <td><strong>Num</strong></td>
+                <td><strong>Area</strong></td>
+                <td><strong>Title</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% if courses|length == 0: %}
+                
+            {% else %}
+                {% for course in courses: %}
+                    <tr>
+                        <td> 
+                                <!-- For testing: automatically go 
+                                    from browser to missing classid:-->
+                                <!--<a href="/searchresults?classid={{ 9034 }}">{{ course['classid'] }}-->
+                            <a href="/searchresults?classid={{ course['classid'] }}">
+                            {{ course['classid'] }}</a>
+                        </td>
+                        <td> {{course['dept']}} </td>
+                        <td> {{course['coursenum']}} </td>
+                        <td> {{course['area']}} </td>
+                        <td> {{course['title']}} </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+
+        </tbody>
+      </table>
+      <br>
+      {% endif %}
+      <hr>
+      Created by Judah Guggenheim.
+      <hr>
+      <br>
+      <!-- {% include 'footer.html' %} -->
+   </body>
 </html>
+
