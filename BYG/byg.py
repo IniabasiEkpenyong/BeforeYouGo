@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 #-----------------------------------------------------------------------
-# penny.py
-# Author: Bob Dondero
+# byg.py
+# Author: Judah Guggenheim
 #-----------------------------------------------------------------------
 
 import time
@@ -28,74 +28,39 @@ def get_current_time():
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
-# def index():
-#     print("COS!!!")
-#     html_code = flask.render_template('index.html',
-#         ampm=get_ampm(),
-#         current_time=get_current_time())
-#     response = flask.make_response(html_code)
-#     return response
-#
-# #---------------------------------------------------------------------
-#
-# @app.route('/index', methods=['GET'])
-def search_form():
-    prev_author = flask.request.cookies.get('prev_author')
-    if prev_author is None:
-        prev_author = '(None)'
-
-    prev_dept = flask.request.cookies.get('prev_dept')
-    if prev_dept is None:
-        prev_dept = ''
-
-    prev_num = flask.request.cookies.get('prev_num')
-    if prev_num is None:
-        prev_num = ''
-
-    prev_area = flask.request.cookies.get('prev_area')
-    if prev_area is None:
-        prev_area = ''
-
-    prev_title = flask.request.cookies.get('prev_title')
-    if prev_title is None:
-        prev_title = ''
-
-    dept = flask.request.args.get('dept')
-    if dept is None:
-        dept = ''
-
-    num = flask.request.args.get('num')
-    if num is None:
-        num = ''
-
-    area = flask.request.args.get('area')
-    if area is None:
-        area = ''
-
-    title = flask.request.args.get('title')
-    if title is None:
-        title = ''
-
-    err_msg, courses = database.get_courses(
-        dept, num, area, title)
-
-
+def home_page():
     html_code = flask.render_template('index.html',
+        ampm=get_ampm(),
+        current_time=get_current_time()
+    )
+
+    response = flask.make_response(html_code)
+    return response
+
+@app.route('/global', methods = ['GET'])
+def search_form():
+    prev_cat = flask.request.cookies.get('prev_cat')
+    if prev_cat is None:
+        prev_cat= ''
+
+    cat = flask.request.args.get('cat')
+    if cat is None:
+        cat = ''
+
+    err_msg, events = database.get_events(
+        cat)
+
+    html_code = flask.render_template('global.html',
         ampm=get_ampm(),
         current_time=get_current_time(),
         err_msg = err_msg,
-        courses = courses,
-        prev_dept = prev_dept,
-        prev_num = prev_num,
-        prev_area = prev_area,
-        prev_title = prev_title,
-        prev_author=prev_author)
+        events = events,
+        prev_cat = prev_cat
+    )
+
     response = flask.make_response(html_code)
 
-    response.set_cookie('prev_dept', dept)
-    response.set_cookie('prev_num', num)
-    response.set_cookie('prev_area', area)
-    response.set_cookie('prev_title', title)
+    response.set_cookie('prev_cat', cat)
     return response
 
 #-----------------------------------------------------------------------

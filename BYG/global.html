@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Registrar</title>
+   </head>
+   <body>
+      {% include 'header.html' %}
+      <h1>Before You Go</h1>
+      {% if err_msg != '': %} 
+            <p> {{ err_msg }}</p>
+      {% else %}
+      <h2> Global Bucket List</h2>
+      <hr>
+      <form action="/global" method="get">
+        <table>
+            <tr>
+                <td align="right"><label for="name">Name:</label></td>
+                <td><input type="text" id="nameInput" name="name" 
+                    value="{{ request.args.get('name', prev_name) }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right"><label for="cat" >Category:</label></td>
+                <td><input type="text" name="cat" id = "catInput"
+                value = "{{ request.args.get('cat', prev_cat) }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right"><label for="loc" >Location:</label></td>
+                <td><input type="text" name="loc" id = locInput
+                value = "{{ request.args.get('loc', prev_loc) }}">
+                </td>
+            </tr>
+            <tr>
+                <td align="right"><label for="desc" >Description:</label></td>
+                <td><input type="text" name="desc" id = "descInput"
+                value = "{{ request.args.get('desc', prev_desc) }}">
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Go" id = "submitButton"></td>
+            </tr>
+        </table>
+      </form>
+
+      <hr>
+      <table border="1" cellpadding="1" cellspacing="2" id = "globalBucketList">
+        <thead>
+            <tr>
+                <td><strong>ID</strong></td>
+                <td><strong>Name</strong></td>
+                <td><strong>Category</strong></td>
+                <td><strong>Location</strong></td>
+                <td><strong>Description</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% if events|length == 0: %}
+                
+            {% else %}
+                {% for event in events: %}
+                    <tr>
+                        <td> 
+                                <!-- For testing: automatically go 
+                                    from browser to missing classid:-->
+                                <!--<a href="/searchresults?classid={{ 9034 }}">{{ event['isbn'] }}-->
+                            <a href="/searchresults?classid={{ event['isbn'] }}">
+                            {{ event['isbn'] }}</a>
+                        </td>
+                        <td> {{event['title']}} </td>
+                        <td> {{event['category']}} </td>
+                        <!-- <td> {{event['area']}} </td> 
+                        <td> {{event['title']}} </td> -->
+                    </tr>
+                {% endfor %}
+            {% endif %}
+
+        </tbody>
+      </table>
+      <br>
+      {% endif %}
+
+      {% include 'footer.html' %}
+   </body>
+</html>
+
