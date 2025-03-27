@@ -75,9 +75,15 @@
                         <td> {{event['cat']}} </td>
                         <td> {{event['loc']}} </td> 
                         <td> {{event['descrip']}} </td> 
-                        <td>
+                        <!--<td>
                             <input type="checkbox" class="global-checkbox" data-bucketid="{{ event['bucket_id'] }}">
-                        </td>                       
+                        </td> -->
+                        <td>
+                            <form action="/add_to_my_list" method="POST" style="display:inline;">
+                              <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
+                              <input type="submit" value="Add to My List">
+                            </form>
+                          </td>
                     </tr>
                 {% endfor %}
             {% endif %}

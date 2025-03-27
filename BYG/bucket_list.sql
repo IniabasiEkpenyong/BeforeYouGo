@@ -11,15 +11,12 @@ CREATE TABLE bucket_list (
     cloudinary_id TEXT
 );
 
-CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    username TEXT,
-    email TEXT,
-    major TEXT,
-    class_year TEXT,
-    descrip TEXT, 
-    cloudinary_id TEXT,
-    bucket_id TEXT
+
+CREATE TABLE user_bucket (
+    id SERIAL PRIMARY KEY,
+    user_netid VARCHAR NOT NULL,
+    bucket_id INTEGER REFERENCES bucket_list(bucket_id),
+    completed BOOLEAN DEFAULT FALSE
 );
 
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)

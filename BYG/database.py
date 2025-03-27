@@ -30,6 +30,14 @@ class Bucket (Base):
 
 _engine = sqlalchemy.create_engine(_DATABASE_URL)
 
+
+class UserBucket(Base):
+    __tablename__ = 'user_bucket'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    user_netid = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    bucket_id = sqlalchemy.Column(sqlalchemy.Integer, 
+                                  sqlalchemy.ForeignKey('bucket_list.bucket_id'))
+    completed = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 #-----------------------------------------------------------------------
 
 def get_events(title='', cat='', loc = '', descrip = ''):
