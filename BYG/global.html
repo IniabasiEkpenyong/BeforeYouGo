@@ -14,9 +14,9 @@
       <form action="/global" method="get">
         <table>
             <tr>
-                <td align="right"><label for="name">Name:</label></td>
-                <td><input type="text" id="nameInput" name="name" 
-                    value="{{ request.args.get('name', prev_name) }}">
+                <td align="right"><label for="title">Title:</label></td>
+                <td><input type="text" id="titleInput" name="title" 
+                    value="{{ request.args.get('title', prev_title) }}">
                 </td>
             </tr>
             <tr>
@@ -43,16 +43,17 @@
             </tr>
         </table>
       </form>
-
       <hr>
       <table border="1" cellpadding="1" cellspacing="2" id = "globalBucketList">
         <thead>
             <tr>
                 <td><strong>ID</strong></td>
-                <td><strong>Name</strong></td>
+                <td><strong>Title</strong></td>
+                <td><strong>Contact</strong></td>
                 <td><strong>Category</strong></td>
                 <td><strong>Location</strong></td>
                 <td><strong>Description</strong></td>
+                
             </tr>
         </thead>
         <tbody>
@@ -66,12 +67,13 @@
                                     from browser to missing classid:-->
                                 <!--<a href="/searchresults?classid={{ 9034 }}">{{ event['isbn'] }}-->
                             <a href="/searchresults?classid={{ event['isbn'] }}">
-                            {{ event['isbn'] }}</a>
+                            {{ event['bucket_id'] }}</a>
                         </td>
                         <td> {{event['title']}} </td>
-                        <td> {{event['category']}} </td>
-                        <!-- <td> {{event['area']}} </td> 
-                        <td> {{event['title']}} </td> -->
+                        <td> {{event['contact']}} </td>
+                        <td> {{event['cat']}} </td>
+                        <td> {{event['loc']}} </td> 
+                        <td> {{event['descrip']}} </td>                        
                     </tr>
                 {% endfor %}
             {% endif %}
