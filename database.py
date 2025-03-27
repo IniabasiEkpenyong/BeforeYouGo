@@ -35,31 +35,30 @@ _engine = sqlalchemy.create_engine(_DATABASE_URL)
 def get_events(category):
 
     events = []
-
     with sqlalchemy.orm.Session(_engine) as session:
 
         query = session.query(Bucket).filter(
             Bucket.category.ilike(category+'%'))
         table = query.all()
         for row in table:
-            event = {'id': row.bucket_id, 'item': row.item,
-                'contact': row.contact, 'area': row.area,
-                'description': row.descrip, 'category': row.category,
+            event = {'bucket_id': row.bucket_id, 'title': row.item,
+                'contact': row.contact, 'loc': row.area,
+                'descrip': row.descrip, 'cat': row.category,
                 'cloudinary_id': row.cloudinary_id}
             events.append(event)
-    return events
+    return '', events
 #-----------------------------------------------------------------------
 # For testing:
 
 def _test():
-    events = get_events('athletic')
+    events = get_events('athletic')[1]
     for event in events:
-        print(event['id'])
-        print(event['item'])
+        print(event['bucket_id'])
+        print(event['title'])
         print(event['contact'])
-        print(event['area'])
-        print(event['description'])
-        print(event['category'])
+        print(event['loc'])
+        print(event['descrip'])
+        print(event['cat'])
         print(event['cloudinary_id'])
         print()
 
