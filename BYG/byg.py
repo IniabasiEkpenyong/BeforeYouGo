@@ -172,6 +172,7 @@ def my_bucket():
 
 @app.route('/mark_completed', methods=['POST'])
 def mark_completed():
+    print("HERE")
     user_info = auth.authenticate()
     user_netid = user_info['user']
 
