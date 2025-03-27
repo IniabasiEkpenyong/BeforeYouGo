@@ -41,7 +41,8 @@ def get_events(title='', cat='', loc = '', descrip = ''):
             Bucket.category.ilike('%'+ cat+'%')).filter(
                 Bucket.descrip.ilike('%'+ descrip +'%')).filter(
                     Bucket.area.ilike('%'+ loc +'%')).filter(
-                        Bucket.item.ilike('%'+ title +'%'))
+                        Bucket.item.ilike('%'+ title +'%')
+                        ).order_by(Bucket.category, Bucket.item)
         
         table = query.all()
         for row in table:
