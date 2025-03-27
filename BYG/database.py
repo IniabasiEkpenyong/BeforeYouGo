@@ -8,7 +8,7 @@
 import sqlite3
 import contextlib
 import overviewshelper
-import detailshelper
+# import detailshelper
 
 #-----------------------------------------------------------------------
 
@@ -115,7 +115,6 @@ def get_events(category):
 #-----------------------------------------------------------------------
 
 def _test():
-
     err_msg, events = get_events(category= 'creative')
     print('err_msg: ', err_msg)
     for event in events:
