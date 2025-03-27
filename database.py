@@ -19,7 +19,7 @@ _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
 Base = sqlalchemy.orm.declarative_base()
 
 class Bucket (Base):
-    ___tablename__ = 'bucket_list'
+    __tablename__ = 'bucket_list'
     bucket_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     item = sqlalchemy.Column(sqlalchemy.String)
     contact = sqlalchemy.Column(sqlalchemy.String)
@@ -34,7 +34,7 @@ _engine = sqlalchemy.create_engine(_DATABASE_URL)
 
 def get_events(category):
 
-    books = []
+    events = []
 
     with sqlalchemy.orm.Session(_engine) as session:
 
@@ -42,19 +42,25 @@ def get_events(category):
             Bucket.category.ilike(category+'%'))
         table = query.all()
         for row in table:
-            event = {'isbn': row.isbn, 'author': row.author,
-                'title': row.title}
-            books.append(book)
-    return books
+            event = {'id': row.bucket_id, 'title': row.title,
+                'contact': row.contact, 'area': row.area,
+                'description': row.descrip, 'category': row.category,
+                'cloudinary_id': row.cloudinary_id}
+            events.append(event)
+    return events
 #-----------------------------------------------------------------------
 # For testing:
 
 def _test():
-    books = get_books('ker')
-    for book in books:
-        print(book['isbn'])
-        print(book['author'])
-        print(book['title'])
+    events = get_events('athletic')
+    for event in events:
+        print(event['id'])
+        print(event['title'])
+        print(event['contact'])
+        print(event['area'])
+        print(event['description'])
+        print(event['category'])
+        print(event['cloudinary_id'])
         print()
 
 if __name__ == '__main__':
