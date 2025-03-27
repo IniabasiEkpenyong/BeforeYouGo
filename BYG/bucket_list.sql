@@ -1,14 +1,31 @@
 DROP TABLE IF EXISTS bucket_list;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE bucket_list (
-    isbn TEXT PRIMARY KEY, 
-    title TEXT, 
-    category TEXT
+    bucket_id SERIAL PRIMARY KEY,
+    item TEXT,
+    contact TEXT,
+    area TEXT,
+    descrip TEXT, 
+    category TEXT,
+    cloudinary_id TEXT
 );
 
-INSERT INTO bucket_list (isbn, title, category)
-    VALUES ('123', 'Ceramics Studio', 'creative');
-INSERT INTO bucket_list (isbn, title, category)
-    VALUES ('234', 'Climbing Wall', 'athletic');
-INSERT INTO bucket_list (isbn, title, category)
-    VALUES ('345', 'Maker Space', 'creative');
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    username TEXT,
+    email TEXT,
+    major TEXT,
+    class_year TEXT,
+    descrip TEXT, 
+    cloudinary_id TEXT,
+    bucket_id TEXT
+);
+
+INSERT INTO bucket_list (contact, area, descrip, category, cloudinary_id)
+    VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 'Make clay pots.', 'creative', 'XXX');
+INSERT INTO bucket_list (contact, area, descrip, category, cloudinary_id)
+    VALUES ('Climbing Wall', '721-675-8932', 'Dillon Gym', 'Scale the rock wall and see how you fare.', 'athletic', 'XXX');
+INSERT INTO bucket_list (contact, area, descrip, category, cloudinary_id)
+    VALUES ('Maker Space', '888-888-8888', 'Lewis Library', '3D-print and create what you can imagine.', 'creative', 'XXX');
+

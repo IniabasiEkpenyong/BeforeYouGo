@@ -11,15 +11,15 @@ import dotenv
 
 #-----------------------------------------------------------------------
 dotenv.load_dotenv()
-_DATABASE_URL = os.environ[’DATABASE_URL’]
-_DATABASE_URL = _DATABASE_URL.replace(’postgres://’, ’postgresql://’)
+_DATABASE_URL = os.environ['DATABASE_URL']
+_DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
 
 #-----------------------------------------------------------------------
 
 Base = sqlalchemy.orm.declarative_base()
 
 class Book (Base):
-    ___tablename__ = ’books’
+    ___tablename__ = 'books'
     isbn = sqlalchemy.Column(sqlalchemy.String, primary_key=True)
     author = sqlalchemy.Column(sqlalchemy.String)
     title = sqlalchemy.Column(sqlalchemy.String)
@@ -35,23 +35,23 @@ def get_books(author):
     with sqlalchemy.orm.Session(_engine) as session:
 
         query = session.query(Book).filter(
-            Book.author.ilike(author+’%’))
+            Book.author.ilike(author+'%'))
         table = query.all()
         for row in table:
-            book = {’isbn’: row.isbn, ’author’: row.author,
-                ’title’: row.title}
+            book = {'isbn': row.isbn, 'author': row.author,
+                'title': row.title}
             books.append(book)
-return books
+    return books
 #-----------------------------------------------------------------------
 # For testing:
 
 def _test():
-    books = get_books(’ker’)
+    books = get_books('ker')
     for book in books:
-        print(book[’isbn’])
-        print(book[’author’])
-        print(book[’title’])
+        print(book['isbn'])
+        print(book['author'])
+        print(book['title'])
         print()
 
-if __name__ == ’__main__’:
+if __name__ == '__main__':
     _test()

@@ -9,7 +9,7 @@ import os
 import html # html.escape() is used to thwart CSS attacks
 import parseargs
 import common
-import database
+import BYG.database as database
 
 #-----------------------------------------------------------------------
 
