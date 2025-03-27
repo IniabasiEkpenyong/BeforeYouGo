@@ -53,6 +53,7 @@
                 <td><strong>Category</strong></td>
                 <td><strong>Location</strong></td>
                 <td><strong>Description</strong></td>
+                <td><strong>Completed?</strong></td>                
                 
             </tr>
         </thead>
@@ -66,14 +67,17 @@
                                 <!-- For testing: automatically go 
                                     from browser to missing classid:-->
                                 <!--<a href="/searchresults?classid={{ 9034 }}">{{ event['isbn'] }}-->
-                            <a href="/searchresults?classid={{ event['isbn'] }}">
+                            <a href="/global">
                             {{ event['bucket_id'] }}</a>
                         </td>
                         <td> {{event['title']}} </td>
                         <td> {{event['contact']}} </td>
                         <td> {{event['cat']}} </td>
                         <td> {{event['loc']}} </td> 
-                        <td> {{event['descrip']}} </td>                        
+                        <td> {{event['descrip']}} </td> 
+                        <td>
+                            <input type="checkbox" class="global-checkbox" data-bucketid="{{ event['bucket_id'] }}">
+                        </td>                       
                     </tr>
                 {% endfor %}
             {% endif %}

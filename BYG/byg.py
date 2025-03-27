@@ -8,11 +8,20 @@
 import time
 import flask
 import database as database
+from flask import Flask, session, redirect, render_template, request, make_response
+import sqlalchemy
+import sqlalchemy.orm
+
+from models import User, UserBucket
+
+from werkzeug.security import generate_password_hash, check_password_hash
+
 # import sys
 
 #-----------------------------------------------------------------------
 
 app = flask.Flask(__name__, template_folder='.')
+app.secret_key = 'your_secret_key_here'
 
 #-----------------------------------------------------------------------
 
@@ -94,6 +103,28 @@ def search_form():
     return response
 
 #-----------------------------------------------------------------------
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if flask.request.method == 'POST':
+        username = flask.request.form['username']
+        password = flask.request.form['password']
+        email = flask.request.form['email']
+        # Hash the password before storing (use werkzeug.security.generate_password_hash)
+        password_hash = generate_password_hash(password)
+        # Create the user and commit to the database
+        with sqlalchemy.orm.Session(database._engine) as session_db:
+            new_user = User(username=username, password_hash=password_hash, email=email)
+            session_db.add(new_user)
+            session_db.commit()
+        return flask.redirect('/login')
+    response = flask.render_template('signup.html',
+                                     ampm=get_ampm(),
+                    current_time=get_current_time(),)
+    return response
+
+
+
 
 @app.route('/searchresults', methods=['GET'])
 def search_results():

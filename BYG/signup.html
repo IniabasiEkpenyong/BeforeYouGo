@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Sign Up - Before You Go</title>
+  </head>
+  <body>
+    {% include 'header.html' %}
+    <h1>Sign Up</h1>
+    
+    {% if error %}
+      <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    
+    <form action="/signup" method="post">
+      <table>
+        <tr>
+          <td><label for="username">Username:</label></td>
+          <td><input type="text" name="username" id="username" required></td>
+        </tr>
+        <tr>
+          <td><label for="password">Password:</label></td>
+          <td><input type="password" name="password" id="password" required></td>
+        </tr>
+        <tr>
+          <td><label for="email">Email:</label></td>
+          <td><input type="email" name="email" id="email"></td>
+        </tr>
+        <tr>
+          <td colspan="2" style="text-align:center;">
+            <input type="submit" value="Sign Up">
+          </td>
+        </tr>
+      </table>
+    </form>
+    
+    <p>Already have an account? <a href="/login">Log in here</a>.</p>
+    {% include 'footer.html' %}
+  </body>
+</html>
