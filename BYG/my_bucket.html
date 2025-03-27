@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Bucket List</title>
+</head>
+<body>
+  {% include 'header.html' %}
+  <h1>My Bucket List</h1>
+
+  {% if user_items|length == 0 %}
+    <p>You have no items in your personal list yet.</p>
+  {% else %}
+    <table border="1">
+      <tr>
+        <th>Title</th>
+        <th>Location</th>
+        <th>Description</th>
+        <th>Completed?</th>
+        <th>Action</th>
+      </tr>
+      {% for ub, bucket in user_items %}
+        <tr>
+          <td>{{ bucket.item }}</td>
+          <td>{{ bucket.area }}</td>
+          <td>{{ bucket.descrip }}</td>
+          <td>
+            {% if ub.completed %}
+              Yes
+            {% else %}
+              No
+            {% endif %}
+          </td>
+          <td>
+            {% if not ub.completed %}
+              <form action="/mark_completed" method="POST" style="display:inline;">
+                <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+                <input type="submit" value="Mark Completed">
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+  <br>
+  <a href="/global">Back to Global List</a>
+  {% include 'footer.html' %}
+</body>
+</html>

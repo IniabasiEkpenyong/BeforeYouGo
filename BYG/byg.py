@@ -8,13 +8,14 @@
 import time
 import flask
 import database as database
+from database import Bucket, UserBucket
 from flask import Flask, session, redirect, render_template, request, make_response
 import sqlalchemy
 import sqlalchemy.orm
 import auth
 import os
 
-from models import User, UserBucket
+# from models import User, UserBucket
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -121,6 +122,72 @@ def global_page():
     response.set_cookie('prev_loc', loc)
     response.set_cookie('prev_descrip', descrip)
     return response
+
+
+@app.route('/add_to_my_list', methods=['POST'])
+def add_to_my_list():
+    # 1) Ensure the user is authenticated
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    # 2) Get the bucket_id from the form data
+    bucket_id = request.form.get('bucket_id')
+    if not bucket_id:
+        # If somehow there's no bucket_id, just redirect or show an error
+        return flask.redirect('/global')
+
+    # 3) Insert a row into user_bucket if it doesn't already exist
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        # Optionally check if it’s already added
+        existing = session_db.query(UserBucket).filter_by(
+            user_netid=user_netid, bucket_id=bucket_id).first()
+        if existing is None:
+            new_item = UserBucket(user_netid=user_netid, bucket_id=bucket_id)
+            session_db.add(new_item)
+            session_db.commit()
+
+    # 4) Redirect back to the global list or the user’s personal list
+    return flask.redirect('/my_bucket')
+
+
+@app.route('/my_bucket', methods=['GET'])
+def my_bucket():
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    # Query the user_bucket table, joined with the bucket_list table
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        user_items = session_db.query(UserBucket, database.Bucket) \
+            .join(database.Bucket, UserBucket.bucket_id == database.Bucket.bucket_id) \
+            .filter(UserBucket.user_netid == user_netid).all()
+
+    # user_items is a list of tuples: (UserBucket, Bucket)
+    # Pass it to a template
+    return flask.render_template('my_bucket.html',
+        user_netid=user_netid,
+        user_items=user_items,
+        ampm=get_ampm(),
+        current_time=get_current_time()
+    )
+
+@app.route('/mark_completed', methods=['POST'])
+def mark_completed():
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    user_bucket_id = request.form.get('user_bucket_id')
+    if not user_bucket_id:
+        return flask.redirect('/my_bucket')
+
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        ub_item = session_db.query(UserBucket).filter_by(
+            id=user_bucket_id, user_netid=user_netid).first()
+        if ub_item:
+            ub_item.completed = True
+            session_db.commit()
+    return flask.redirect('/my_bucket')
+
+
 
 #-----------------------------------------------------------------------
 
