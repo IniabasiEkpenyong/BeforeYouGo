@@ -15,10 +15,12 @@ import contextlib
 # ^^ This is a problem that it only works on my computer??
 # Automatically find the script's directory (cgi-bin) and locate the database file
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # This gets the cgi-bin path
-DATABASE_PATH = os.path.join(BASE_DIR, "bucket_list.sqlite")  # Path to the database
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # This gets the cgi-bin path
+# DATABASE_PATH = os.path.join(BASE_DIR, "bucket_list.sqlite")  # Path to the database
 
-_DATABASE_URL = f"file:{DATABASE_PATH}?mode=ro"  # Use this as the database URL
+# _DATABASE_URL = f"file:{DATABASE_PATH}?mode=ro"  # Use this as the database URL
+
+_DATABASE_URL = 'file:bucket_list.sqlite?mode=rw'
 
 #-----------------------------------------------------------------------
 
