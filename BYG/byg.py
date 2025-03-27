@@ -37,8 +37,18 @@ def home_page():
     response = flask.make_response(html_code)
     return response
 
+
+
 @app.route('/global', methods = ['GET'])
 def search_form():
+    prev_title = flask.request.cookies.get('prev_title')
+    if prev_title is None:
+        prev_title= ''
+
+    title = flask.request.args.get('title')
+    if title is None:
+        title = ''
+
     prev_cat = flask.request.cookies.get('prev_cat')
     if prev_cat is None:
         prev_cat= ''
@@ -47,8 +57,25 @@ def search_form():
     if cat is None:
         cat = ''
 
+    prev_loc = flask.request.cookies.get('prev_loc')
+    if prev_loc is None:
+        prev_loc= ''
+
+    loc = flask.request.args.get('loc')
+    if loc is None:
+        loc = ''
+
+    prev_descrip = flask.request.cookies.get('prev_descrip')
+    if prev_descrip is None:
+        prev_descrip= ''
+
+    descrip = flask.request.args.get('descrip')
+    if descrip is None:
+        descrip = ''
+
     err_msg, events = database.get_events(
-        cat)
+        title=title, cat = cat,
+        loc = loc, descrip = descrip)
 
     html_code = flask.render_template('global.html',
         ampm=get_ampm(),
@@ -60,7 +87,10 @@ def search_form():
 
     response = flask.make_response(html_code)
 
+    response.set_cookie('prev_title', title)
     response.set_cookie('prev_cat', cat)
+    response.set_cookie('prev_loc', loc)
+    response.set_cookie('prev_descrip', descrip)
     return response
 
 #-----------------------------------------------------------------------

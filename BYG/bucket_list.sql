@@ -23,9 +23,9 @@ CREATE TABLE users (
 );
 
 INSERT INTO bucket_list (title, contact, area, descrip, category, cloudinary_id)
-    VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 'Make clay pots.', 'creative', 'XXX');
+    VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 'Make clay pots.', 'Creative', 'XXX');
 INSERT INTO bucket_list (title, contact, area, descrip, category, cloudinary_id)
-    VALUES ('Climbing Wall', '721-675-8932', 'Dillon Gym', 'Scale the rock wall and see how you fare.', 'athletic', 'XXX');
+    VALUES ('Climbing Wall', '721-675-8932', 'Dillon Gym', 'Scale the rock wall and see how you fare.', 'Athletic', 'XXX');
 INSERT INTO bucket_list (title, contact, area, descrip, category, cloudinary_id)
-    VALUES ('Maker Space', '888-888-8888', 'Lewis Library', '3D-print and create what you can imagine.', 'creative', 'XXX');
+    VALUES ('Maker Space', '888-888-8888', 'Lewis Library', '3D-print and create what you can imagine.', 'Creative', 'XXX');
 

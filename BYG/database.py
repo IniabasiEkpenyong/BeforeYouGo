@@ -17,19 +17,29 @@ _DATABASE_URL = 'file:bucket_list.sqlite?mode=rw'
 #-----------------------------------------------------------------------
 
 
-def get_events(category):
+def get_events(title = '', cat = '', loc  = '', descrip = ''):
     events = []
+
     try:
         with sqlite3.connect(_DATABASE_URL, isolation_level=None,
                              uri=True) as connection:
                 with contextlib.closing(connection.cursor()) as cursor:
-                    query_str = "SELECT isbn, title, category FROM bucket_list "
-                    query_str += "WHERE category LIKE ?"
-                    cursor.execute(query_str, [category+'%'])
+                    query_str = "SELECT bucket_id, title, contact, area, "
+                    query_str += "descrip, category, cloudinary_id "                    
+                    query_str += "FROM bucket_list "
+                    query_str += "WHERE title LIKE ? ESCAPE '\\' "
+                    query_str += "AND category LIKE ? ESCAPE '\\' "
+                    query_str += "AND area LIKE ? ESCAPE '\\' "
+                    query_str += "AND descrip LIKE ? ESCAPE '\\' "
+                    cursor.execute(query_str, 
+                                   ['%'+title+'%', '%'+cat+'%',
+                                    '%'+loc+'%', '%'+descrip+'%'])
                     table = cursor.fetchall()
                 for row in table:
-                     event = {'isbn': row[0], 'title': row[1],
-                             'category': row[2]}
+                     event = {'bucket_id': row[0], 'title': row[1],
+                             'contact': row[2], 'loc': row[3],
+                             'descrip': row[4], 'cat': row[5],
+                             'cloudinary_id': row[6]}
                      events.append(event)
         return '', events
     
