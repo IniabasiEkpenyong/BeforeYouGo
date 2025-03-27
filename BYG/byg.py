@@ -49,7 +49,8 @@ def home_page():
     user_info = auth.authenticate()
     # print(user_info['attributes']['givenname'][0])
     username = user_info['user']
-    given_name = user_info['attributes']['givenname'][0]
+    # given_name = user_info['attributes']['givenname'][0]
+    given_name = auth.get_name(user_info)
 
     html_code = flask.render_template('index.html',
         ampm=get_ampm(),
@@ -103,7 +104,8 @@ def global_page():
     
     user_info = auth.authenticate()
     username = user_info['user']
-    given_name = user_info['attributes']['givenname'][0]
+    # given_name = user_info['attributes']['givenname'][0]
+    given_name = auth.get_name(user_info)
     
     html_code = flask.render_template('global.html',
         ampm=get_ampm(),
@@ -154,6 +156,7 @@ def add_to_my_list():
 def my_bucket():
     user_info = auth.authenticate()
     user_netid = user_info['user']
+    given_name = auth.get_name(user_info)
 
     # Query the user_bucket table, joined with the bucket_list table
     with sqlalchemy.orm.Session(database._engine) as session_db:
@@ -164,6 +167,7 @@ def my_bucket():
     # user_items is a list of tuples: (UserBucket, Bucket)
     # Pass it to a template
     return flask.render_template('my_bucket.html',
+        given_name = given_name,
         user_netid=user_netid,
         user_items=user_items,
         ampm=get_ampm(),

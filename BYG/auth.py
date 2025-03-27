@@ -100,6 +100,14 @@ def is_authenticated():
 
     return 'user_info' in flask.session
 
+def get_name(user_info):
+    try:
+        given_name = user_info['attributes']['givenname'][0]
+        return given_name
+    except:
+        given_name = user_info['user']
+        return given_name
+
 #-----------------------------------------------------------------------
 
 @app.route('/logoutapp', methods=['GET'])
