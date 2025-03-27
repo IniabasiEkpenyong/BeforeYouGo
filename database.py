@@ -18,27 +18,31 @@ _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
 
 Base = sqlalchemy.orm.declarative_base()
 
-class Book (Base):
-    ___tablename__ = 'books'
-    isbn = sqlalchemy.Column(sqlalchemy.String, primary_key=True)
-    author = sqlalchemy.Column(sqlalchemy.String)
-    title = sqlalchemy.Column(sqlalchemy.String)
+class Bucket (Base):
+    ___tablename__ = 'bucket_list'
+    bucket_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    item = sqlalchemy.Column(sqlalchemy.String)
+    contact = sqlalchemy.Column(sqlalchemy.String)
+    area = sqlalchemy.Column(sqlalchemy.String)
+    description = sqlalchemy.Column(sqlalchemy.String)
+    category = sqlalchemy.Column(sqlalchemy.String)
+    cloudinary_id = sqlalchemy.Column(sqlalchemy.String)
 
 _engine = sqlalchemy.create_engine(_DATABASE_URL)
 
 #-----------------------------------------------------------------------
 
-def get_books(author):
+def get_events(category):
 
     books = []
 
     with sqlalchemy.orm.Session(_engine) as session:
 
-        query = session.query(Book).filter(
-            Book.author.ilike(author+'%'))
+        query = session.query(Bucket).filter(
+            Bucket.category.ilike(category+'%'))
         table = query.all()
         for row in table:
-            book = {'isbn': row.isbn, 'author': row.author,
+            event = {'isbn': row.isbn, 'author': row.author,
                 'title': row.title}
             books.append(book)
     return books
