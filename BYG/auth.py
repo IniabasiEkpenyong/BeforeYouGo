@@ -12,7 +12,11 @@ import re
 import json
 import flask
 
-from top import app
+# from top import app
+try:
+    from BYG.byg import app
+except ImportError:
+    from byg import app
 
 #-----------------------------------------------------------------------
 

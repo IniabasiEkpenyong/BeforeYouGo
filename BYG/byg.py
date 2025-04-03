@@ -12,7 +12,6 @@ import flask
 from flask import Flask, session, redirect, render_template, request, make_response
 import sqlalchemy
 import sqlalchemy.orm
-import auth
 import os
 
 # from models import User, UserBucket
