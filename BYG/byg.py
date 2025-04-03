@@ -67,12 +67,12 @@ def get_current_time():
 def home_page():
 
     # user_info = auth.authenticate()    
-    # username = user_info['user']    
-    # given_name = auth.get_name(user_info)
+    username = user_info['user']    
+    given_name = auth.get_name(user_info)
 
     #TEMP hard coding until OIT whitelists
-    username = 'jg2783'
-    given_name = 'Judah'
+    # username = 'jg2783'
+    # given_name = 'Judah'
 
     html_code = flask.render_template('index.html',
         ampm=get_ampm(),
@@ -124,13 +124,13 @@ def global_page():
         title=title, cat = cat,
         loc = loc, descrip = descrip)
     
-    # user_info = auth.authenticate()
-    # username = user_info['user']
-    # given_name = auth.get_name(user_info)
+    user_info = auth.authenticate()
+    username = user_info['user']
+    given_name = auth.get_name(user_info)
 
     #TEMP hard coding until OIT whitelists
-    username = 'jg2783'
-    given_name = 'Judah'
+    # username = 'jg2783'
+    # given_name = 'Judah'
     
     html_code = flask.render_template('global.html',
         ampm=get_ampm(),
@@ -154,12 +154,13 @@ def global_page():
 @app.route('/add_to_my_list', methods=['POST'])
 def add_to_my_list():
     # 1) Ensure the user is authenticated
-    # user_info = auth.authenticate()
-    # user_netid = user_info['user']
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
     #TEMP hard coding until OIT whitelists
     
-    user_netid = 'jg2783'
-    given_name = 'Judah'
+    # user_netid = 'jg2783'
+    # given_name = 'Judah'
 
     bucket_id = request.form.get('bucket_id')
     if not bucket_id:
@@ -179,13 +180,13 @@ def add_to_my_list():
 
 @app.route('/my_bucket', methods=['GET'])
 def my_bucket():
-    # user_info = auth.authenticate()
-    # user_netid = user_info['user']
-    # given_name = auth.get_name(user_info)
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    given_name = auth.get_name(user_info)
 
     #TEMP hard coding until OIT whitelists
-    user_netid = 'jg2783'
-    given_name = 'Judah'    
+    # user_netid = 'jg2783'
+    # given_name = 'Judah'    
 
     # Query the user_bucket table, joined with the bucket_list table
     with sqlalchemy.orm.Session(database._engine) as session_db:
@@ -205,12 +206,12 @@ def my_bucket():
 
 @app.route('/mark_completed', methods=['POST'])
 def mark_completed():
-    # user_info = auth.authenticate()
-    # user_netid = user_info['user']
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
 
     #TEMP hard coding until OIT whitelists
-    user_netid = 'jg2783'
-    given_name = 'Judah'
+    # user_netid = 'jg2783'
+    # given_name = 'Judah'
 
     user_bucket_id = request.form.get('user_bucket_id')
     if not user_bucket_id:
@@ -298,8 +299,13 @@ def search_results():
 @app.route('/add_item', methods=['GET'])
 def show_add_item():
     #TEMP hard coding until OIT whitelists
-    username = 'jg2783'
-    given_name = 'Judah'
+    # username = 'jg2783'
+    # given_name = 'Judah'
+
+    user_info = auth.authenticate()
+    username = user_info['user']
+    given_name = auth.get_name(user_info)
+
 
     return flask.render_template('add_item.html',
         username=username,
