@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Add New Item - Before You Go</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+   </head>
+   <body>
+      {% include 'header.html' %}
+      <h1>Add New Bucket List Item</h1>
+
+      <div class="search-container">
+         <form action="/add_global_item" method="POST" class="search-form">
+            <label for="title">Title:</label>
+            <input type="text" id="titleInput" name="title" required>
+            
+            <label for="contact">Contact:</label>
+            <input type="text" name="contact" id="contactInput" required>
+            
+            <label for="area">Location:</label>
+            <input type="text" name="area" id="areaInput" required>
+            
+            <label for="descrip">Description:</label>
+            <input type="text" name="descrip" id="descripInput" required>
+            
+            <label for="category">Category:</label>
+            <input type="text" name="category" id="categoryInput" required>
+            
+            <input type="submit" value="Add Item">
+         </form>
+      </div>
+
+      {% include 'footer.html' %}
+   </body>
+</html> 

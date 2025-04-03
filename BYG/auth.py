@@ -11,17 +11,13 @@ import urllib.parse
 import re
 import json
 import flask
-
-# from top import app
-
 from flask import redirect, session, request, render_template
-from BYG.byg import app
 
-
-# try:
-#     from BYG.byg import app
-# except ImportError:
-#     from byg import app
+# Import the app from package
+try:
+    from . import app
+except ImportError:
+    from BYG import app
 
 #-----------------------------------------------------------------------
 

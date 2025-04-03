@@ -1,17 +1,21 @@
- #!/usr/bin/env python
- #-----------------------------------------------------------------------
- # database.py
- # Author: Bob Dondero
- #-----------------------------------------------------------------------
+#!/usr/bin/env python
+#-----------------------------------------------------------------------
+# database.py
+# Author: Bob Dondero
+#-----------------------------------------------------------------------
 
 import os
 import sqlalchemy
 import sqlalchemy.orm
 import dotenv
+from pathlib import Path
 # import queue
 
 #-----------------------------------------------------------------------
-dotenv.load_dotenv()
+# Load .env file from the same directory as this file
+env_path = Path(__file__).resolve().parent / '.env'
+dotenv.load_dotenv(env_path)
+
 _DATABASE_URL = os.environ['DATABASE_URL']
 _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
 

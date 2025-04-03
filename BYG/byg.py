@@ -7,32 +7,38 @@
 
 import time
 import flask
-# from database import database
-# from database import Bucket, UserBucket
-from flask import Flask, session, redirect, render_template, request, make_response
 import sqlalchemy
 import sqlalchemy.orm
 import os
+from flask import session, redirect, render_template, request, make_response
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# Import the app from package
+try:
+    from . import app
+    from .database import Bucket, UserBucket
+    from . import database
+except ImportError:
+    from BYG import app
+    from BYG.database import Bucket, UserBucket
+    import BYG.database as database
+
+# Set the secret key
+app.secret_key = os.environ['APP_SECRET_KEY']
 
 # from models import User, UserBucket
-from werkzeug.security import generate_password_hash, check_password_hash
 # import sys
 
 # Handle local vs package-relative imports
-# try:
-#     from . import database
-#     from . import auth
-#     from .database import Bucket, UserBucket
-# except ImportError:
-#     import database
-#     import auth
+try:
+    from . import database
+    from . import auth
+    from .database import Bucket, UserBucket
+except ImportError:
+    import database
+    import auth
 
-app = Flask(__name__, template_folder='.')
 # app.secret_key = 'app-secret-key'  # Or from env
-
-from . import auth, database, top  # all relative
-# from database import Bucket, UserBucket
-from .database import Bucket, UserBucket
 
 
 #-----------------------------------------------------------------------
@@ -155,15 +161,12 @@ def add_to_my_list():
     user_netid = 'jg2783'
     given_name = 'Judah'
 
-    # 2) Get the bucket_id from the form data
     bucket_id = request.form.get('bucket_id')
     if not bucket_id:
-        # If somehow there's no bucket_id, just redirect or show an error
         return flask.redirect('/global')
 
-    # 3) Insert a row into user_bucket if it doesn't already exist
     with sqlalchemy.orm.Session(database._engine) as session_db:
-        # Optionally check if it’s already added
+        # Optionally check if it's already added
         existing = session_db.query(UserBucket).filter_by(
             user_netid=user_netid, bucket_id=bucket_id).first()
         if existing is None:
@@ -171,7 +174,6 @@ def add_to_my_list():
             session_db.add(new_item)
             session_db.commit()
 
-    # 4) Redirect back to the global list or the user’s personal list
     return flask.redirect('/my_bucket')
 
 
@@ -246,8 +248,6 @@ def mark_completed():
 #     return response
 
 
-
-
 @app.route('/searchresults', methods=['GET'])
 def search_results():
     error_msg = ''
@@ -294,3 +294,45 @@ def search_results():
     response = flask.make_response(html_code)
 
     return response
+
+@app.route('/add_item', methods=['GET'])
+def show_add_item():
+    #TEMP hard coding until OIT whitelists
+    username = 'jg2783'
+    given_name = 'Judah'
+
+    return flask.render_template('add_item.html',
+        username=username,
+        given_name=given_name,
+        ampm=get_ampm(),
+        current_time=get_current_time()
+    )
+
+@app.route('/add_global_item', methods=['POST'])
+def add_global_item():
+    # Get form data
+    title = request.form.get('title')
+    contact = request.form.get('contact')
+    area = request.form.get('area')
+    descrip = request.form.get('descrip')
+    category = request.form.get('category')
+
+    # Validate that all required fields are present
+    if not all([title, contact, area, descrip, category]):
+        return flask.redirect('/add_item')
+
+    # Add the new item to the database
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        new_item = Bucket(
+            item=title,
+            contact=contact,
+            area=area,
+            descrip=descrip,
+            category=category,
+            cloudinary_id='XXX'  # You can update this when you implement image upload
+        )
+        session_db.add(new_item)
+        session_db.commit()
+
+    # Redirect back to the global list
+    return flask.redirect('/global')
