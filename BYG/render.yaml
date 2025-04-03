@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: before-you-go
-    env: python
-    rootDir: BYG
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn byg:app"
