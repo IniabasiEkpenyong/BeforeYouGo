@@ -12,6 +12,10 @@
       {% else %}
       <h2>Global Bucket List</h2>
       
+      <div style="text-align: right; margin-bottom: 20px;">
+         <a href="{{ url_for('show_add_item') }}" class="add-button" style="display: inline-block; max-width: 200px;">Add New Item</a>
+      </div>
+
       <div class="search-container">
          <form action="/global" method="get" class="search-form">
             <label for="title">Title:</label>
@@ -79,7 +83,6 @@
          {% endif %}
       </div>
       {% endif %}
-
       {% include 'footer.html' %}
    </body>
 </html>
