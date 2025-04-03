@@ -8,11 +8,14 @@ import os
 import sqlalchemy
 import sqlalchemy.orm
 import dotenv
+# import queue
 
 #-----------------------------------------------------------------------
 dotenv.load_dotenv()
 _DATABASE_URL = os.environ['DATABASE_URL']
 _DATABASE_URL = _DATABASE_URL.replace('postgres://', 'postgresql://')
+
+# _connection_pool = queue.Queue()
 
 #-----------------------------------------------------------------------
 
