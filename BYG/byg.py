@@ -7,8 +7,8 @@
 
 import time
 import flask
-import database as database
-from database import Bucket, UserBucket
+# from database import database
+# from database import Bucket, UserBucket
 from flask import Flask, session, redirect, render_template, request, make_response
 import sqlalchemy
 import sqlalchemy.orm
@@ -16,15 +16,23 @@ import auth
 import os
 
 # from models import User, UserBucket
-
 from werkzeug.security import generate_password_hash, check_password_hash
-
 # import sys
+
+# Handle local vs package-relative imports
+try:
+    from . import database
+    from . import auth
+    from .database import Bucket, UserBucket
+except ImportError:
+    import database
+    import auth
+    from database import Bucket, UserBucket
 
 #-----------------------------------------------------------------------
 
-# app = flask.Flask(__name__, template_folder='.')
-from top import app 
+app = flask.Flask(__name__, template_folder='.')
+#from top import app 
 
 
 # app.secret_key = 'secret_key_here'
