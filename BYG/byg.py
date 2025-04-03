@@ -31,7 +31,9 @@ app = Flask(__name__, template_folder='.')
 # app.secret_key = 'app-secret-key'  # Or from env
 
 from . import auth, database, top  # all relative
-from database import Bucket, UserBucket
+# from database import Bucket, UserBucket
+from .database import Bucket, UserBucket
+
 
 #-----------------------------------------------------------------------
 
