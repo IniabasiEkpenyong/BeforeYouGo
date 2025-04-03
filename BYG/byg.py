@@ -66,7 +66,7 @@ def get_current_time():
 @app.route('/index', methods=['GET'])
 def home_page():
 
-    # user_info = auth.authenticate()    
+    user_info = auth.authenticate()    
     username = user_info['user']    
     given_name = auth.get_name(user_info)
 
