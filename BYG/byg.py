@@ -7,7 +7,7 @@
 
 import time
 import flask
-import database as database
+from . import database
 from database import Bucket, UserBucket
 from flask import Flask, session, redirect, render_template, request, make_response
 import sqlalchemy

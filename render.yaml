@@ -3,7 +3,4 @@ services:
     name: before-you-go
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn BYG.byg:app
-    envVars:
-      - key: APP_SECRET_KEY
-        sync: false
+    startCommand: "gunicorn BYG.byg:app"
