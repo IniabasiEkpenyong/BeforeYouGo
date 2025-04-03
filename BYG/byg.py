@@ -19,14 +19,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # import sys
 
 # Handle local vs package-relative imports
-try:
-    from . import database
-    from . import auth
-    from .database import Bucket, UserBucket
-except ImportError:
-    import database
-    import auth
-    from database import Bucket, UserBucket
+# try:
+#     from . import database
+#     from . import auth
+#     from .database import Bucket, UserBucket
+# except ImportError:
+#     import database
+#     import auth
+
+from . import auth, database, top  # all relative
+from database import Bucket, UserBucket
 
 #-----------------------------------------------------------------------
 
