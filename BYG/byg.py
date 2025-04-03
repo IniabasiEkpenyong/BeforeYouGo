@@ -23,8 +23,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 #-----------------------------------------------------------------------
 
-# app = flask.Flask(__name__, template_folder='.')
-from top import app 
+app = flask.Flask(__name__, template_folder='.')
+#from top import app 
 
 
 # app.secret_key = 'secret_key_here'
