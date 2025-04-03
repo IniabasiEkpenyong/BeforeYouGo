@@ -4,4 +4,4 @@ services:
     env: python
     rootDir: BYG
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn byg:app"
+    startCommand: "gunicorn BYG.byg:app"
