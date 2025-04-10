@@ -261,7 +261,10 @@ def my_bucket():
         user_items = session_db.query(UserBucket, database.Bucket) \
             .join(database.Bucket, UserBucket.bucket_id == database.Bucket.bucket_id) \
             .filter(UserBucket.user_netid == user_netid).all()
-
+    
+    total_items = len(user_items)
+    completed = sum(1 for item in user_items if item[0].completed)
+    progress = 0 if total_items == 0 else (completed/total_items)* 100
     # user_items is a list of tuples: (UserBucket, Bucket)
     # Pass it to a template
     return flask.render_template('my_bucket.html',
@@ -269,7 +272,8 @@ def my_bucket():
         user_netid=user_netid,
         user_items=user_items,
         ampm=get_ampm(),
-        current_time=get_current_time()
+        current_time=get_current_time(),
+        progress=progress
     )
 
 @app.route('/mark_completed', methods=['POST'])
