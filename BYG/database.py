@@ -71,8 +71,10 @@ def get_events(title='', cat='', loc = '', descrip = ''):
 
 def get_all_categories():
     with sqlalchemy.orm.Session(_engine) as session:
-        return sorted(set(row.category for row in 
-        session.query(Bucket.category).distinct() if row.category))
+        categories = session.query(Bucket.category).filter(Bucket.priv == False).distinct().all()
+    
+        # Filter out categories that are private
+        return sorted(set(category for category, in categories if category))
 #-----------------------------------------------------------------------
 # For testing:
 
