@@ -22,27 +22,27 @@ CREATE TABLE user_bucket (
 
 -- We can improve this logic later so we can linearize the items
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
-    VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 'Make clay pots.', 'creative', 'XXX');
+    VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 'Make clay pots.', 'creative', 'ceramic.jpg');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
-    VALUES ('Climbing Wall', '721-675-8932', 'Dillon Gym', 'Scale the rock wall and see how you fare.', 'athletic', 'XXX');
+    VALUES ('Climbing Wall', '721-675-8932', 'Dillon Gym', 'Scale the rock wall and see how you fare.', 'athletic', 'climbing');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
-    VALUES ('Maker Space', '888-888-8888', 'Lewis Library', '3D-print and create what you can imagine.', 'creative', 'XXX');
+    VALUES ('Maker Space', '888-888-8888', 'Lewis Library', '3D-print and create what you can imagine.', 'creative', '3dprinter');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
-    VALUES ('Princeton Tunnels', '609-555-1001', 'Campus', 'Explore the mysterious underground tunnels.', 'adventure', 'XXX');
+    VALUES ('Princeton Tunnels', '609-555-1001', 'Campus', 'Explore the mysterious underground tunnels.', 'adventure', 'explore.jpg');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
     VALUES ('Graduate College Tower', '609-555-1002', 'Graduate College', 'Climb to the top for a great view.', 'historic', 'XXX');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
-    VALUES ('Rockefeller Tower', '609-555-1003', 'Rockefeller College', 'See campus from the Rocky tower.', 'historic', 'XXX');
+    VALUES ('Rockefeller Tower', '609-555-1003', 'Rockefeller College', 'See campus from the Rocky tower.', 'historic', 'tower.jpg');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
     VALUES ('PNI Monkey Lab', '609-555-1004', 'PNI', 'Tour the cognitive neuroscience facilities.', 'academic', 'XXX');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
-    VALUES ('Roma Theater Movie Night', '609-555-1005', 'Campus', 'Go to a movie night at the Roma.', 'social', 'XXX');
+    VALUES ('Roma Theater Movie Night', '609-555-1005', 'Campus', 'Go to a movie night at the Roma.', 'social', 'movie.png');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
     VALUES ('Princeton Battlefield Tour', '609-555-1006', 'Princeton Battlefield', 'Visit the Revolutionary War site.', 'historic', 'XXX');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
     VALUES ('Princeton Airport Flight Class', '609-555-1007', 'Princeton Airport', 'Take an introductory flying lesson.', 'adventure', 'XXX');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
-    VALUES ('Danny DeVito Shrine', '609-555-1008', 'Mathey College', 'Visit the shrine of Danny DeVito.', 'quirky', 'XXX');
+    VALUES ('Danny DeVito Shrine', '609-555-1008', 'Mathey College', 'Visit the shrine of Danny DeVito.', 'quirky', 'danny.avif');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
     VALUES ('Grounds for Sculpture', '609-555-1010', 'Hamilton, NJ', 'Explore the outdoor sculpture museum.', 'artistic', 'XXX');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
