@@ -71,6 +71,7 @@ body {
     box-shadow: var(--card-shadow);
     overflow: hidden;
     transition: transform 0.2s, box-shadow 0.2s;
+    padding: 20px;
 }
 
 .bucket-card:hover {

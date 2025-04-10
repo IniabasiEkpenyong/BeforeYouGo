@@ -51,6 +51,7 @@ app = flask.Flask(__name__, template_folder='.')
 app.secret_key = os.environ['APP_SECRET_KEY']
 
 #-----------------------------------------------------------------------
+admins = ['jg2783', 'ie9117']
 
 def get_ampm():
     if time.strftime('%p') == 'AM':
@@ -127,6 +128,7 @@ def global_page():
     user_info = auth.authenticate()
     username = user_info['user']
     given_name = auth.get_name(user_info)
+    is_admin = username in admins
 
     #TEMP hard coding until OIT whitelists
     # username = 'jg2783'
@@ -144,7 +146,8 @@ def global_page():
         prev_cat = prev_cat,
         username = username,
         given_name = given_name,
-        categories=categories
+        categories=categories,
+        is_admin = is_admin
     )
 
     response = flask.make_response(html_code)
@@ -202,13 +205,6 @@ def remove_from_my_list():
 
     return flask.redirect('/my_bucket')
 
-def requires_admin():
-    user_info = auth.authenticate()
-    user_netid = user_info['user']
-    if user_netid != 'jg2783' and user_netid != 'ie9117':
-        return flask.redirect('/my_bucket')
-
-@requires_admin
 @app.route('/remove_from_global_list', methods=['POST'])
 def remove_from_global_list():
     # Ensure the user is authenticated
@@ -219,19 +215,16 @@ def remove_from_global_list():
     if not bucket_id:
         return flask.redirect('/global')
 
-    user_bucket_id = flask.request.form.get('user_bucket_id')
-    if not user_bucket_id:
-        return flask.redirect('/my_bucket')
 
     with sqlalchemy.orm.Session(database._engine) as session_db:
         # Ensure the item belongs to the user before deleting
-        ub_item = session_db.query(UserBucket).filter_by(
-            id=user_bucket_id, user_netid=user_netid).first()
+        ub_item = session_db.query(Bucket).filter_by(
+            bucket_id=bucket_id).first()
         if ub_item:
             session_db.delete(ub_item)
             session_db.commit()
 
-    return flask.redirect('/my_bucket')
+    return flask.redirect('/global')
 
 
 
