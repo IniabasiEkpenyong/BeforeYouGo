@@ -255,7 +255,7 @@ def mark_completed():
 # replace: ub_item.completed = True' 
 # with:    ub_item.completed = !ub_item.completed' 
 @app.route('/reset_completed', methods=['POST'])
-def mark_completed():
+def reset_completed():
     user_info = auth.authenticate()
     user_netid = user_info['user']
 
