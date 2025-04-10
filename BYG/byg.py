@@ -251,6 +251,26 @@ def mark_completed():
             session_db.commit()
     return flask.redirect('/my_bucket')
 
+# Honestly could prob just use the same function as above,
+# replace: ub_item.completed = True' 
+# with:    ub_item.completed = !ub_item.completed' 
+@app.route('/reset_completed', methods=['POST'])
+def mark_completed():
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    user_bucket_id = request.form.get('user_bucket_id')
+    if not user_bucket_id:
+        return flask.redirect('/my_bucket')
+
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        ub_item = session_db.query(UserBucket).filter_by(
+            id=user_bucket_id, user_netid=user_netid).first()
+        if ub_item:
+            ub_item.completed = False
+            session_db.commit()
+    return flask.redirect('/my_bucket')
+
 
 
 #-----------------------------------------------------------------------

@@ -17,7 +17,8 @@
         <th>Location</th>
         <th>Description</th>
         <th>Completed?</th>
-        <th></th>
+        <th><!-- Completed button col --></th>
+        <th><!-- Delete button col --></th>
       </tr>
       {% for ub, bucket in user_items %}
         <tr>
@@ -37,6 +38,11 @@
                 <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
                 <input type="submit" value="Mark Completed">
               </form>
+            {% else %}
+                <form action="/reset_completed" method="POST" style="display:inline;">
+                    <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+                    <input type="submit" value="Reset">
+                </form>
             {% endif %}
           </td>
           <td>
