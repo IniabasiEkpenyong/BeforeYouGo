@@ -67,6 +67,11 @@ def get_events(title='', cat='', loc = '', descrip = ''):
                 'cloudinary_id': row.cloudinary_id}
             events.append(event)
     return '', events
+
+def get_all_categories():
+    with sqlalchemy.orm.Session(_engine) as session:
+        return sorted(set(row.category for row in 
+        session.query(Bucket.category).distinct() if row.category))
 #-----------------------------------------------------------------------
 # For testing:
 
