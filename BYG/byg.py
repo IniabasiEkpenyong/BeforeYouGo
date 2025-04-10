@@ -418,8 +418,18 @@ def search_results():
 
 @app.route('/show_item', methods=['POST'])
 def show_item():
+
+    user_info = auth.authenticate()    
+    username = user_info['user']    
+    given_name = auth.get_name(user_info)
+    
     priv = request.form.get('priv')
-    return flask.render_template('add_item.html', priv=priv)
+    return flask.render_template('add_item.html', 
+                ampm=get_ampm(),
+                current_time=get_current_time(),
+                username = username,
+                given_name = given_name,
+                priv=priv)
 
 @app.route('/create_item', methods=['POST'])
 def add__item():

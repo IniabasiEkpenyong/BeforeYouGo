@@ -120,7 +120,7 @@
   <h1 class="title">My Bucket List</h1>
   <form action="/show_item" method="post">
     <input type="hidden" name="priv" value="True">
-    <input type="submit" class="add-button" value="Add to Personal Bucket List">
+    <input type="submit" class="add-button" value="Create new event for my Personal Bucket List">
   </form>
   {% if user_items|length == 0 %}
     <p>You have no items in your personal list yet.</p>
@@ -133,8 +133,8 @@
         <th>Location</th>
         <th>Description</th>
         <th>Completed?</th>
-        <th><!-- Completed button col --></th>
-        <th><!-- Delete button col --></th>
+        <th><!-- Completed button column --></th>
+        <th><!-- Delete button column --></th>
       </tr>
       {% for ub, bucket in user_items %}
         <tr>
