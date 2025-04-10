@@ -131,7 +131,11 @@ def global_page():
     #TEMP hard coding until OIT whitelists
     # username = 'jg2783'
     # given_name = 'Judah'
-    
+    try:
+        categories = database.get_all_categories()
+    except:
+        categories = []
+
     html_code = flask.render_template('global.html',
         ampm=get_ampm(),
         current_time=get_current_time(),
@@ -139,7 +143,8 @@ def global_page():
         events = events,
         prev_cat = prev_cat,
         username = username,
-        given_name = given_name
+        given_name = given_name,
+        categories=categories
     )
 
     response = flask.make_response(html_code)

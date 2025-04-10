@@ -22,9 +22,17 @@
             <input type="text" id="titleInput" name="title" 
                 value="{{ request.args.get('title', prev_title) }}">
             
-            <label for="cat">Category:</label>
+            <!--<label for="cat">Category:</label>
             <input type="text" name="cat" id="catInput"
-                value="{{ request.args.get('cat', prev_cat) }}">
+                value="{{ request.args.get('cat', prev_cat) }}">-->
+
+            <label for="cat">Category:</label>
+            <select name="cat" id="catInput">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category }}" {% if category == prev_cat %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
             
             <label for="loc">Location:</label>
             <input type="text" name="loc" id="locInput"
