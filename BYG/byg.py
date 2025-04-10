@@ -51,6 +51,7 @@ app = flask.Flask(__name__, template_folder='.')
 app.secret_key = os.environ['APP_SECRET_KEY']
 
 #-----------------------------------------------------------------------
+admins = ['jg2783', 'ie9117']
 
 def get_ampm():
     if time.strftime('%p') == 'AM':
@@ -66,13 +67,13 @@ def get_current_time():
 @app.route('/index', methods=['GET'])
 def home_page():
 
-    # user_info = auth.authenticate()    
-    # username = user_info['user']    
-    # given_name = auth.get_name(user_info)
+    user_info = auth.authenticate()    
+    username = user_info['user']    
+    given_name = auth.get_name(user_info)
 
     #TEMP hard coding until OIT whitelists
-    username = 'jg2783'
-    given_name = 'Judah'
+    # username = 'jg2783'
+    # given_name = 'Judah'
 
     html_code = flask.render_template('index.html',
         ampm=get_ampm(),
@@ -124,14 +125,19 @@ def global_page():
         title=title, cat = cat,
         loc = loc, descrip = descrip)
     
-    # user_info = auth.authenticate()
-    # username = user_info['user']
-    # given_name = auth.get_name(user_info)
+    user_info = auth.authenticate()
+    username = user_info['user']
+    given_name = auth.get_name(user_info)
+    is_admin = username in admins
 
     #TEMP hard coding until OIT whitelists
-    username = 'jg2783'
-    given_name = 'Judah'
-    
+    # username = 'jg2783'
+    # given_name = 'Judah'
+    try:
+        categories = database.get_all_categories()
+    except:
+        categories = []
+
     html_code = flask.render_template('global.html',
         ampm=get_ampm(),
         current_time=get_current_time(),
@@ -139,7 +145,9 @@ def global_page():
         events = events,
         prev_cat = prev_cat,
         username = username,
-        given_name = given_name
+        given_name = given_name,
+        categories=categories,
+        is_admin = is_admin
     )
 
     response = flask.make_response(html_code)
@@ -154,12 +162,13 @@ def global_page():
 @app.route('/add_to_my_list', methods=['POST'])
 def add_to_my_list():
     # 1) Ensure the user is authenticated
-    # user_info = auth.authenticate()
-    # user_netid = user_info['user']
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
     #TEMP hard coding until OIT whitelists
     
-    user_netid = 'jg2783'
-    given_name = 'Judah'
+    # user_netid = 'jg2783'
+    # given_name = 'Judah'
 
     bucket_id = request.form.get('bucket_id')
     if not bucket_id:
@@ -176,16 +185,59 @@ def add_to_my_list():
 
     return flask.redirect('/my_bucket')
 
+@app.route('/remove_from_my_list', methods=['POST'])
+def remove_from_my_list():
+    # Ensure the user is authenticated
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    user_bucket_id = flask.request.form.get('user_bucket_id')
+    if not user_bucket_id:
+        return flask.redirect('/my_bucket')
+
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        # Ensure the item belongs to the user before deleting
+        ub_item = session_db.query(UserBucket).filter_by(
+            id=user_bucket_id, user_netid=user_netid).first()
+        if ub_item:
+            session_db.delete(ub_item)
+            session_db.commit()
+
+    return flask.redirect('/my_bucket')
+
+@app.route('/remove_from_global_list', methods=['POST'])
+def remove_from_global_list():
+    # Ensure the user is authenticated
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    bucket_id = flask.request.form.get('bucket_id')
+    if not bucket_id:
+        return flask.redirect('/global')
+
+
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        # Ensure the item belongs to the user before deleting
+        ub_item = session_db.query(Bucket).filter_by(
+            bucket_id=bucket_id).first()
+        if ub_item:
+            session_db.delete(ub_item)
+            session_db.commit()
+
+    return flask.redirect('/global')
+
+
+
 
 @app.route('/my_bucket', methods=['GET'])
 def my_bucket():
-    # user_info = auth.authenticate()
-    # user_netid = user_info['user']
-    # given_name = auth.get_name(user_info)
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    given_name = auth.get_name(user_info)
 
     #TEMP hard coding until OIT whitelists
-    user_netid = 'jg2783'
-    given_name = 'Judah'    
+    # user_netid = 'jg2783'
+    # given_name = 'Judah'    
 
     # Query the user_bucket table, joined with the bucket_list table
     with sqlalchemy.orm.Session(database._engine) as session_db:
@@ -205,12 +257,12 @@ def my_bucket():
 
 @app.route('/mark_completed', methods=['POST'])
 def mark_completed():
-    # user_info = auth.authenticate()
-    # user_netid = user_info['user']
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
 
     #TEMP hard coding until OIT whitelists
-    user_netid = 'jg2783'
-    given_name = 'Judah'
+    # user_netid = 'jg2783'
+    # given_name = 'Judah'
 
     user_bucket_id = request.form.get('user_bucket_id')
     if not user_bucket_id:
@@ -221,6 +273,26 @@ def mark_completed():
             id=user_bucket_id, user_netid=user_netid).first()
         if ub_item:
             ub_item.completed = True
+            session_db.commit()
+    return flask.redirect('/my_bucket')
+
+# Honestly could prob just use the same function as above,
+# replace: ub_item.completed = True' 
+# with:    ub_item.completed = !ub_item.completed' 
+@app.route('/reset_completed', methods=['POST'])
+def reset_completed():
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    user_bucket_id = request.form.get('user_bucket_id')
+    if not user_bucket_id:
+        return flask.redirect('/my_bucket')
+
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        ub_item = session_db.query(UserBucket).filter_by(
+            id=user_bucket_id, user_netid=user_netid).first()
+        if ub_item:
+            ub_item.completed = False
             session_db.commit()
     return flask.redirect('/my_bucket')
 
@@ -295,28 +367,20 @@ def search_results():
 
     return response
 
-@app.route('/add_item', methods=['GET'])
-def show_add_item():
-    #TEMP hard coding until OIT whitelists
-    username = 'jg2783'
-    given_name = 'Judah'
-
-    return flask.render_template('add_item.html',
-        username=username,
-        given_name=given_name,
-        ampm=get_ampm(),
-        current_time=get_current_time()
-    )
+@app.route('/add_item', methods=['POST'])
+def show_item():
+    return flask.render_template('add_item.html', priv=request.args.get('priv'))
 
 @app.route('/add_global_item', methods=['POST'])
-def add_global_item():
+@app.route('/add_private_item', methods=['POST'])
+def add__item():
     # Get form data
     title = request.form.get('title')
     contact = request.form.get('contact')
     area = request.form.get('area')
     descrip = request.form.get('descrip')
     category = request.form.get('category')
-
+    priv = request.form.get('priv')
     # Validate that all required fields are present
     if not all([title, contact, area, descrip, category]):
         return flask.redirect('/add_item')
@@ -329,10 +393,24 @@ def add_global_item():
             area=area,
             descrip=descrip,
             category=category,
-            cloudinary_id='XXX'  # You can update this when you implement image upload
+            cloudinary_id='XXX',
+            priv=priv
         )
         session_db.add(new_item)
         session_db.commit()
 
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        new_item = Bucket(
+            item=title,
+            contact=contact,
+            area=area,
+            descrip=descrip,
+            category=category,
+            cloudinary_id='XXX',
+            priv=priv
+        )
+        session_db.add(new_item)
+        session_db.commit()
+        
     # Redirect back to the global list
     return flask.redirect('/global')

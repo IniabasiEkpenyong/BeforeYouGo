@@ -11,10 +11,6 @@
             <p>{{ err_msg }}</p>
       {% else %}
       <h2>Global Bucket List</h2>
-      
-      <div style="text-align: right; margin-bottom: 20px;">
-         <a href="{{ url_for('show_add_item') }}" class="add-button" style="display: inline-block; max-width: 200px;">Add New Item</a>
-      </div>
 
       <div class="search-container">
          <form action="/global" method="get" class="search-form">
@@ -22,9 +18,17 @@
             <input type="text" id="titleInput" name="title" 
                 value="{{ request.args.get('title', prev_title) }}">
             
-            <label for="cat">Category:</label>
+            <!--<label for="cat">Category:</label>
             <input type="text" name="cat" id="catInput"
-                value="{{ request.args.get('cat', prev_cat) }}">
+                value="{{ request.args.get('cat', prev_cat) }}">-->
+
+            <label for="cat">Category:</label>
+            <select name="cat" id="catInput">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category }}" {% if category == prev_cat %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
             
             <label for="loc">Location:</label>
             <input type="text" name="loc" id="locInput"
@@ -36,6 +40,14 @@
             
             <input type="submit" value="Search" id="submitButton">
          </form>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 20px;">
+         <form action="/add_item" method="post">
+            <input type="hidden" name="priv" value="{{False}}">
+            <input type="submit"  class="add-button" value="Add to Global Bucket List" style="display: inline-block; max-width: 300px;text-decoration: none;">
+         </form>
+         
       </div>
 
       <div class="cards-container">
@@ -75,8 +87,15 @@
                      
                      <form action="/add_to_my_list" method="POST">
                         <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
-                        <button type="submit" class="add-button">Add to My List</button>
+                        <button type="submit" class="add-button"">Add to My List</button>
                      </form>
+
+                     {% if is_admin %}
+                        <form action="/remove_from_global_list" method="POST">
+                           <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
+                           <button type="submit" class="add-button">Delete</button>
+                        </form>
+                     {% endif %}
                   </div>
                </div>
             {% endfor %}

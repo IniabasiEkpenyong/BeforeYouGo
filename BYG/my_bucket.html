@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>My Bucket List</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
   {% include 'header.html' %}
@@ -10,13 +11,23 @@
   {% if user_items|length == 0 %}
     <p>You have no items in your personal list yet.</p>
   {% else %}
-    <table border="1">
+
+  <!-- I think the best way to do this is to FIRST collect 
+    two seperate lists; one of completed and one of uncompleted items.
+    Then we can lay them out as two tables. It also makes it easy to 
+    calculate the progress bar here. -->
+  [Note to Devs: progress bar in development here]
+  You have {{ user_items|length }} in your personal list.
+  You have completed [we gotta calculate this #] of them. 
+    <!--<table border="1">-->
+    <table class="cards-container">
       <tr>
         <th>Title</th>
         <th>Location</th>
         <th>Description</th>
         <th>Completed?</th>
-        <th>Action</th>
+        <th><!-- Completed button col --></th>
+        <th><!-- Delete button col --></th>
       </tr>
       {% for ub, bucket in user_items %}
         <tr>
@@ -36,7 +47,18 @@
                 <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
                 <input type="submit" value="Mark Completed">
               </form>
+            {% else %}
+                <form action="/reset_completed" method="POST" style="display:inline;">
+                    <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+                    <input type="submit" value="Reset">
+                </form>
             {% endif %}
+          </td>
+          <td>
+            <form action="/remove_from_my_list" method="POST" style="display:inline;">
+                <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+                <input type="submit" value="Delete">
+            </form>
           </td>
         </tr>
       {% endfor %}

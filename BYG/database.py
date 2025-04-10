@@ -34,6 +34,7 @@ class Bucket (Base):
     descrip = sqlalchemy.Column(sqlalchemy.String)
     category = sqlalchemy.Column(sqlalchemy.String)
     cloudinary_id = sqlalchemy.Column(sqlalchemy.String)
+    priv = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
 _engine = sqlalchemy.create_engine(_DATABASE_URL)
 
@@ -64,9 +65,14 @@ def get_events(title='', cat='', loc = '', descrip = ''):
             event = {'bucket_id': row.bucket_id, 'title': row.item,
                 'contact': row.contact, 'loc': row.area,
                 'descrip': row.descrip, 'cat': row.category,
-                'cloudinary_id': row.cloudinary_id}
+                'cloudinary_id': row.cloudinary_id, 'priv': row.priv}
             events.append(event)
     return '', events
+
+def get_all_categories():
+    with sqlalchemy.orm.Session(_engine) as session:
+        return sorted(set(row.category for row in 
+        session.query(Bucket.category).distinct() if row.category))
 #-----------------------------------------------------------------------
 # For testing:
 
@@ -80,7 +86,7 @@ def _test():
         print(event['descrip'])
         print(event['cat'])
         print(event['cloudinary_id'])
-        print()
+        print(event['priv'])
 
 if __name__ == '__main__':
     _test()
