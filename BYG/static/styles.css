@@ -12,6 +12,33 @@ body {
     background-color: var(--background-color);
 }
 
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.header-button {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.container-fluid {
+    background-color:#187bdd; 
+    color:white; 
+    position:sticky; 
+    top:0px; 
+    bottom:0px;
+}
+
+
 .search-container {
     background: white;
     padding: 20px;
@@ -139,6 +166,7 @@ body {
     font-weight: 500;
     margin-top: 8px;
 } 
+<<<<<<< HEAD
 
 .wrapper {
     perspective: 1200px;
@@ -217,3 +245,5 @@ body {
 .card-front a:hover {
     text-decoration: underline;
 }
+=======
+>>>>>>> dffc1e5d1f8b7a9237e961ac57aec0c3f6fd4fe8

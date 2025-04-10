@@ -171,7 +171,10 @@ def add_to_my_list():
     # given_name = 'Judah'
 
     bucket_id = request.form.get('bucket_id')
-    if not bucket_id:
+
+    # If bucket_id is not provided, try to get it from the URL
+    
+    if bucket_id is None:
         return flask.redirect('/global')
 
     with sqlalchemy.orm.Session(database._engine) as session_db:
@@ -215,13 +218,20 @@ def remove_from_global_list():
     if not bucket_id:
         return flask.redirect('/global')
 
-
     with sqlalchemy.orm.Session(database._engine) as session_db:
-        # Ensure the item belongs to the user before deleting
-        ub_item = session_db.query(Bucket).filter_by(
+        # Removes the item from the user's bucket list
+        ub_items = session_db.query(UserBucket).filter_by(
+            bucket_id=bucket_id)
+        if ub_items:
+            for ub_item in ub_items:
+                session_db.delete(ub_item)
+                session_db.commit()
+
+        # Removes the item from the global bucket list
+        item = session_db.query(Bucket).filter_by(
             bucket_id=bucket_id).first()
-        if ub_item:
-            session_db.delete(ub_item)
+        if item:
+            session_db.delete(item)
             session_db.commit()
 
     return flask.redirect('/global')
@@ -367,12 +377,12 @@ def search_results():
 
     return response
 
-@app.route('/add_item', methods=['POST'])
+@app.route('/show_item', methods=['POST'])
 def show_item():
-    return flask.render_template('add_item.html', priv=request.args.get('priv'))
+    priv = request.form.get('priv')
+    return flask.render_template('add_item.html', priv=priv)
 
-@app.route('/add_global_item', methods=['POST'])
-@app.route('/add_private_item', methods=['POST'])
+@app.route('/create_item', methods=['POST'])
 def add__item():
     # Get form data
     title = request.form.get('title')
@@ -380,10 +390,10 @@ def add__item():
     area = request.form.get('area')
     descrip = request.form.get('descrip')
     category = request.form.get('category')
-    priv = request.form.get('priv')
+    priv = eval(request.form.get('priv'))
     # Validate that all required fields are present
     if not all([title, contact, area, descrip, category]):
-        return flask.redirect('/add_item')
+        return flask.redirect(flask.url_for('/show_item', priv=priv))
 
     # Add the new item to the database
     with sqlalchemy.orm.Session(database._engine) as session_db:
@@ -398,19 +408,16 @@ def add__item():
         )
         session_db.add(new_item)
         session_db.commit()
-
-    with sqlalchemy.orm.Session(database._engine) as session_db:
-        new_item = Bucket(
-            item=title,
-            contact=contact,
-            area=area,
-            descrip=descrip,
-            category=category,
-            cloudinary_id='XXX',
-            priv=priv
-        )
-        session_db.add(new_item)
-        session_db.commit()
         
+        if priv == True:
+            user_info = auth.authenticate()
+            user_netid = user_info['user']
+            new_item = UserBucket(user_netid=user_netid, bucket_id=new_item.bucket_id)
+            session_db.add(new_item)
+            session_db.commit()
+   
     # Redirect back to the global list
-    return flask.redirect('/global')
+    if priv == True:
+        return flask.redirect('/my_bucket')
+    else:
+        return flask.redirect('/global')

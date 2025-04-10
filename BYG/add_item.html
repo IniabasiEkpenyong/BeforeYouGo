@@ -10,7 +10,7 @@
 
       <div class="search-container">
 
-         <form action= method="POST" class="search-form">
+         <form action="/create_item" method="POST" class="search-form">
             <label for="title">Title:</label>
             <input type="text" id="titleInput" name="title" required>
             
@@ -26,8 +26,7 @@
             <label for="category">Category:</label>
             <input type="text" name="category" id="categoryInput" required>
 
-            <label for="privacy">Category:</label>
-            <input type=hidden name="privacy" id="privacyInput" value='{{priv}}' required>
+            <input type=hidden name="priv" id="privacyInput" value='{{priv}}' required>
             
             <input type="submit" value="Add Item">
          </form>

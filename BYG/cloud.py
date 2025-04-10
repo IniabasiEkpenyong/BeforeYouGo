@@ -1,32 +1,46 @@
-
-from dotenv import load_dotenv
-
 import cloudinary
-
+import cloudinary.uploader
+import cloudinary.api
 import os
+from pathlib import Path
+import dotenv
 
-load_dotenv()
+env_path = Path(__file__).resolve().parent / '.env'
+dotenv.load_dotenv(env_path)
 
-cloudinary.config(
-    cloud_name = os.getenv("doydyfm1q"),
-    api_key = os.getenv("979955127449654"),
-    api_secret = os.getenv("yhoJbwpg-jq1zmYduxmElcp_LOg"),
-    secure = True
-)
+folder = './images'
+tfolder = 'BucketListPics'
 
-folder = ['./images']
-tfolder = ['BucketListPics']
-for filename in os.listdir(folder):
-        if filename.lower().endswith('.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif') :
-            file_path = os.path.join(folder, filename)
-            public_id = os.path.splittext(filename)[0]
-            try:
-                upload_result = cloudinary.uploader.upload(file_path,folder = tfolder,
-                                            public_id=public_id)
-                print(upload_result['public_id'])
-            except Exception as e:
-                print (f"Failed to upload {filename} : {e}")
+def main():
 
+    cloudinary.config(
+        cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
+        api_key = os.getenv("CLOUDINARY_API_KEY"),
+        api_secret = os.getenv("CLOUDINARY_API_SECRET"),
+        secure = True
+    )
+    for filename in os.listdir(folder):
+            f = filename.lower();
+            if f.endswith('.jpg') or f.endswith('.png') or f.endswith('.avif') :
+                file_path = os.path.join(folder, filename)
+                public_id = os.path.splitext(filename)[0]
+                try:
+                    upload_result = cloudinary.uploader.upload(file_path, folder = tfolder,
+                                                public_id=public_id)
+                    print(upload_result['public_id'])
+                    retrieve_image(public_id)
+                except Exception as e:
+                    print (f"Failed to upload {filename} : {e}")
+
+def retrieve_image(public_id):
+    try:
+        response = cloudinary.api.resources(type='upload', prefix=tfolder, public_id=public_id)
+        print(response)
+    except Exception as e:
+        print(f"Failed to retrieve image: {e}")
+
+if __name__ == "__main__":
+    main()
 
 
 
