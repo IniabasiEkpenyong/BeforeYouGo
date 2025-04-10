@@ -10,13 +10,14 @@
   {% if user_items|length == 0 %}
     <p>You have no items in your personal list yet.</p>
   {% else %}
-    <table border="1">
+    <!--<table border="1">-->
+    <table class="table table-striped align-middle">
       <tr>
         <th>Title</th>
         <th>Location</th>
         <th>Description</th>
         <th>Completed?</th>
-        <th>Action</th>
+        <th></th>
       </tr>
       {% for ub, bucket in user_items %}
         <tr>
@@ -37,6 +38,12 @@
                 <input type="submit" value="Mark Completed">
               </form>
             {% endif %}
+          </td>
+          <td>
+            <form action="/remove_from_my_list" method="POST" style="display:inline;">
+                <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+                <input type="submit" value="Delete">
+            </form>
           </td>
         </tr>
       {% endfor %}

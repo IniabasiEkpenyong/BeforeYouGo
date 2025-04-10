@@ -183,6 +183,24 @@ def add_to_my_list():
     return flask.redirect('/my_bucket')
 
 
+@app.route('/remove_from_my_list', methods=['POST'])
+def add_to_my_list():
+    # 1) Ensure the user is authenticated
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    bucket_id = request.form.get('bucket_id')
+    if not bucket_id:
+        return flask.redirect('/global')
+
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        # I need to finish this
+        return
+
+    return flask.redirect('/my_bucket')
+
+
+
 @app.route('/my_bucket', methods=['GET'])
 def my_bucket():
     user_info = auth.authenticate()
