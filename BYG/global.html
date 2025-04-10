@@ -11,6 +11,13 @@
       {% else %}
       <h2 class="title">Global Bucket List</h2>
 
+      <div style="text-align: center; margin-bottom: 20px;">
+         <form action="/show_item" method="post">
+            <input type="hidden" name="priv" value="False">
+            <input type="submit"  class="add-button" value="Add to Global Bucket List" style="display: inline-block; max-width: 300px;text-decoration: none;">
+         </form>   
+      </div>
+
       <div class="search-container">
          <form action="/global" method="get" class="search-form" id="searchForm">
             <label for="search">Search:</label>
@@ -98,13 +105,6 @@
          {% endif %}
       </div>
       {% endif %}
-
-      <div style="text-align: center; margin-bottom: 20px;">
-         <form action="/show_item" method="post">
-            <input type="hidden" name="priv" value="False">
-            <input type="submit"  class="add-button" value="Add to Global Bucket List" style="display: inline-block; max-width: 300px;text-decoration: none;">
-         </form>   
-      </div>
       
       {% include 'footer.html' %}
    </body>
