@@ -121,9 +121,19 @@ def global_page():
     if descrip is None:
         descrip = ''
 
+    sort = flask.request.args.get('sort', '')
+
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        user_bucket_ids = session_db.query(UserBucket.bucket_id).filter_by(user_netid=user_netid).all()
+        user_bucket_ids = [id for (id,) in user_bucket_ids]
+
     err_msg, events = database.get_events(
-        title=title, cat = cat,
-        loc = loc, descrip = descrip)
+        title=title, cat=cat,
+        loc=loc, descrip=descrip, sort=sort,
+        exclude_ids=user_bucket_ids)
     
     user_info = auth.authenticate()
     username = user_info['user']
@@ -188,7 +198,15 @@ def add_to_my_list():
             session_db.add(new_item)
             session_db.commit()
 
-    return flask.redirect('/my_bucket')
+    search = flask.request.form.get('search', '')
+    sort = flask.request.form.get('sort', '')
+    cat = flask.request.form.get('cat', '')
+
+    response = flask.redirect('/my_bucket')
+    response.set_cookie('search', search)
+    response.set_cookie('sort', sort)
+    response.set_cookie('cat', cat)
+    return response
 
 @app.route('/remove_from_my_list', methods=['POST'])
 def remove_from_my_list():
@@ -243,7 +261,11 @@ def remove_from_global_list():
             session_db.delete(item)
             session_db.commit()
 
-    return flask.redirect('/global')
+    search = flask.request.form.get('search', '')
+    sort = flask.request.form.get('sort', '')
+    cat = flask.request.form.get('cat', '')
+
+    return flask.redirect(f'/global?search={search}&sort={sort}&cat={cat}')
 
 
 

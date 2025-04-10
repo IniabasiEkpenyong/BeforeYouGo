@@ -48,18 +48,24 @@ class UserBucket(Base):
     completed = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 #-----------------------------------------------------------------------
 
-def get_events(title='', cat='', loc = '', descrip = ''):
+def get_events(title='', cat='', loc='', descrip='', sort='', exclude_ids=None):
+    if exclude_ids is None:
+        exclude_ids = []
 
     events = []
     with sqlalchemy.orm.Session(_engine) as session:
-
         query = session.query(Bucket).filter(
-            Bucket.category.ilike('%'+ cat+'%')).filter(
-                Bucket.descrip.ilike('%'+ descrip +'%')).filter(
-                    Bucket.area.ilike('%'+ loc +'%')).filter(
-                        Bucket.item.ilike('%'+ title +'%')
-                        ).order_by(Bucket.category, Bucket.item)
-        
+            ~Bucket.bucket_id.in_(exclude_ids),
+            Bucket.category.ilike('%' + cat + '%'),
+            Bucket.descrip.ilike('%' + descrip + '%'),
+            Bucket.area.ilike('%' + loc + '%'),
+            Bucket.item.ilike('%' + title + '%'))
+
+        if sort == 'alphabetical':
+            query = query.order_by(Bucket.item)
+        elif sort == 'recent':
+            query = query.order_by(Bucket.bucket_id.desc())
+
         table = query.all()
         for row in table:
             event = {'bucket_id': row.bucket_id, 'title': row.item,

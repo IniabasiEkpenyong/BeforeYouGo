@@ -76,12 +76,18 @@
                         
                         <form action="/add_to_my_list" method="POST">
                            <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
-                           <button type="submit" class="add-button"">Add to My List</button>
+                           <input type="hidden" name="search" value="{{ request.args.get('search', '') }}">
+                           <input type="hidden" name="sort" value="{{ request.args.get('sort', '') }}">
+                           <input type="hidden" name="cat" value="{{ request.args.get('cat', '') }}">
+                           <button type="submit" class="add-button">Add to My List</button>
                         </form>
 
                         {% if is_admin %}
                            <form action="/remove_from_global_list" method="POST">
                               <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
+                              <input type="hidden" name="search" value="{{ request.args.get('search', '') }}">
+                              <input type="hidden" name="sort" value="{{ request.args.get('sort', '') }}">
+                              <input type="hidden" name="cat" value="{{ request.args.get('cat', '') }}">
                               <button type="submit" class="add-button">Delete</button>
                            </form>
                         {% endif %}
