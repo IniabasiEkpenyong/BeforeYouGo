@@ -205,13 +205,15 @@ def remove_from_my_list():
         ub_item = session_db.query(UserBucket).filter_by(
             id=user_bucket_id, user_netid=user_netid).first()
         if ub_item:
+            bucket_id=ub_item.bucket_id
             session_db.delete(ub_item)
-            session_db.commit()
-        item = session_db.query(Bucket).filter_by(
+            item = session_db.query(Bucket).filter_by(
             bucket_id=bucket_id).first()
-        if item:
-            session_db.delete(item)
-            session_db.commit()
+            if item:
+                session_db.delete(item)
+                session_db.commit()
+        
+        session_db.commit()
 
     return flask.redirect('/my_bucket')
 
