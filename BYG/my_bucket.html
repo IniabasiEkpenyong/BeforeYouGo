@@ -8,12 +8,10 @@
 <body>
   {% include 'header.html' %}
   <h1 class="title">My Bucket List</h1>
-
-  <div class="progress-bar" style="--width: 10" data-label="Percent Completed"></div>
   {% if user_items|length == 0 %}
     <p>You have no items in your personal list yet.</p>
   {% else %}
-
+    <div class="progress-bar" style="--width: {{progress}}" data-label="Percent Completed"></div>
   <!-- I think the best way to do this is to FIRST collect 
     two seperate lists; one of completed and one of uncompleted items.
     Then we can lay them out as two tables. It also makes it easy to 
