@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Bucket List</title>
+  <title class="title">My Bucket List</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
   {% include 'header.html' %}
-  <h1>My Bucket List</h1>
+  <h1 class="title">My Bucket List</h1>
 
   {% if user_items|length == 0 %}
     <p>You have no items in your personal list yet.</p>
@@ -64,6 +64,13 @@
       {% endfor %}
     </table>
   {% endif %}
+
+  <form action="/show_item" method="post">
+    <input type="hidden" name="priv" value="True">
+    <input type="submit"  class="add-button" value="Add to Personal Bucket List" style="display: inline-block; max-width: 300px;text-decoration: none;">
+ </form>
+
+  
   <br>
   <a href="/global">Back to Global List</a>
   {% include 'footer.html' %}

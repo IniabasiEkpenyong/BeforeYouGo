@@ -10,7 +10,7 @@
       {% if err_msg != '' %} 
             <p>{{ err_msg }}</p>
       {% else %}
-      <h2>Global Bucket List</h2>
+      <h2 class="title">Global Bucket List</h2>
 
       <div class="search-container">
          <form action="/global" method="get" class="search-form">
@@ -43,11 +43,10 @@
       </div>
 
       <div style="text-align: center; margin-bottom: 20px;">
-         <form action="/add_item" method="post">
-            <input type="hidden" name="priv" value="{{False}}">
+         <form action="/show_item" method="post">
+            <input type="hidden" name="priv" value="False">
             <input type="submit"  class="add-button" value="Add to Global Bucket List" style="display: inline-block; max-width: 300px;text-decoration: none;">
-         </form>
-         
+         </form>   
       </div>
 
       <div class="cards-container">
@@ -55,49 +54,51 @@
             <p>No items found.</p>
          {% else %}
             {% for event in events %}
-               <div class="bucket-card">
-                  <div class="card-header">
-                     <h3>{{ event['title'] }}</h3>
-                  </div>
-                  <div class="card-body">
-                     {% if event['cat'] %}
-                        <div class="category-tag">{{ event['cat'] }}</div>
-                     {% endif %}
-                     
-                     {% if event['contact'] %}
-                        <div class="card-detail">
-                           <strong>Contact:</strong>
-                           <span>{{ event['contact'] }}</span>
-                        </div>
-                     {% endif %}
-                     
-                     {% if event['loc'] %}
-                        <div class="card-detail">
-                           <strong>Location:</strong>
-                           <span>{{ event['loc'] }}</span>
-                        </div>
-                     {% endif %}
-                     
-                     {% if event['descrip'] %}
-                        <div class="card-detail">
-                           <strong>Description:</strong>
-                           <span>{{ event['descrip'] }}</span>
-                        </div>
-                     {% endif %}
-                     
-                     <form action="/add_to_my_list" method="POST">
-                        <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
-                        <button type="submit" class="add-button"">Add to My List</button>
-                     </form>
-
-                     {% if is_admin %}
-                        <form action="/remove_from_global_list" method="POST">
+               {% if event['priv'] == False %}
+                  <div class="bucket-card">
+                     <div class="card-header">
+                        <h3>{{ event['title'] }}</h3>
+                     </div>
+                     <div class="card-body">
+                        {% if event['cat'] %}
+                           <div class="category-tag">{{ event['cat'] }}</div>
+                        {% endif %}
+                        
+                        {% if event['contact'] %}
+                           <div class="card-detail">
+                              <strong>Contact:</strong>
+                              <span>{{ event['contact'] }}</span>
+                           </div>
+                        {% endif %}
+                        
+                        {% if event['loc'] %}
+                           <div class="card-detail">
+                              <strong>Location:</strong>
+                              <span>{{ event['loc'] }}</span>
+                           </div>
+                        {% endif %}
+                        
+                        {% if event['descrip'] %}
+                           <div class="card-detail">
+                              <strong>Description:</strong>
+                              <span>{{ event['descrip'] }}</span>
+                           </div>
+                        {% endif %}
+                        
+                        <form action="/add_to_my_list" method="POST">
                            <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
-                           <button type="submit" class="add-button">Delete</button>
+                           <button type="submit" class="add-button"">Add to My List</button>
                         </form>
-                     {% endif %}
+
+                        {% if is_admin %}
+                           <form action="/remove_from_global_list" method="POST">
+                              <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
+                              <button type="submit" class="add-button">Delete</button>
+                           </form>
+                        {% endif %}
+                     </div>
                   </div>
-               </div>
+               {% endif %}
             {% endfor %}
          {% endif %}
       </div>
