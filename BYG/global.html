@@ -43,7 +43,11 @@
       </div>
 
       <div style="text-align: center; margin-bottom: 20px;">
-         <a href="/add_item" class="add-button" style="display: inline-block; max-width: 200px;text-decoration: none;">Add To Global Bucket List</a>
+         <form action="/add_item" method="post">
+            <input type="hidden" name="priv" value="{{False}}">
+            <input type="submit"  class="add-button" value="Add to Global Bucket List" style="display: inline-block; max-width: 300px;text-decoration: none;">
+         </form>
+         
       </div>
 
       <div class="cards-container">
@@ -83,7 +87,7 @@
                      
                      <form action="/add_to_my_list" method="POST">
                         <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
-                        <button type="submit" class="add-button">Add to My List</button>
+                        <button type="submit" class="add-button"">Add to My List</button>
                      </form>
 
                      {% if is_admin %}

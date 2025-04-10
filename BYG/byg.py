@@ -367,33 +367,20 @@ def search_results():
 
     return response
 
-@app.route('/add_item', methods=['GET'])
-def show_add_item():
-    #TEMP hard coding until OIT whitelists
-    # username = 'jg2783'
-    # given_name = 'Judah'
-
-    user_info = auth.authenticate()
-    username = user_info['user']
-    given_name = auth.get_name(user_info)
-
-
-    return flask.render_template('add_item.html',
-        username=username,
-        given_name=given_name,
-        ampm=get_ampm(),
-        current_time=get_current_time()
-    )
+@app.route('/add_item', methods=['POST'])
+def show_item():
+    return flask.render_template('add_item.html', priv=request.args.get('priv'))
 
 @app.route('/add_global_item', methods=['POST'])
-def add_global_item():
+@app.route('/add_private_item', methods=['POST'])
+def add__item():
     # Get form data
     title = request.form.get('title')
     contact = request.form.get('contact')
     area = request.form.get('area')
     descrip = request.form.get('descrip')
     category = request.form.get('category')
-
+    priv = request.form.get('priv')
     # Validate that all required fields are present
     if not all([title, contact, area, descrip, category]):
         return flask.redirect('/add_item')
@@ -406,10 +393,24 @@ def add_global_item():
             area=area,
             descrip=descrip,
             category=category,
-            cloudinary_id='XXX'  # You can update this when you implement image upload
+            cloudinary_id='XXX',
+            priv=priv
         )
         session_db.add(new_item)
         session_db.commit()
 
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        new_item = Bucket(
+            item=title,
+            contact=contact,
+            area=area,
+            descrip=descrip,
+            category=category,
+            cloudinary_id='XXX',
+            priv=priv
+        )
+        session_db.add(new_item)
+        session_db.commit()
+        
     # Redirect back to the global list
     return flask.redirect('/global')

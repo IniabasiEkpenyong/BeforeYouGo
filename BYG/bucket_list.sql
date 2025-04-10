@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS bucket_list;
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS bucket_list CASCADE;
+DROP TABLE IF EXISTS user_bucket CASCADE;
 
 CREATE TABLE bucket_list (
     bucket_id SERIAL PRIMARY KEY,
@@ -8,7 +8,8 @@ CREATE TABLE bucket_list (
     area TEXT,
     descrip TEXT, 
     category TEXT,
-    cloudinary_id TEXT
+    cloudinary_id TEXT,
+    priv BOOLEAN DEFAULT FALSE
 );
 
 -- We can improve this logic later so no duplicate user_netids are made
