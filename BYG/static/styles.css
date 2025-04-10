@@ -1,7 +1,7 @@
 :root {
     --primary-color: #1e88e5;
     --hover-color: #1976d2;
-    --background-color: #f5f5f5;
+    --background-color: #675a5a;
     --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -91,18 +91,20 @@ body {
 }
 
 .card-body {
-    padding: 15px;
+    padding: 30px;
 }
 
 .card-detail {
     margin: 8px 0;
     display: flex;
     align-items: start;
+    
 }
 
 .card-detail strong {
-    min-width: 100px;
-    color: #666;
+    min-width: 90px;
+    display: flex;
+    color: #823636;
 }
 
 .add-button {
@@ -137,3 +139,82 @@ body {
     font-weight: 500;
     margin-top: 8px;
 } 
+/* Apply perspective to the wrapper to enable 3D effect */
+.wrapper {
+    perspective: 1200px;
+}
+
+.card-page {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  /* Centering the card vertically */
+    align-items: center;  /* Centering horizontally */
+    background-color: #f0f0f0;
+}
+
+/* Centering the card in the wrapper */
+.card-page .wrapper {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding-top: 50px;
+}
+
+/* Card container settings */
+.card {
+    width: 400px;
+    height: 250px;
+    position: relative;
+    transform-style: preserve-3d;  /* Enable 3D transformations */
+    transition: transform 0.8s;
+    cursor: pointer;
+}
+
+/* Flip the card when clicked */
+.card.clicked {
+    transform: rotateY(180deg);
+}
+
+/* Style for each side of the card (front and back) */
+.card-side {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;  /* Prevent back side from being visible when flipped */
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* The back side of the card */
+.card-back {
+    background-color: #3760C9;
+    color: white;
+    transform: rotateY(180deg);  /* Pre-rotate the back */
+}
+
+/* The front side of the card */
+.card-front {
+    background-color: white;
+}
+
+/* Styling the link on the front */
+.card-front a {
+    color: #aa4422;
+    text-decoration: none;
+    font-size: 32px;
+}
+
+/* Add hover effect for the link */
+.card-front a:hover {
+    text-decoration: underline;
+}
