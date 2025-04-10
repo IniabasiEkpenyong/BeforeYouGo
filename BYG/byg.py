@@ -456,3 +456,22 @@ def add__item():
         return flask.redirect('/my_bucket')
     else:
         return flask.redirect('/global')
+
+@app.route('/logoutapp')
+def logout_app():
+    # Clear the session data
+    session.clear()
+    
+    # Redirect to the home page or login page
+    return flask.render_template('loggedout.html')
+
+@app.route('/logoutcas')
+def logout_cas():
+    # Clear the session data
+    session.clear()
+    
+    # Additional logic to end the CAS session
+    # This might involve redirecting to a CAS logout URL
+    
+    # Redirect to the home page or login page
+    return flask.render_template('loggedout.html')

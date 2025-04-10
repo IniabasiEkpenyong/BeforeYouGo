@@ -10,8 +10,24 @@ content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
-<!--<div class="container-fluid " style="background-color:#FF671F; 
-color:black; position:sticky; top:0px; bottom:0px;">-->
+<style>
+    
+</style>
+
+<div class="header">
+    <div class="container-fluid">
+        <center>
+            <a href="{{ url_for('home_page') }}">Home</a>
+            <a href="{{ url_for('my_bucket') }}">My Bucket List</a>
+            <a href="{{ url_for('global_page') }}">Global List</a>
+            <a href="{{ url_for('logout_app') }}">Logout</a>
+        </center>
+    </div>
+</div>
+
+<div class="header-content">
+    <!-- Additional content can go here -->
+</div>
 
 <div class="container-fluid">
 
@@ -20,18 +36,6 @@ color:black; position:sticky; top:0px; bottom:0px;">-->
 Good {{ampm}} {{given_name}} and welcome to
 </h2>
 <h1><strong>Before You Go</strong></h1>
-</center>
-
-<center>
-    <button class="header-button">
-        <!-- Here could benefit from javascript -->
-        <a href="global" style="text-decoration: none;">Global Bucket List</a>
-    </button>
-    <button class="header-button">
-        <!-- Here could benefit from javascript -->
-        <a href="my_bucket" style="text-decoration: none;">My Bucket List</a>
-    </button> 
-</center>
 
 <hr>
 </div>
