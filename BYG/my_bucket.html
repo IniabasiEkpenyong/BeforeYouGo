@@ -10,6 +10,14 @@
   {% if user_items|length == 0 %}
     <p>You have no items in your personal list yet.</p>
   {% else %}
+
+  <!-- I think the best way to do this is to FIRST collect 
+    two seperate lists; one of completed and one of uncompleted items.
+    Then we can lay them out as two tables. It also makes it easy to 
+    calculate the progress bar here. -->
+  [Note to Devs: progress bar in development here]
+  You have {{ user_items|length }} in your personal list.
+  You have completed [we gotta calculate this #] of them. 
     <!--<table border="1">-->
     <table class="table table-striped align-middle">
       <tr>
