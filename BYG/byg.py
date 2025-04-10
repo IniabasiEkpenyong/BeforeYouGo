@@ -182,20 +182,23 @@ def add_to_my_list():
 
     return flask.redirect('/my_bucket')
 
-
 @app.route('/remove_from_my_list', methods=['POST'])
 def remove_from_my_list():
-    # 1) Ensure the user is authenticated
+    # Ensure the user is authenticated
     user_info = auth.authenticate()
     user_netid = user_info['user']
 
-    bucket_id = request.form.get('bucket_id')
-    if not bucket_id:
-        return flask.redirect('/global')
+    user_bucket_id = flask.request.form.get('user_bucket_id')
+    if not user_bucket_id:
+        return flask.redirect('/my_bucket')
 
     with sqlalchemy.orm.Session(database._engine) as session_db:
-        # I need to finish this
-        return
+        # Ensure the item belongs to the user before deleting
+        ub_item = session_db.query(UserBucket).filter_by(
+            id=user_bucket_id, user_netid=user_netid).first()
+        if ub_item:
+            session_db.delete(ub_item)
+            session_db.commit()
 
     return flask.redirect('/my_bucket')
 
