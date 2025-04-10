@@ -56,10 +56,11 @@ def get_events(title='', cat='', loc='', descrip='', sort='', exclude_ids=None):
     with sqlalchemy.orm.Session(_engine) as session:
         query = session.query(Bucket).filter(
             ~Bucket.bucket_id.in_(exclude_ids),
-            Bucket.category.ilike('%' + cat + '%'),
             Bucket.descrip.ilike('%' + descrip + '%'),
-            Bucket.area.ilike('%' + loc + '%'),
             Bucket.item.ilike('%' + title + '%'))
+
+        if cat:
+            query = query.filter(Bucket.category.ilike('%' + cat + '%'))
 
         if sort == 'alphabetical':
             query = query.order_by(Bucket.item)

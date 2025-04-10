@@ -4,19 +4,128 @@
   <title class="title">My Bucket List</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    .title {
+        text-align: center;
+        margin-top: 20px;
+        color: #007bff;
+    }
+    .progress-bar {
+        width: 100%;
+        background-color: #e0e0e0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin: 20px 0;
+        position: relative;
+    }
+    .progress-bar::before {
+        content: attr(data-label);
+        display: block;
+        text-align: center;
+        color: #fff;
+        background-color: #007bff;
+        width: var(--width);
+        height: 20px;
+        line-height: 20px;
+        border-radius: 5px;
+        position: absolute;
+        top: 60%;
+        left: 0;
+        transform: translateY(-50%);
+    }
+    .cards-container {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    .cards-container th, .cards-container td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    .cards-container tr:hover {
+        background-color: #f1f1f1;
+    }
+    .add-button, input[type="submit"] {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    .add-button:hover, input[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+    a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    .progress-bar, .cards-container, .add-button {
+        margin: 20px auto;
+        max-width: 80%;
+    }
+    .cards-container {
+        margin-top: 20px;
+    }
+    .add-button {
+        display: block;
+        margin: 20px auto;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    .add-button:hover {
+        background-color: #0056b3;
+    }
+    main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+  </style>
 </head>
 <body>
   {% include 'header.html' %}
   <h1 class="title">My Bucket List</h1>
+  <form action="/show_item" method="post">
+    <input type="hidden" name="priv" value="True">
+    <input type="submit" class="add-button" value="Add to Personal Bucket List">
+  </form>
   {% if user_items|length == 0 %}
     <p>You have no items in your personal list yet.</p>
   {% else %}
     <div class="progress-bar" style="--width: {{progress}}" data-label="Percent Completed"></div>
-  <!-- I think the best way to do this is to FIRST collect 
-    two seperate lists; one of completed and one of uncompleted items.
-    Then we can lay them out as two tables. It also makes it easy to 
-    calculate the progress bar here. -->
-    <!--<table border="1">-->
     <table class="cards-container">
       <tr>
         <th>Title</th>
@@ -62,13 +171,6 @@
     </table>
   {% endif %}
 
-  <form action="/show_item" method="post">
-    <input type="hidden" name="priv" value="True">
-    <input type="submit"  class="add-button" value="Add to Personal Bucket List" style="display: inline-block; max-width: 300px;text-decoration: none;">
- </form>
-
-  
-  <br>
   <a href="/global">Back to Global List</a>
   {% include 'footer.html' %}
 </body>

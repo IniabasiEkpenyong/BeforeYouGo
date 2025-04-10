@@ -11,7 +11,21 @@ content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
 <style>
-    
+    body {
+        padding-top: 60px; /* Adjust based on header height */
+    }
+    .header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .progress-bar {
+        position: relative;
+        z-index: 1;
+    }
 </style>
 
 <div class="header">
