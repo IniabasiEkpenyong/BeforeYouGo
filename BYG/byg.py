@@ -184,7 +184,7 @@ def add_to_my_list():
 
 
 @app.route('/remove_from_my_list', methods=['POST'])
-def add_to_my_list():
+def remove_from_my_list():
     # 1) Ensure the user is authenticated
     user_info = auth.authenticate()
     user_netid = user_info['user']
