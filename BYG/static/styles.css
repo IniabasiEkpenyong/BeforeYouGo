@@ -214,7 +214,6 @@ body {
     font-size: 32px;
 }
 
-/* Add hover effect for the link */
 .card-front a:hover {
     text-decoration: underline;
 }
