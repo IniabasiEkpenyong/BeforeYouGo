@@ -1,7 +1,7 @@
 :root {
     --primary-color: #1e88e5;
     --hover-color: #1976d2;
-    --background-color: #675a5a;
+    --background-color: #fefafa;
     --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -171,6 +171,7 @@ body {
     perspective: 1200px;
 }
 
+
 .card-page {
     margin: 0;
     padding: 0;
@@ -212,7 +213,7 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    backface-visibility: hidden;  /
+    backface-visibility: hidden;
     border-radius: 20px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     display: flex;

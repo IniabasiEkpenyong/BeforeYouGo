@@ -18,12 +18,10 @@ try:
     from . import app
     from .database import Bucket, UserBucket
     from . import database
-    from . import cloud
 except ImportError:
     from BYG import app
     from BYG.database import Bucket, UserBucket
     import BYG.database as database
-    from BYG import cloud
 
 # Set the secret key
 app.secret_key = os.environ['APP_SECRET_KEY']

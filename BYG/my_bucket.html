@@ -3,11 +3,13 @@
 <head>
   <title class="title">My Bucket List</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css') }}">
 </head>
 <body>
   {% include 'header.html' %}
   <h1 class="title">My Bucket List</h1>
 
+  <div class="progress-bar" style="--width: 10" data-label="Percent Completed"></div>
   {% if user_items|length == 0 %}
     <p>You have no items in your personal list yet.</p>
   {% else %}
@@ -16,9 +18,6 @@
     two seperate lists; one of completed and one of uncompleted items.
     Then we can lay them out as two tables. It also makes it easy to 
     calculate the progress bar here. -->
-  [Note to Devs: progress bar in development here]
-  You have {{ user_items|length }} in your personal list.
-  You have completed [we gotta calculate this #] of them. 
     <!--<table border="1">-->
     <table class="cards-container">
       <tr>
