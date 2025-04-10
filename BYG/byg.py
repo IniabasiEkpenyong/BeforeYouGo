@@ -218,13 +218,20 @@ def remove_from_global_list():
     if not bucket_id:
         return flask.redirect('/global')
 
-
     with sqlalchemy.orm.Session(database._engine) as session_db:
-        # Ensure the item belongs to the user before deleting
-        ub_item = session_db.query(Bucket).filter_by(
+        # Removes the item from the user's bucket list
+        ub_items = session_db.query(UserBucket).filter_by(
+            bucket_id=bucket_id)
+        if ub_items:
+            for ub_item in ub_items:
+                session_db.delete(ub_item)
+                session_db.commit()
+
+        # Removes the item from the global bucket list
+        item = session_db.query(Bucket).filter_by(
             bucket_id=bucket_id).first()
-        if ub_item:
-            session_db.delete(ub_item)
+        if item:
+            session_db.delete(item)
             session_db.commit()
 
     return flask.redirect('/global')
