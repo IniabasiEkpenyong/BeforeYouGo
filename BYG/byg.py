@@ -416,6 +416,11 @@ def search_results():
 
     return response
 
+@app.route("/map")
+def map_page():
+    return render_template("map.html", api_key=os.getenv("GOOGLE_API_KEY"))
+
+
 @app.route('/show_item', methods=['POST'])
 def show_item():
 
