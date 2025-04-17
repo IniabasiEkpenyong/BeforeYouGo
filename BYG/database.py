@@ -48,6 +48,20 @@ class UserBucket(Base):
     bucket_id = sqlalchemy.Column(sqlalchemy.Integer, 
                                   sqlalchemy.ForeignKey('bucket_list.bucket_id'))
     completed = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+
+class SubTask(Base):
+    __tablename__ = 'subtasks'
+    
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    user_bucket_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user_buckets.id'), nullable=False)
+    description = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
+    completed = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    
+    # Relationship with UserBucket
+    user_bucket = sqlalchemy.orm.relationship("UserBucket", back_populates="subtasks")
+
+# Add relationship to UserBucket class
+UserBucket.subtasks = sqlalchemy.orm.relationship("SubTask", back_populates="user_bucket", cascade="all, delete-orphan")
 #-----------------------------------------------------------------------
 
 def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort='', exclude_ids=None):
