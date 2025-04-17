@@ -142,6 +142,10 @@
   <div id="map"></div>
 
   <script>
+    let pins = {{ pins | tojson }};
+  </script>
+
+  <script>
     let map;
     let marker;
 
@@ -168,12 +172,27 @@
           position: place.geometry.location,
         });
 
+        
+
         console.log("Selected place:", {
           name: place.name,
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng()
         });
       });
+        // --- Add your personal bucket list pins ---
+    
+    pins.forEach(pin => {
+      if (pin.lat && pin.lng) {
+        new google.maps.Marker({
+          position: { lat: pin.lat, lng: pin.lng },
+          map: map,
+          title: pin.title
+        });
+      }
+    });
+
+
     }
   </script>
 

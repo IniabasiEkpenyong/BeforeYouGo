@@ -324,7 +324,19 @@ def my_bucket():
     total_items = len(user_items)
     completed = sum(1 for item in user_items if item[0].completed)
     progress = 0 if total_items == 0 else (completed/total_items)* 100
+    
     # user_items is a list of tuples: (UserBucket, Bucket)
+    # Build the pins array for the map
+    pins = [
+        {
+            'title': bucket.item,
+            'lat': bucket.lat,
+            'lng': bucket.lng
+        }
+        for ub, bucket in user_items if bucket.lat and bucket.lng
+    ]
+    
+    
     # Pass it to a template
     return flask.render_template('my_bucket.html',
         given_name = given_name,
@@ -333,6 +345,7 @@ def my_bucket():
         ampm=get_ampm(),
         current_time=get_current_time(),
         progress=progress,
+        pins=pins,
         api_key=os.getenv("GOOGLE_API_KEY")
     )
 
