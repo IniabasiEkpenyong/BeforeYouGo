@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -78,15 +78,3 @@ def add_images_to_database():
 if __name__ == "__main__":
     main()
 
-
-
-
-
-
-
-
-
-
-    
-=======
->>>>>>> e173fa7794e95ddba9a3803615ccb820fdc1a612

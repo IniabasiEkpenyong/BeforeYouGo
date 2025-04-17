@@ -135,6 +135,47 @@ def get_all_categories():
     
         # Filter out categories that are private
         return sorted(set(category for category, in categories if category))
+    
+def get_subtasks(user_bucket_id):
+    with sqlalchemy.orm.Session(_engine) as session:
+        subtasks = session.query(SubTask).filter(SubTask.user_bucket_id == user_bucket_id).all()
+        return [{'id': subtask.id, 'description': subtask.description, 'completed': subtask.completed} for subtask in subtasks]
+
+def add_subtask(user_bucket_id, description):
+    with sqlalchemy.orm.Session(_engine) as session:
+        subtask = SubTask(user_bucket_id=user_bucket_id, description=description)
+        session.add(subtask)
+        session.commit()
+        return subtask.id
+
+def update_subtask(subtask_id, completed):
+    with sqlalchemy.orm.Session(_engine) as session:
+        subtask = session.query(SubTask).filter(SubTask.id == subtask_id).first()
+        if subtask:
+            subtask.completed = completed
+            session.commit()
+            return True
+        return False
+
+def delete_subtask(subtask_id):
+    with sqlalchemy.orm.Session(_engine) as session:
+        subtask = session.query(SubTask).filter(SubTask.id == subtask_id).first()
+        if subtask:
+            session.delete(subtask)
+            session.commit()
+            return True
+        return False
+    
+def get_progress(user_bucket_id):
+    with sqlalchemy.orm.Session(_engine) as session:
+        subtasks = session.query(SubTask).filter(SubTask.user_bucket_id == user_bucket_id).all()
+        if not subtasks:
+            user_bucket = session.query(UserBucket).filter_by(id=user_bucket_id).first()
+            return 100 if user_bucket and user_bucket.completed else 0
+        
+        total = len(subtasks)
+        completed = sum(1 for st in subtasks if st.completed)
+        return (completed / total) * 100
 #-----------------------------------------------------------------------
 # For testing:
 
