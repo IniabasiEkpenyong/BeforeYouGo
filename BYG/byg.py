@@ -159,7 +159,8 @@ def global_page():
         username = username,
         given_name = given_name,
         categories=categories,
-        is_admin = is_admin
+        is_admin = is_admin,
+        api_key=os.getenv("GOOGLE_API_KEY")
     )
 
     response = flask.make_response(html_code)

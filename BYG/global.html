@@ -25,7 +25,17 @@
                 value="{{ request.args.get('search', '') }}">
             <input type="submit" value="Search" id="submitButton">
          </form>
+         <!--
       </div>
+
+      <div class="location-search-container"> -->
+        <form action="/global" method="get" class="search-form" id="searchForm">
+           <label for="loc">Find:</label>
+           <input type="text" id="locationInput" name="loc" required
+               value="{{ request.args.get('loc', '') }}">
+           <input type="submit" value="Location" id="locSubmitButton">
+        </form>
+     </div>
 
       <div class="filter-container" style="text-align: center;">
          <form action="/global" method="get" class="filter-form">
@@ -107,6 +117,17 @@
       {% endif %}
       
       {% include 'footer.html' %}
+      <script>
+        function initGlobalSearch() {
+          const input = document.getElementById("searchInput");
+          new google.maps.places.Autocomplete(input);
+        }
+      </script>
+      
+      <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initGlobalSearch"
+        async defer></script>
+
    </body>
 </html>
 
