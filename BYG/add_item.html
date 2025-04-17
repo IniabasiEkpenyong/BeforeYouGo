@@ -10,15 +10,19 @@
 
       <div class="search-container">
 
-         <form action="/create_item" method="POST" class="search-form">
+         <form id = "addItemForm" action="/create_item" 
+         method="POST" class="search-form">
             <label for="title">Title:</label>
             <input type="text" id="titleInput" name="title" required>
             
             <label for="contact">Contact:</label>
-            <input type="text" name="contact" id="contactInput" required>
+            <input type="text" name="contact" id="contactInput">
             
             <label for="area">Location:</label>
             <input type="text" name="area" id="areaInput" required>
+                <!-- Hidden fields for lat/lng -->
+                <input type="hidden" name="lat" id="latInput">
+                <input type="hidden" name="lng" id="lngInput">
             
             <label for="descrip">Description:</label>
             <input type="text" name="descrip" id="descripInput" required>
@@ -33,5 +37,40 @@
       </div>
 
       {% include 'footer.html' %}
+
+      <script>
+            let autocompleteUsed = false;
+
+            function initAutocomplete() {
+              const input = document.getElementById("areaInput");
+              const autocomplete = new google.maps.places.Autocomplete(input);
+            
+              autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) return;
+            
+                document.getElementById("latInput").value = place.geometry.location.lat();
+                document.getElementById("lngInput").value = place.geometry.location.lng();
+            
+                autocompleteUsed = true;
+              });
+          
+              // On form submit, validate that a place was selected
+              document.getElementById("addItemForm").addEventListener("submit", function (e) {
+                if (!autocompleteUsed) {
+                  e.preventDefault(); // stop form submission
+                  alert("Please select a valid location.");
+                  input.focus();
+                }
+              });
+            }
+        
+      </script>
+      
+      <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAutocomplete"
+        async defer>
+      </script>
+      
    </body>
 </html> 

@@ -11,39 +11,56 @@
       {% else %}
       <h2 class="title">Global Bucket List</h2>
 
-      <div class="search-container">
-         <form action="/global" method="get" class="search-form">
-            <label for="title">Title:</label>
-            <input type="text" id="titleInput" name="title" 
-                value="{{ request.args.get('title', prev_title) }}">
-
-            <label for="cat">Category:</label>
-            <select name="cat" id="catInput">
-                <option value="">All Categories</option>
-                {% for category in categories %}
-                  <option value="{{ category }}" {% if category == prev_cat %}selected{% endif %}>{{ category }}</option>
-                {% endfor %}
-            </select>
-            
-            <label for="loc">Location:</label>
-            <input type="text" name="loc" id="locInput"
-                value="{{ request.args.get('loc', prev_loc) }}">
-            
-            <label for="desc">Description:</label>
-            <input type="text" name="desc" id="descInput"
-                value="{{ request.args.get('desc', prev_desc) }}">
-            
-            <input type="submit" value="Search" id="submitButton">
-         </form>
-      </div>
-
       <div style="text-align: center; margin-bottom: 20px;">
          <form action="/show_item" method="post">
             <input type="hidden" name="priv" value="False">
-            <input type="submit"  class="add-button" value="Add to Global Bucket List" style="display: inline-block; max-width: 300px;text-decoration: none;">
+            <input type="submit"  class="add-button" value="Create Global Bucket List Item" style="display: inline-block; max-width: 300px;text-decoration: none;">
          </form>   
       </div>
 
+      <div class="search-container">
+         <form action="/global" method="get" class="search-form" id="searchForm">
+            <label for="search">Search:</label>
+            <!-- NOTE: I took out the word 'required '-->
+            <input type="text" id="searchInput" name="search"
+                value="{{ request.args.get('search', '') }}"
+                placeholder="Search by Keyword">
+            <!--<input type="submit" value="Search" id="submitButton">
+         </form>
+      </div>
+
+      <div class="location-search-container"> 
+        <form action="/global" method="get" class="search-form" id="searchForm"> -->
+           <label for="loc">Find:</label>
+           <!-- NOTE: I took out the word 'required '-->
+           <input type="text" id="locationInput" name="loc"
+               value="{{ request.args.get('loc', '') }}"
+               placeholder="Search by Location">
+               <input type="hidden" name="lat" id="latSearch">
+               <input type="hidden" name="lng" id="lngSearch">               
+           <!--<input type="submit" value="Location" id="locSubmitButton">-->
+           <input type="submit" value="Search" id="submitButton">
+        </form>
+     </div>
+
+      <div class="filter-container" style="text-align: center;">
+         <form action="/global" method="get" class="filter-form">
+            <label for="sort">Sort By:</label>
+            <select name="sort" id="sortInput" onchange="this.form.submit();">
+                <option value="alphabetical" {% if request.args.get('sort') == 'alphabetical' %}selected{% endif %}>Alphabetical</option>
+                <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Most Recently Added</option>
+            </select>
+
+            <label for="cat">Category:</label>
+            <select name="cat" id="catInput" onchange="this.form.submit();">
+                <option value="" {% if request.args.get('cat') == '' %}selected{% endif %}>All Categories</option>
+                {% for category in categories %}
+                  <option value="{{ category }}" {% if category == request.args.get('cat') %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+         </form>
+      </div>
+      
       <div class="cards-container">
          {% if events|length == 0 %}
             <p>No items found.</p>
@@ -75,19 +92,25 @@
                         
                         {% if event['descrip'] %}
                            <div class="card-detail">
-                              <strong>Description:</strong>
-                              <span>{{ event['descrip'] }}</span>
+                              <strong>Description: </strong>
+                              <span>{{event['descrip'] }}</span>
                            </div>
                         {% endif %}
                         
                         <form action="/add_to_my_list" method="POST">
                            <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
-                           <button type="submit" class="add-button"">Add to My List</button>
+                           <input type="hidden" name="search" value="{{ request.args.get('search', '') }}">
+                           <input type="hidden" name="sort" value="{{ request.args.get('sort', '') }}">
+                           <input type="hidden" name="cat" value="{{ request.args.get('cat', '') }}">
+                           <button type="submit" class="add-button">Add to My List</button>
                         </form>
 
                         {% if is_admin %}
                            <form action="/remove_from_global_list" method="POST">
                               <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
+                              <input type="hidden" name="search" value="{{ request.args.get('search', '') }}">
+                              <input type="hidden" name="sort" value="{{ request.args.get('sort', '') }}">
+                              <input type="hidden" name="cat" value="{{ request.args.get('cat', '') }}">
                               <button type="submit" class="add-button">Delete</button>
                            </form>
                         {% endif %}
@@ -98,7 +121,28 @@
          {% endif %}
       </div>
       {% endif %}
+      
       {% include 'footer.html' %}
+      <script>
+        function initGlobalSearch() {
+            const input = document.getElementById("locationInput");
+            const autocomplete = new google.maps.places.Autocomplete(input);
+            
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) return;
+                
+                document.getElementById("latSearch").value = place.geometry.location.lat();
+                document.getElementById("lngSearch").value = place.geometry.location.lng();
+            });
+        }
+
+      </script>
+      
+      <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initGlobalSearch"
+        async defer></script>
+
    </body>
 </html>
 

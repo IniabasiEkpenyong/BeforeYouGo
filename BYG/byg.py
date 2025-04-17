@@ -63,6 +63,18 @@ def get_current_time():
 
 #-----------------------------------------------------------------------
 
+@app.route("/debug_locations")
+def debug_locations():
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        entries = session_db.query(database.Bucket).all()
+
+        rows = []
+        for e in entries:
+            rows.append(f"{e.bucket_id}: {e.item} @ ({e.lat}, {e.lng})")
+
+    return "<br>".join(rows)
+
+
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def home_page():
@@ -89,13 +101,22 @@ def home_page():
 
 @app.route('/global', methods = ['GET'])
 def global_page():
+
+    search = flask.request.args.get('search', '')
+    if search is None:
+        title = ''
+        descrip = ''
+    else:
+        title = search
+        descrip = search
+
     prev_title = flask.request.cookies.get('prev_title')
     if prev_title is None:
         prev_title= ''
 
-    title = flask.request.args.get('title')
-    if title is None:
-        title = ''
+#    title = flask.request.args.get('title')
+#    if title is None:
+#        title = ''
 
     prev_cat = flask.request.cookies.get('prev_cat')
     if prev_cat is None:
@@ -117,13 +138,34 @@ def global_page():
     if prev_descrip is None:
         prev_descrip= ''
 
-    descrip = flask.request.args.get('descrip')
-    if descrip is None:
-        descrip = ''
+#    descrip = flask.request.args.get('descrip')
+#    if descrip is None:
+#        descrip = ''
+
+    lat = flask.request.args.get('lat')
+    lng = flask.request.args.get('lng')
+
+    try:
+        lat = float(str(lat).replace('−', '-')) if lat else None
+        lng = float(str(lng).replace('−', '-')) if lng else None
+    except ValueError:
+        lat = None
+        lng = None
+
+    sort = flask.request.args.get('sort', '')
+
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        user_bucket_ids = session_db.query(UserBucket.bucket_id).filter_by(user_netid=user_netid).all()
+        user_bucket_ids = [id for (id,) in user_bucket_ids]
 
     err_msg, events = database.get_events(
-        title=title, cat = cat,
-        loc = loc, descrip = descrip)
+        title=title, cat=cat,
+        loc=loc, descrip=descrip, sort=sort,
+        exclude_ids=user_bucket_ids,
+        lat=lat, lng =lng)
     
     user_info = auth.authenticate()
     username = user_info['user']
@@ -149,7 +191,8 @@ def global_page():
         username = username,
         given_name = given_name,
         categories=categories,
-        is_admin = is_admin
+        is_admin = is_admin,
+        api_key=os.getenv("GOOGLE_API_KEY")
     )
 
     response = flask.make_response(html_code)
@@ -188,7 +231,15 @@ def add_to_my_list():
             session_db.add(new_item)
             session_db.commit()
 
-    return flask.redirect('/my_bucket')
+    search = flask.request.form.get('search', '')
+    sort = flask.request.form.get('sort', '')
+    cat = flask.request.form.get('cat', '')
+
+    response = flask.redirect('/my_bucket')
+    response.set_cookie('search', search)
+    response.set_cookie('sort', sort)
+    response.set_cookie('cat', cat)
+    return response
 
 @app.route('/remove_from_my_list', methods=['POST'])
 def remove_from_my_list():
@@ -205,13 +256,19 @@ def remove_from_my_list():
         ub_item = session_db.query(UserBucket).filter_by(
             id=user_bucket_id, user_netid=user_netid).first()
         if ub_item:
+            bucket_id = ub_item.bucket_id
             session_db.delete(ub_item)
             session_db.commit()
-        item = session_db.query(Bucket).filter_by(
-            bucket_id=bucket_id).first()
-        if item:
-            session_db.delete(item)
-            session_db.commit()
+
+            # Check if the item is public before deleting from the global list
+            item = session_db.query(Bucket).filter_by(
+                bucket_id=bucket_id).first()
+            if item and not item.priv:
+                # Do not delete from the global list if the item is public
+                pass
+            else:
+                session_db.delete(item)
+                session_db.commit()
 
     return flask.redirect('/my_bucket')
 
@@ -241,9 +298,11 @@ def remove_from_global_list():
             session_db.delete(item)
             session_db.commit()
 
-    return flask.redirect('/global')
+    search = flask.request.form.get('search', '')
+    sort = flask.request.form.get('sort', '')
+    cat = flask.request.form.get('cat', '')
 
-
+    return flask.redirect(f'/global?search={search}&sort={sort}&cat={cat}')
 
 
 @app.route('/my_bucket', methods=['GET'])
@@ -273,7 +332,8 @@ def my_bucket():
         user_items=user_items,
         ampm=get_ampm(),
         current_time=get_current_time(),
-        progress=progress
+        progress=progress,
+        api_key=os.getenv("GOOGLE_API_KEY")
     )
 
 @app.route('/mark_completed', methods=['POST'])
@@ -388,23 +448,49 @@ def search_results():
 
     return response
 
+@app.route("/map")
+def map_page():
+    return render_template("map.html", api_key=os.getenv("GOOGLE_API_KEY"))
+
+
 @app.route('/show_item', methods=['POST'])
 def show_item():
+
+    user_info = auth.authenticate()    
+    username = user_info['user']    
+    given_name = auth.get_name(user_info)
+    
     priv = request.form.get('priv')
-    return flask.render_template('add_item.html', priv=priv)
+    return flask.render_template('add_item.html', 
+                ampm=get_ampm(),
+                current_time=get_current_time(),
+                username = username,
+                given_name = given_name,
+                priv=priv,
+                api_key=os.getenv("GOOGLE_API_KEY")
+                )
 
 @app.route('/create_item', methods=['POST'])
 def add__item():
     # Get form data
     title = request.form.get('title')
     contact = request.form.get('contact')
+    
     area = request.form.get('area')
+    lat = request.form.get('lat')
+    lng = request.form.get('lng')
+    
     descrip = request.form.get('descrip')
     category = request.form.get('category')
     priv = eval(request.form.get('priv'))
+
     # Validate that all required fields are present
-    if not all([title, contact, area, descrip, category]):
-        return flask.redirect(flask.url_for('/show_item', priv=priv))
+    # NOTE: I got rid of this bc it was causing problems, and
+    # bc we can now just make it 'required' on the form itself
+    # # if not all([title, contact, area, descrip, category]):
+    # if not all([title, area, descrip, category]):
+    #     # return flask.redirect(flask.url_for('/show_item', priv=priv))
+    #     return flask.redirect(flask.url_for('show_item', priv=priv))
 
     # Add the new item to the database
     with sqlalchemy.orm.Session(database._engine) as session_db:
@@ -412,6 +498,8 @@ def add__item():
             item=title,
             contact=contact,
             area=area,
+            lat=lat,
+            lng=lng,
             descrip=descrip,
             category=category,
             cloudinary_id='XXX',
@@ -432,3 +520,22 @@ def add__item():
         return flask.redirect('/my_bucket')
     else:
         return flask.redirect('/global')
+
+@app.route('/logoutapp')
+def logout_app():
+    # Clear the session data
+    session.clear()
+    
+    # Redirect to the home page or login page
+    return flask.render_template('loggedout.html')
+
+@app.route('/logoutcas')
+def logout_cas():
+    # Clear the session data
+    session.clear()
+    
+    # Additional logic to end the CAS session
+    # This might involve redirecting to a CAS logout URL
+    
+    # Redirect to the home page or login page
+    return flask.render_template('loggedout.html')

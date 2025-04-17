@@ -31,6 +31,8 @@ class Bucket (Base):
     item = sqlalchemy.Column(sqlalchemy.String)
     contact = sqlalchemy.Column(sqlalchemy.String)
     area = sqlalchemy.Column(sqlalchemy.String)
+    lat = sqlalchemy.Column(sqlalchemy.Float)
+    lng = sqlalchemy.Column(sqlalchemy.Float)
     descrip = sqlalchemy.Column(sqlalchemy.String)
     category = sqlalchemy.Column(sqlalchemy.String)
     cloudinary_id = sqlalchemy.Column(sqlalchemy.String)
@@ -46,20 +48,60 @@ class UserBucket(Base):
     bucket_id = sqlalchemy.Column(sqlalchemy.Integer, 
                                   sqlalchemy.ForeignKey('bucket_list.bucket_id'))
     completed = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+
 #-----------------------------------------------------------------------
 
-def get_events(title='', cat='', loc = '', descrip = ''):
+def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort='', exclude_ids=None):
+    if exclude_ids is None:
+        exclude_ids = []
 
     events = []
     with sqlalchemy.orm.Session(_engine) as session:
+        print("==== LOCATION FILTER DEBUG ====")
+        print("Raw lat:", lat, "type:", type(lat))
+        print("Raw lng:", lng, "type:", type(lng))
 
         query = session.query(Bucket).filter(
-            Bucket.category.ilike('%'+ cat+'%')).filter(
-                Bucket.descrip.ilike('%'+ descrip +'%')).filter(
-                    Bucket.area.ilike('%'+ loc +'%')).filter(
-                        Bucket.item.ilike('%'+ title +'%')
-                        ).order_by(Bucket.category, Bucket.item)
-        
+            ~Bucket.bucket_id.in_(exclude_ids),
+            sqlalchemy.or_(
+            Bucket.descrip.ilike('%' + descrip + '%'),
+            Bucket.item.ilike('%' + title + '%')
+            ))
+
+        if loc:
+            query = query.filter(Bucket.area.ilike('%' + loc + '%'))
+
+        if lat and lng:
+            try:
+                # lat = float(lat)
+                # lng = float(lng)
+
+                lat = float(str(lat).replace('−', '-'))
+                lng = float(str(lng).replace('−', '-'))
+                print("Converted lat:", lat)
+                print("Converted lng:", lng)
+
+                # Match locations within ~0.01 degrees (~1.1 km); make smaller soon
+                query = query.filter(
+                    sqlalchemy.and_(
+                        Bucket.lat >= lat - 0.01,
+                        Bucket.lat <= lat + 0.01,
+                        Bucket.lng >= lng - 0.01,
+                        Bucket.lng <= lng + 0.01
+                    )
+                )
+            except ValueError as e:
+                print("ERROR parsing lat/lng:", e)
+                pass  # Skip filtering if lat/lng not valid floats
+
+        if cat:
+            query = query.filter(Bucket.category.ilike('%' + cat + '%'))
+
+        if sort == 'alphabetical':
+            query = query.order_by(Bucket.item)
+        elif sort == 'recent':
+            query = query.order_by(Bucket.bucket_id.desc())
+
         table = query.all()
         for row in table:
             event = {'bucket_id': row.bucket_id, 'title': row.item,
