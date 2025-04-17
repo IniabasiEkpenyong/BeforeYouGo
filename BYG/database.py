@@ -73,10 +73,10 @@ def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort=''
                 # Match locations within ~0.01 degrees (~1.1 km)
                 query = query.filter(
                     sqlalchemy.and_(
-                        Bucket.lat >= lat - 0.01,
-                        Bucket.lat <= lat + 0.01,
-                        Bucket.lng >= lng - 0.01,
-                        Bucket.lng <= lng + 0.01
+                        Bucket.lat >= lat - 1.01,
+                        Bucket.lat <= lat + 1.01,
+                        Bucket.lng >= lng - 1.01,
+                        Bucket.lng <= lng + 1.01
                     )
                 )
             except ValueError:
