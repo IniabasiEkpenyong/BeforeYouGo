@@ -14,7 +14,6 @@ CREATE TABLE bucket_list (
     priv BOOLEAN DEFAULT FALSE
 );
 
--- We can improve this logic later so no duplicate user_netids are made
 CREATE TABLE user_bucket (
     id SERIAL PRIMARY KEY,
     user_netid VARCHAR NOT NULL,
@@ -22,7 +21,17 @@ CREATE TABLE user_bucket (
     completed BOOLEAN DEFAULT FALSE
 );
 
--- We can improve this logic later so we can linearize the items
+CREATE TABLE IF NOT EXISTS subtasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_bucket_id INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_bucket_id) REFERENCES user_buckets(id) ON DELETE CASCADE
+);
+
+
+-- We can improve this logic later so we can linearize adding items
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 40.3422959650295, -74.65496351594201, 'Make clay pots.', 'creative', 'ceramic.jpg', FALSE);
 
