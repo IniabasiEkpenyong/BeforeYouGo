@@ -63,6 +63,18 @@ def get_current_time():
 
 #-----------------------------------------------------------------------
 
+@app.route("/debug_locations")
+def debug_locations():
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        entries = session_db.query(database.Bucket).all()
+
+        rows = []
+        for e in entries:
+            rows.append(f"{e.bucket_id}: {e.item} @ ({e.lat}, {e.lng})")
+
+    return "<br>".join(rows)
+
+
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def home_page():
@@ -131,11 +143,14 @@ def global_page():
 #        descrip = ''
 
     lat = flask.request.args.get('lat')
-    if lat is None:
-        lat = 0
     lng = flask.request.args.get('lng')
-    if lng is None:
-        lng = 0
+
+    try:
+        lat = float(lat) if lat else None
+        lng = float(lng) if lng else None
+    except ValueError:
+        lat = None
+        lng = None
 
     sort = flask.request.args.get('sort', '')
 

@@ -56,6 +56,10 @@ def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort=''
 
     events = []
     with sqlalchemy.orm.Session(_engine) as session:
+        print("==== LOCATION FILTER DEBUG ====")
+        print("Raw lat:", lat, "type:", type(lat))
+        print("Raw lng:", lng, "type:", type(lng))
+
         query = session.query(Bucket).filter(
             ~Bucket.bucket_id.in_(exclude_ids),
             sqlalchemy.or_(
@@ -68,18 +72,25 @@ def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort=''
 
         if lat and lng:
             try:
-                lat = float(lat)
-                lng = float(lng)
-                # Match locations within ~0.01 degrees (~1.1 km)
+                # lat = float(lat)
+                # lng = float(lng)
+
+                lat = float(str(lat).replace('−', '-'))
+                lng = float(str(lng).replace('−', '-'))
+                print("Converted lat:", lat)
+                print("Converted lng:", lng)
+
+                # Match locations within ~0.01 degrees (~1.1 km); make smaller soon
                 query = query.filter(
                     sqlalchemy.and_(
-                        Bucket.lat >= lat - 1.01,
-                        Bucket.lat <= lat + 1.01,
-                        Bucket.lng >= lng - 1.01,
-                        Bucket.lng <= lng + 1.01
+                        Bucket.lat >= lat - 0.01,
+                        Bucket.lat <= lat + 0.01,
+                        Bucket.lng >= lng - 0.01,
+                        Bucket.lng <= lng + 0.01
                     )
                 )
-            except ValueError:
+            except ValueError as e:
+                print("ERROR parsing lat/lng:", e)
                 pass  # Skip filtering if lat/lng not valid floats
 
         if cat:
