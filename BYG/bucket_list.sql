@@ -22,6 +22,17 @@ CREATE TABLE user_bucket (
     completed BOOLEAN DEFAULT FALSE
 );
 
+CREATE TABLE subtasks (
+    id SERIAL PRIMARY KEY,
+    user_bucket_id INTEGER NOT NULL REFERENCES user_bucket(id) ON DELETE CASCADE,
+    description TEXT NOT NULL,
+    completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_subtasks_user_bucket_id ON subtasks(user_bucket_id);
+
+
 -- We can improve this logic later so we can linearize adding items
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 40.3422959650295, -74.65496351594201, 'Make clay pots.', 'creative', 'ceramic.jpg', FALSE);
@@ -67,6 +78,7 @@ VALUES ('PPPL', '609-555-1013', 'Plasma Physics Lab', 40.35074928704113, -74.602
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Poe field stargazing', '609-555-1014', 'Poe Field', 40.34364531909187, -74.6550066803598, 'Relax and stargaze under the open sky.', 'reflective', 'XXX', FALSE);
+
 /*
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Farminary', '609-555-1015', 'Route 206', 40.3253, -74.6835, 'Visit the farm run by the seminary.', 'sustainable', 'XXX', FALSE);
