@@ -23,17 +23,17 @@
             <label for="search">Search:</label>
             <input type="text" id="searchInput" name="search" required
                 value="{{ request.args.get('search', '') }}">
-            <input type="submit" value="Search" id="submitButton">
+            <!--<input type="submit" value="Search" id="submitButton">
          </form>
-         <!--
       </div>
 
-      <div class="location-search-container"> -->
-        <form action="/global" method="get" class="search-form" id="searchForm">
+      <div class="location-search-container"> 
+        <form action="/global" method="get" class="search-form" id="searchForm"> -->
            <label for="loc">Find:</label>
            <input type="text" id="locationInput" name="loc" required
                value="{{ request.args.get('loc', '') }}">
-           <input type="submit" value="Location" id="locSubmitButton">
+           <!--<input type="submit" value="Location" id="locSubmitButton">-->
+           <input type="submit" value="Search" id="submitButton">
         </form>
      </div>
 
