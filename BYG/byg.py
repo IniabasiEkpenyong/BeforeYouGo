@@ -436,14 +436,20 @@ def show_item():
                 current_time=get_current_time(),
                 username = username,
                 given_name = given_name,
-                priv=priv)
+                priv=priv,
+                api_key=os.getenv("GOOGLE_API_KEY")
+                )
 
 @app.route('/create_item', methods=['POST'])
 def add__item():
     # Get form data
     title = request.form.get('title')
     contact = request.form.get('contact')
+    
     area = request.form.get('area')
+    lat = request.form.get('lat')
+    long = request.form.get('long')
+    
     descrip = request.form.get('descrip')
     category = request.form.get('category')
     priv = eval(request.form.get('priv'))
@@ -457,6 +463,8 @@ def add__item():
             item=title,
             contact=contact,
             area=area,
+            lat=lat,
+            long=long,
             descrip=descrip,
             category=category,
             cloudinary_id='XXX',

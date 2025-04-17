@@ -23,7 +23,7 @@ CREATE TABLE user_bucket (
 );
 
 -- We can improve this logic later so we can linearize the items
-INSERT INTO bucket_list (item, contact, area, lat, long, descrip, category, cloudinary_id, priv) 
+/* INSERT INTO bucket_list (item, contact, area, lat, long, descrip, category, cloudinary_id, priv) 
 VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 40.3444, -74.6577, 'Make clay pots.', 'creative', 'ceramic.jpg', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, long, descrip, category, cloudinary_id, priv) 
@@ -130,3 +130,4 @@ VALUES ('Attend a Whig-Clio Senate Debate', NULL, 'Whig Hall', 40.3484, -74.6593
 
 INSERT INTO bucket_list (item, contact, area, lat, long, descrip, category, cloudinary_id, priv) 
 VALUES ('Halloweekend', NULL, 'Prospect Avenue', 40.3463, -74.6540, 'Participate in Halloweekend on Prospect.', 'Princetonia', 'XXX', FALSE);
+*/

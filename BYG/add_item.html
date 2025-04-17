@@ -15,10 +15,13 @@
             <input type="text" id="titleInput" name="title" required>
             
             <label for="contact">Contact:</label>
-            <input type="text" name="contact" id="contactInput" required>
+            <input type="text" name="contact" id="contactInput">
             
             <label for="area">Location:</label>
             <input type="text" name="area" id="areaInput" required>
+                <!-- Hidden fields for lat/long -->
+                <input type="hidden" name="lat" id="latInput">
+                <input type="hidden" name="long" id="longInput">
             
             <label for="descrip">Description:</label>
             <input type="text" name="descrip" id="descripInput" required>
@@ -33,5 +36,26 @@
       </div>
 
       {% include 'footer.html' %}
+
+      <script>
+        function initAutocomplete() {
+          const input = document.getElementById("areaInput");
+          const autocomplete = new google.maps.places.Autocomplete(input);
+      
+          autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+            if (!place.geometry || !place.geometry.location) return;
+      
+            document.getElementById("latInput").value = place.geometry.location.lat();
+            document.getElementById("longInput").value = place.geometry.location.lng();
+          });
+        }
+      </script>
+      
+      <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAutocomplete"
+        async defer>
+      </script>
+      
    </body>
 </html> 

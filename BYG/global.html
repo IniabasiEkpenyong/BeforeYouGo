@@ -14,14 +14,15 @@
       <div style="text-align: center; margin-bottom: 20px;">
          <form action="/show_item" method="post">
             <input type="hidden" name="priv" value="False">
-            <input type="submit"  class="add-button" value="Add to Global Bucket List" style="display: inline-block; max-width: 300px;text-decoration: none;">
+            <input type="submit"  class="add-button" value="Create Global Bucket List Item" style="display: inline-block; max-width: 300px;text-decoration: none;">
          </form>   
       </div>
 
       <div class="search-container">
          <form action="/global" method="get" class="search-form" id="searchForm">
             <label for="search">Search:</label>
-            <input type="text" id="searchInput" name="search" required
+            <!-- NOTE: I took out the word 'required '-->
+            <input type="text" id="searchInput" name="search"
                 value="{{ request.args.get('search', '') }}">
             <!--<input type="submit" value="Search" id="submitButton">
          </form>
@@ -30,7 +31,8 @@
       <div class="location-search-container"> 
         <form action="/global" method="get" class="search-form" id="searchForm"> -->
            <label for="loc">Find:</label>
-           <input type="text" id="locationInput" name="loc" required
+           <!-- NOTE: I took out the word 'required '-->
+           <input type="text" id="locationInput" name="loc"
                value="{{ request.args.get('loc', '') }}">
            <!--<input type="submit" value="Location" id="locSubmitButton">-->
            <input type="submit" value="Search" id="submitButton">
