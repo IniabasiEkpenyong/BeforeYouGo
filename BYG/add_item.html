@@ -10,7 +10,8 @@
 
       <div class="search-container">
 
-         <form action="/create_item" method="POST" class="search-form">
+         <form id = "addItemForm" action="/create_item" 
+         method="POST" class="search-form">
             <label for="title">Title:</label>
             <input type="text" id="titleInput" name="title" required>
             
@@ -38,18 +39,32 @@
       {% include 'footer.html' %}
 
       <script>
-        function initAutocomplete() {
-          const input = document.getElementById("areaInput");
-          const autocomplete = new google.maps.places.Autocomplete(input);
-      
-          autocomplete.addListener("place_changed", () => {
-            const place = autocomplete.getPlace();
-            if (!place.geometry || !place.geometry.location) return;
-      
-            document.getElementById("latInput").value = place.geometry.location.lat();
-            document.getElementById("lngInput").value = place.geometry.location.lng();
-          });
-        }
+            let autocompleteUsed = false;
+
+            function initAutocomplete() {
+              const input = document.getElementById("locationInput");
+              const autocomplete = new google.maps.places.Autocomplete(input);
+            
+              autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) return;
+            
+                document.getElementById("latInput").value = place.geometry.location.lat();
+                document.getElementById("lngInput").value = place.geometry.location.lng();
+            
+                autocompleteUsed = true;
+              });
+          
+              // On form submit, validate that a place was selected
+              document.getElementById("addItemForm").addEventListener("submit", function (e) {
+                if (!autocompleteUsed) {
+                  e.preventDefault(); // stop form submission
+                  alert("Please select a location from the dropdown.");
+                  input.focus();
+                }
+              });
+            }
+        
       </script>
       
       <script
