@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS bucket_list CASCADE;
 DROP TABLE IF EXISTS user_bucket CASCADE;
+DROP TABLE IF EXISTS subtasks CASCADE;
 
 CREATE TABLE bucket_list (
     bucket_id SERIAL PRIMARY KEY,
@@ -20,16 +21,6 @@ CREATE TABLE user_bucket (
     bucket_id INTEGER REFERENCES bucket_list(bucket_id),
     completed BOOLEAN DEFAULT FALSE
 );
-
-CREATE TABLE IF NOT EXISTS subtasks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_bucket_id INTEGER NOT NULL,
-    description TEXT NOT NULL,
-    completed BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_bucket_id) REFERENCES user_buckets(id) ON DELETE CASCADE
-);
-
 
 -- We can improve this logic later so we can linearize adding items
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
