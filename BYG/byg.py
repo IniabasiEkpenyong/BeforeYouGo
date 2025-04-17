@@ -149,7 +149,7 @@ def global_page():
     err_msg, events = database.get_events(
         title=title, cat=cat,
         loc=loc, descrip=descrip, sort=sort,
-        exclude_ids=user_bucket_ids
+        exclude_ids=user_bucket_ids,
         lat=lat, lng =lng)
     
     user_info = auth.authenticate()
