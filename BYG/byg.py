@@ -89,13 +89,22 @@ def home_page():
 
 @app.route('/global', methods = ['GET'])
 def global_page():
+
+    search = flask.request.args.get('search', '')
+    if search is None:
+        title = ''
+        descrip = ''
+    else:
+        title = search
+        descrip = search
+
     prev_title = flask.request.cookies.get('prev_title')
     if prev_title is None:
         prev_title= ''
 
-    title = flask.request.args.get('title')
-    if title is None:
-        title = ''
+#    title = flask.request.args.get('title')
+#    if title is None:
+#        title = ''
 
     prev_cat = flask.request.cookies.get('prev_cat')
     if prev_cat is None:
@@ -117,9 +126,9 @@ def global_page():
     if prev_descrip is None:
         prev_descrip= ''
 
-    descrip = flask.request.args.get('descrip')
-    if descrip is None:
-        descrip = ''
+#    descrip = flask.request.args.get('descrip')
+#    if descrip is None:
+#        descrip = ''
 
     sort = flask.request.args.get('sort', '')
 
@@ -453,7 +462,7 @@ def add__item():
     descrip = request.form.get('descrip')
     category = request.form.get('category')
     priv = eval(request.form.get('priv'))
-    
+
     # Validate that all required fields are present
     # NOTE: I got rid of this bc it was causing problems, and
     # bc we can now just make it 'required' on the form itself
