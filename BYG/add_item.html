@@ -59,7 +59,7 @@
               document.getElementById("addItemForm").addEventListener("submit", function (e) {
                 if (!autocompleteUsed) {
                   e.preventDefault(); // stop form submission
-                  alert("Please select a location from the dropdown.");
+                  alert("Please select a valid location.");
                   input.focus();
                 }
               });

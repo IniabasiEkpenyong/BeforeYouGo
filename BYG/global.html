@@ -23,7 +23,8 @@
             <label for="search">Search:</label>
             <!-- NOTE: I took out the word 'required '-->
             <input type="text" id="searchInput" name="search"
-                value="{{ request.args.get('search', '') }}">
+                value="{{ request.args.get('search', '') }}"
+                placeholder="Search by Keyword">
             <!--<input type="submit" value="Search" id="submitButton">
          </form>
       </div>
@@ -33,7 +34,10 @@
            <label for="loc">Find:</label>
            <!-- NOTE: I took out the word 'required '-->
            <input type="text" id="locationInput" name="loc"
-               value="{{ request.args.get('loc', '') }}">
+               value="{{ request.args.get('loc', '') }}"
+               placeholder="Search by Location">
+               <input type="hidden" name="lat" id="latSearch">
+               <input type="hidden" name="lng" id="lngSearch">               
            <!--<input type="submit" value="Location" id="locSubmitButton">-->
            <input type="submit" value="Search" id="submitButton">
         </form>
@@ -121,9 +125,18 @@
       {% include 'footer.html' %}
       <script>
         function initGlobalSearch() {
-          const input = document.getElementById("locationInput");
-          new google.maps.places.Autocomplete(input);
+            const input = document.getElementById("locationInput");
+            const autocomplete = new google.maps.places.Autocomplete(input);
+            
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) return;
+                
+                document.getElementById("latSearch").value = place.geometry.location.lat();
+                document.getElementById("lngSearch").value = place.geometry.location.lng();
+            });
         }
+
       </script>
       
       <script

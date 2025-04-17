@@ -130,6 +130,13 @@ def global_page():
 #    if descrip is None:
 #        descrip = ''
 
+    lat = flask.request.args.get('lat')
+    if lat is None:
+        lat = 0
+    lng = flask.request.args.get('lng')
+    if lng is None:
+        lng = 0
+
     sort = flask.request.args.get('sort', '')
 
     user_info = auth.authenticate()
@@ -142,7 +149,8 @@ def global_page():
     err_msg, events = database.get_events(
         title=title, cat=cat,
         loc=loc, descrip=descrip, sort=sort,
-        exclude_ids=user_bucket_ids)
+        exclude_ids=user_bucket_ids
+        lat=lat, lng =lng)
     
     user_info = auth.authenticate()
     username = user_info['user']

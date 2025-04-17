@@ -50,7 +50,7 @@ class UserBucket(Base):
     completed = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 #-----------------------------------------------------------------------
 
-def get_events(title='', cat='', loc='', descrip='', sort='', exclude_ids=None):
+def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort='', exclude_ids=None):
     if exclude_ids is None:
         exclude_ids = []
 
@@ -65,6 +65,22 @@ def get_events(title='', cat='', loc='', descrip='', sort='', exclude_ids=None):
 
         if loc:
             query = query.filter(Bucket.area.ilike('%' + loc + '%'))
+
+        if lat and lng:
+            try:
+                lat = float(lat)
+                lng = float(lng)
+                # Match locations within ~0.01 degrees (~1.1 km)
+                query = query.filter(
+                    sqlalchemy.and_(
+                        Bucket.lat >= lat - 0.01,
+                        Bucket.lat <= lat + 0.01,
+                        Bucket.lng >= lng - 0.01,
+                        Bucket.lng <= lng + 0.01
+                    )
+                )
+            except ValueError:
+                pass  # Skip filtering if lat/lng not valid floats
 
         if cat:
             query = query.filter(Bucket.category.ilike('%' + cat + '%'))
