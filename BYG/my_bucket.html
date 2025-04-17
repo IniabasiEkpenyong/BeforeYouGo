@@ -142,6 +142,7 @@
   <div id="map"></div>
 
   <script>
+    // I think we just don't need this?
     let pins = {{ pins | tojson }};
   </script>
 
@@ -187,7 +188,18 @@
         new google.maps.Marker({
           position: { lat: pin.lat, lng: pin.lng },
           map: map,
-          title: pin.title
+          title: pin.title,
+          icon: pin.completed // Learned how to do this mux in cos 306
+          ? "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+          : "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+        });
+
+        const infoWindow = new google.maps.infoWindow({
+            content: `<strong>${pin.title}</strong>`
+        });
+
+        marker.addListener("click", () => {
+            infoWindow.open(map, marker);
         });
       }
     });

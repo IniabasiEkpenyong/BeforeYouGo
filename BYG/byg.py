@@ -331,7 +331,8 @@ def my_bucket():
         {
             'title': bucket.item,
             'lat': bucket.lat,
-            'lng': bucket.lng
+            'lng': bucket.lng,
+            'completed': ub.completed
         }
         for ub, bucket in user_items if bucket.lat and bucket.lng
     ]
