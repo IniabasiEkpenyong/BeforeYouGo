@@ -142,7 +142,7 @@
   <div id="map"></div>
 
   <script>
-    let pins = JSON.parse('{{ pins | tojson | escapejs }}');
+    let pins = {{ pins | tojson }};
   </script>
 
   <script>
