@@ -63,6 +63,9 @@ def get_events(title='', cat='', loc='', descrip='', sort='', exclude_ids=None):
             Bucket.item.ilike('%' + title + '%')
             ))
 
+        if loc:
+            query = query.filter(Bucket.area.ilike('%' + loc + '%'))
+
         if cat:
             query = query.filter(Bucket.category.ilike('%' + cat + '%'))
 
