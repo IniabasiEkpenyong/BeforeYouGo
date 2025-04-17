@@ -58,19 +58,16 @@ VALUES ('Danny DeVito Shrine', '609-555-1008', 'Frist Campus Center', 40.3467961
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Grounds for Sculpture', '609-555-1010', 'Hamilton, NJ', 40.23695376032633, -74.71875739200733, 'Explore the outdoor sculpture museum.', 'artistic', 'XXX', FALSE);
+
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('Amish Farmers Market', '609-555-1011', 'Trenton Area', 40.38777817707781, -74.60158420538576, 'Eat and shop at the Amish market.', 'food', 'XXX', FALSE);
+
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('PPPL', '609-555-1013', 'Plasma Physics Lab', 40.35074928704113, -74.6028651932533, 'Tour the Princeton Plasma Physics Lab.', 'academic', 'XXX', FALSE);
+
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('Poe field stargazing', '609-555-1014', 'Poe Field', 40.34364531909187, -74.6550066803598, 'Relax and stargaze under the open sky.', 'reflective', 'XXX', FALSE);
 /*
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Amish Farmers Market', '609-555-1011', 'Trenton Area', 40.2171, -74.7429, 'Eat and shop at the Amish market.', 'food', 'XXX', FALSE);
-
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Prospect 13', '609-555-1012', 'Prospect Ave', 40.3470, -74.6540, 'Discover what happens at Prospect 13.', 'social', 'XXX', FALSE);
-
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('PPPL', '609-555-1013', 'Plainsboro', 40.3506, -74.5987, 'Tour the Princeton Plasma Physics Lab.', 'academic', 'XXX', FALSE);
-
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Poe field stargazing', '609-555-1014', 'Poe Field', 40.3424, -74.6565, 'Relax and stargaze under the open sky.', 'reflective', 'XXX', FALSE);
-
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Farminary', '609-555-1015', 'Route 206', 40.3253, -74.6835, 'Visit the farm run by the seminary.', 'sustainable', 'XXX', FALSE);
 
@@ -84,7 +81,7 @@ INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloud
 VALUES ('Forbes Brunch', '609-555-1018', 'Forbes College', 40.3441, -74.6602, 'Have a fancy brunch at Forbes.', 'food', 'XXX', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Prospect 12', NULL, 'Prospect Avenue', 40.3463, -74.6540, 'Drink an alcoholic drink at every eating club in one night', 'Social', 'XXX', FALSE);
+VALUES ('Prospect 12', NULL, 'Prospect Avenue', 40.3463, -74.6540, 'Have a drink at every eating club in one night', 'Social', 'XXX', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Visit the mae machine shop', NULL, 'MAE Machine Shop', NULL, NULL, 'Cool place to be, get to cut up some plastic or metal, and learn tools.', 'Academic', 'XXX', FALSE);
