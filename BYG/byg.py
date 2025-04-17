@@ -146,8 +146,8 @@ def global_page():
     lng = flask.request.args.get('lng')
 
     try:
-        lat = float(lat) if lat else None
-        lng = float(lng) if lng else None
+        lat = float(str(lat).replace('−', '-')) if lat else None
+        lng = float(str(lng).replace('−', '-')) if lng else None
     except ValueError:
         lat = None
         lng = None
