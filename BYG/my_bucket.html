@@ -142,6 +142,11 @@
   <div id="map"></div>
 
   <script>
+    // I think we just don't need this?
+    let pins = {{ pins | tojson }};
+  </script>
+
+  <script>
     let map;
     let marker;
 
@@ -168,12 +173,38 @@
           position: place.geometry.location,
         });
 
+        
+
         console.log("Selected place:", {
           name: place.name,
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng()
         });
       });
+        // --- Add your personal bucket list pins ---
+    
+    pins.forEach(pin => {
+      if (pin.lat && pin.lng) {
+        new google.maps.Marker({
+          position: { lat: pin.lat, lng: pin.lng },
+          map: map,
+          title: pin.title,
+          icon: pin.completed // Learned how to do this mux in cos 306
+          ? "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+          : "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+        });
+
+        const infoWindow = new google.maps.infoWindow({
+            content: `<strong>${pin.title}</strong>`
+        });
+
+        marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+        });
+      }
+    });
+
+
     }
   </script>
 
