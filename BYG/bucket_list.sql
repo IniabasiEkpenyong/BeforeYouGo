@@ -23,21 +23,21 @@ CREATE TABLE user_bucket (
 );
 
 -- We can improve this logic later so we can linearize the items
-/* INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 40.3444, -74.6577, 'Make clay pots.', 'creative', 'ceramic.jpg', FALSE);
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 40.3422959650295, -74.65496351594201, 'Make clay pots.', 'creative', 'ceramic.jpg', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Climbing Wall', '721-675-8932', 'Dillon Gym', 40.3445, -74.6554, 'Scale the rock wall and see how you fare.', 'athletic', 'climbing', FALSE);
+VALUES ('Climbing Wall', '721-675-8932', 'Princeton Stadium', 40.34580906239536, -74.65000148021971, 'Scale the rock wall and see how you fare.', 'athletic', 'climbing', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Maker Space', '888-888-8888', 'Lewis Library', 40.3503, -74.6523, '3D-print and create what you can imagine.', 'creative', '3dprinter', FALSE);
+VALUES ('Maker Space', '888-888-8888', 'Lewis Library', 40.34661008276812, -74.65258909200425, '3D-print and create what you can imagine.', 'creative', '3dprinter', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Princeton Tunnels', '609-555-1001', 'Campus', 40.3430, -74.6551, 'Explore the mysterious underground tunnels.', 'adventure', 'explore.jpg', FALSE);
+VALUES ('Princeton Tunnels', '609-555-1001', 'Campus', 40.34886232734069, -74.6593445312841, 'Explore the mysterious underground tunnels.', 'adventure', 'explore.jpg', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Graduate College Tower', '609-555-1002', 'Graduate College', 40.3405, -74.6619, 'Climb to the top for a great view.', 'historic', 'XXX', FALSE);
-
+VALUES ('Graduate College Tower', '609-555-1002', 'Graduate College', 40.340862645767565, -74.66442614477758, 'Climb to the top for a great view.', 'historic', 'XXX', FALSE);
+/*
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Rockefeller Tower', '609-555-1003', 'Rockefeller College', 40.3496, -74.6580, 'See campus from the Rocky tower.', 'historic', 'tower.jpg', FALSE);
 
