@@ -19,9 +19,9 @@
             
             <label for="area">Location:</label>
             <input type="text" name="area" id="areaInput" required>
-                <!-- Hidden fields for lat/long -->
+                <!-- Hidden fields for lat/lng -->
                 <input type="hidden" name="lat" id="latInput">
-                <input type="hidden" name="long" id="longInput">
+                <input type="hidden" name="lng" id="lngInput">
             
             <label for="descrip">Description:</label>
             <input type="text" name="descrip" id="descripInput" required>
@@ -47,7 +47,7 @@
             if (!place.geometry || !place.geometry.location) return;
       
             document.getElementById("latInput").value = place.geometry.location.lat();
-            document.getElementById("longInput").value = place.geometry.location.lng();
+            document.getElementById("lngInput").value = place.geometry.location.lng();
           });
         }
       </script>

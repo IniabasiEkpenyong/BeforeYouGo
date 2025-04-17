@@ -31,6 +31,8 @@ class Bucket (Base):
     item = sqlalchemy.Column(sqlalchemy.String)
     contact = sqlalchemy.Column(sqlalchemy.String)
     area = sqlalchemy.Column(sqlalchemy.String)
+    lat = sqlalchemy.Column(sqlalchemy.Float)
+    long = sqlalchemy.Column(sqlalchemy.Float)
     descrip = sqlalchemy.Column(sqlalchemy.String)
     category = sqlalchemy.Column(sqlalchemy.String)
     cloudinary_id = sqlalchemy.Column(sqlalchemy.String)

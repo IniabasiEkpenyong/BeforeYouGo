@@ -448,7 +448,7 @@ def add__item():
     
     area = request.form.get('area')
     lat = request.form.get('lat')
-    long = request.form.get('long')
+    lng = request.form.get('lng')
     
     descrip = request.form.get('descrip')
     category = request.form.get('category')
@@ -464,7 +464,7 @@ def add__item():
             contact=contact,
             area=area,
             lat=lat,
-            long=long,
+            lng=lng,
             descrip=descrip,
             category=category,
             cloudinary_id='XXX',
