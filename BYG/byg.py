@@ -453,11 +453,14 @@ def add__item():
     descrip = request.form.get('descrip')
     category = request.form.get('category')
     priv = eval(request.form.get('priv'))
+    
     # Validate that all required fields are present
-    # if not all([title, contact, area, descrip, category]):
-    if not all([title, area, descrip, category]):
-        # return flask.redirect(flask.url_for('/show_item', priv=priv))
-        return flask.redirect(flask.url_for('show_item', priv=priv))
+    # NOTE: I got rid of this bc it was causing problems, and
+    # bc we can now just make it 'required' on the form itself
+    # # if not all([title, contact, area, descrip, category]):
+    # if not all([title, area, descrip, category]):
+    #     # return flask.redirect(flask.url_for('/show_item', priv=priv))
+    #     return flask.redirect(flask.url_for('show_item', priv=priv))
 
     # Add the new item to the database
     with sqlalchemy.orm.Session(database._engine) as session_db:
