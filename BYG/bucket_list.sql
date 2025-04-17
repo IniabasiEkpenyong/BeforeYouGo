@@ -49,16 +49,16 @@ VALUES ('Roma Theater Movie Night', '609-555-1005', 'Rockefeller College', 40.34
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Princeton Battlefield Tour', '609-555-1006', 'Princeton Battlefield', 40.33102075322586, -74.67671911779128, 'Visit the Revolutionary War site.', 'historic', 'XXX', FALSE);
+
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('Princeton Airport Flight Class', '609-555-1007', 'Princeton Airport', 40.39757271507362, -74.66030562758498, 'Take an introductory flying lesson.', 'adventure', 'XXX', FALSE);
+
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('Danny DeVito Shrine', '609-555-1008', 'Frist Campus Center', 40.346796147653855, -74.65514601594192, 'Visit the shrine of Danny DeVito.', 'quirky', 'danny.avif', FALSE);
+
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('Grounds for Sculpture', '609-555-1010', 'Hamilton, NJ', 40.23695376032633, -74.71875739200733, 'Explore the outdoor sculpture museum.', 'artistic', 'XXX', FALSE);
 /*
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Princeton Airport Flight Class', '609-555-1007', 'Princeton Airport', 40.3879, -74.6651, 'Take an introductory flying lesson.', 'adventure', 'XXX', FALSE);
-
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Danny DeVito Shrine', '609-555-1008', 'Mathey College', 40.3512, -74.6596, 'Visit the shrine of Danny DeVito.', 'quirky', 'danny.avif', FALSE);
-
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Grounds for Sculpture', '609-555-1010', 'Hamilton, NJ', 40.2360, -74.6905, 'Explore the outdoor sculpture museum.', 'artistic', 'XXX', FALSE);
-
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Amish Farmers Market', '609-555-1011', 'Trenton Area', 40.2171, -74.7429, 'Eat and shop at the Amish market.', 'food', 'XXX', FALSE);
 

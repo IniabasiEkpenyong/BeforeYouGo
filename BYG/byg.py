@@ -454,7 +454,8 @@ def add__item():
     category = request.form.get('category')
     priv = eval(request.form.get('priv'))
     # Validate that all required fields are present
-    if not all([title, contact, area, descrip, category]):
+    # if not all([title, contact, area, descrip, category]):
+    if not all([title, area, descrip, category]):
         # return flask.redirect(flask.url_for('/show_item', priv=priv))
         return flask.redirect(flask.url_for('show_item', priv=priv))
 
