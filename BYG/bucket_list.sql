@@ -37,19 +37,19 @@ VALUES ('Princeton Tunnels', '609-555-1001', 'Campus', 40.34886232734069, -74.65
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Graduate College Tower', '609-555-1002', 'Graduate College', 40.340862645767565, -74.66442614477758, 'Climb to the top for a great view.', 'historic', 'XXX', FALSE);
+
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('Rockefeller Tower', '609-555-1003', 'Rockefeller College', 40.34860783791797, -74.66206518525743, 'See campus from the Rocky tower.', 'historic', 'tower.jpg', FALSE);
+
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('PNI Monkey Lab', '609-555-1004', 'PNI', 40.343480083733574, -74.65249748035964, 'Tour the cognitive neuroscience facilities.', 'academic', 'XXX', FALSE);
+
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('Roma Theater Movie Night', '609-555-1005', 'Rockefeller College', 40.3487999889968, -74.6621349226885, 'Go to a movie night at the Roma.', 'social', 'movie.png', FALSE);
+
+INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
+VALUES ('Princeton Battlefield Tour', '609-555-1006', 'Princeton Battlefield', 40.33102075322586, -74.67671911779128, 'Visit the Revolutionary War site.', 'historic', 'XXX', FALSE);
 /*
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Rockefeller Tower', '609-555-1003', 'Rockefeller College', 40.3496, -74.6580, 'See campus from the Rocky tower.', 'historic', 'tower.jpg', FALSE);
-
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('PNI Monkey Lab', '609-555-1004', 'PNI', 40.3487, -74.6590, 'Tour the cognitive neuroscience facilities.', 'academic', 'XXX', FALSE);
-
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Roma Theater Movie Night', '609-555-1005', 'Campus', 40.3430, -74.6551, 'Go to a movie night at the Roma.', 'social', 'movie.png', FALSE);
-
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Princeton Battlefield Tour', '609-555-1006', 'Princeton Battlefield', 40.3252, -74.6750, 'Visit the Revolutionary War site.', 'historic', 'XXX', FALSE);
-
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Princeton Airport Flight Class', '609-555-1007', 'Princeton Airport', 40.3879, -74.6651, 'Take an introductory flying lesson.', 'adventure', 'XXX', FALSE);
 

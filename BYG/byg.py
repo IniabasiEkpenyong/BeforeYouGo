@@ -455,7 +455,8 @@ def add__item():
     priv = eval(request.form.get('priv'))
     # Validate that all required fields are present
     if not all([title, contact, area, descrip, category]):
-        return flask.redirect(flask.url_for('/show_item', priv=priv))
+        # return flask.redirect(flask.url_for('/show_item', priv=priv))
+        return flask.redirect(flask.url_for('show_item', priv=priv))
 
     # Add the new item to the database
     with sqlalchemy.orm.Session(database._engine) as session_db:
