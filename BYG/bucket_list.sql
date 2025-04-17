@@ -61,3 +61,51 @@ INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
     VALUES ('Map room (Lewis basement)', '609-555-1017', 'Lewis Library', 'Explore rare maps in the basement.', 'academic', 'XXX');
 INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
     VALUES ('Forbes Brunch', '609-555-1018', 'Forbes College', 'Have a fancy brunch at Forbes.', 'food', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Prospect 12', NULL, '', 'Drink an alcoholic drink at every eating club in one night', 'Social', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Visit the mae machine shop', NULL, '', 'Cool place to be, get to cut up some plastic or metal, and learn tools. Additional note: Probably need a MAE student to get in / use the machines', 'Academic', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Learn the wheel at the pottery studio', NULL, '', 'Sign up for a class and learn to throw clay at the student pottery studio. It is literally so fun and free.', 'Creative', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Fox Shrine', NULL, '', 'Find the fox shrine in Frist! Hint: it's built into the wall in one of the hallways.', 'Adventurous', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Chill on Poe', NULL, '', 'When it\'s warm out, get studio 34 vibes and no‐tech deep talks on Poe Field while stargazing', 'Social', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Explore Prospect Gardens', NULL, '', 'Just walk around the Prospect Gardens, take some pictures, bring friends.', 'Adventurous', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Princeton Garden Project', 'Elizabeth.kunze@princeton.edu', '', 'Volunteer with the Princeton Garden Project—people who work there are always welcoming.', 'Volunteer', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Visit the Danny DeVito Shrine', NULL, '', 'Find the hidden away Danny DeVito Shrine in the Slums (Frist basement).', 'Princetonia', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Roof Climbing', NULL, '', 'Climb all the roofs on campus (Forbes, Campus Club, Blair, etc).', 'Adventurous', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('NCW Ceramics Studio', NULL, '', 'Make and take home your own ceramic piece at the NCW studio!', 'Creative', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('FreeFood ListServ Day', NULL, '', 'Eat at every free‐food email from the ListServ in one day.', 'Princetonia', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Attend Christian Union Nova Encounter', '504-232-7518', '', 'Attend CU Nova Encounter to worship and learn about Christ among others.', 'Spiritual', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Intramural Sports', NULL, '', 'Join an intramural sport—even if you don’t know how to play, it’s a great time!', 'Athletic', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Go to the Ceramic Studio', NULL, '', 'Visit the ceramic studio and make something!', 'Creative', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Attend a Whig-Clio Senate Debate', NULL, '', 'Sit in on a Whig-Clio Senate debate to hear student government in action.', 'Social', 'XXX');
+
+INSERT INTO bucket_list (item, contact, area, descrip, category, cloudinary_id)
+VALUES ('Halloweekend', NULL, '', 'Participate in Halloweekend on Prospect Avenue.', 'Princetonia', 'XXX');

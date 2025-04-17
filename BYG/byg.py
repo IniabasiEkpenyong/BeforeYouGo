@@ -301,7 +301,8 @@ def my_bucket():
         user_items=user_items,
         ampm=get_ampm(),
         current_time=get_current_time(),
-        progress=progress
+        progress=progress,
+        api_key=os.getenv("GOOGLE_API_KEY")
     )
 
 @app.route('/mark_completed', methods=['POST'])
