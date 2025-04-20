@@ -147,20 +147,23 @@
     async defer>
   </script>
 
-  <br>
-
   <!-- Progress Bar and Event List -->
   {% if user_items|length == 0 %}
     <p>You have no items in your personal list yet.</p>
   {% else %}
-    <div class="progress-container w-full bg-gray-200 rounded-full h-2.5 mb-4">
-      <div class="progress-bar bg-blue-600 h-2.5 rounded-full" 
+  <div class="max-w-3xl mx-auto my-6">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-lg font-semibold text-gray-700">Your Progress: {{progress |int}}%</h3>
+    </div>
+    <div class="bg-gray-600 rounded-full h-2.5">
+      <div class="bg-blue-600 rounded-full h-2.5" 
           style="width: {{ progress }}%;" 
           aria-valuenow="{{ progress }}" 
           aria-valuemin="0" 
           aria-valuemax="100">
       </div>
     </div>
+  </div>
     <!-- User Items Table -->
     <table class="table table-striped align-middle">
       <thead>
@@ -184,7 +187,7 @@
               {% if not ub.completed %}
                 <button type="button" class="btn btn-sm btn-outline-primary" 
                         data-bs-toggle="modal" data-bs-target="#subtaskModal{{ ub.id }}">
-                  Manage Steps
+                        <i class="fas fa-tasks"></i>
                 </button>
               {% endif %}
             </td>
