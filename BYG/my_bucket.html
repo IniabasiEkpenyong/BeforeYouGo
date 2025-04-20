@@ -164,51 +164,84 @@
       </div>
     </div>
   </div>
-    <!-- User Items Table -->
-    <table class="table table-striped align-middle">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Location</th>
-          <th>Description</th>
-          <th>Completed?</th>
-          <th>Manage Steps</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ub, bucket in user_items %}
-          <tr>
-            <td>{{ bucket.item }}</td>
-            <td>{{ bucket.area }}</td>
-            <td>{{ bucket.descrip }}</td>
-            <td>{{ 'Yes' if ub.completed else 'No' }}</td>
-            <td>
-              {% if not ub.completed %}
-                <button type="button" class="btn btn-sm btn-outline-primary" 
-                        data-bs-toggle="modal" data-bs-target="#subtaskModal{{ ub.id }}">
-                        <i class="fas fa-tasks"></i>
-                </button>
-              {% endif %}
-            </td>
-            <td>
-              <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST">
-                <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-                <input type="submit" value="{% if ub.completed %}Reset{% else %}Mark Completed{% endif %}">
-              </form>
-            </td>
-            <td>
-              <form action="/remove_from_my_list" method="POST">
-                <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-                <input type="submit" value="Delete">
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- User Items Table -->
+  <div class="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for ub, bucket in user_items %}
+      <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full justify-between">
+        
+        <!-- Top Section -->
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold text-gray-700">{{ bucket.item }}</h3>
+          <p class="text-gray-600">{{ bucket.area }}</p>
+          <p class="text-gray-600 max-h-24 overflow-y-auto break-words">{{ bucket.descrip }}</p>
+          <span class="mt-2 inline-block text-sm {{ 'text-green-500' if ub.completed else 'text-red-500' }}">
+            {{ 'Completed' if ub.completed else 'Not Completed' }}
+          </span>
+        </div>
+  
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-2 mt-auto">
+          {% if not ub.completed %}
+            <button type="button" class="btn btn-sm btn-outline-primary flex-1 sm:flex-none"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#subtaskModal{{ ub.id }}">
+              <i class="fas fa-tasks"></i> Steps
+            </button>
+          {% endif %}
+  
+          <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST" class="flex-1 sm:flex-none">
+            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+            <input type="submit" class="btn btn-sm btn-outline-success w-full sm:w-auto" 
+                   value="{% if ub.completed %}Reset{% else %}Mark{% endif %}">
+          </form>
+  
+          <form action="/remove_from_my_list" method="POST" class="flex-1 sm:flex-none">
+            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+            <input type="submit" class="btn btn-sm btn-outline-danger w-full sm:w-auto" value="Delete">
+          </form>
+        </div>
+  
+      </div>
+    {% endfor %}
+  </div><div class="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for ub, bucket in user_items %}
+      <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full justify-between">
+        
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold text-gray-700">{{ bucket.item }}</h3>
+          <p class="text-gray-600">{{ bucket.area }}</p>
+          <p class="text-gray-600 max-h-24 overflow-y-auto break-words">{{ bucket.descrip }}</p>
+          <span class="mt-2 inline-block text-sm {{ 'text-green-500' if ub.completed else 'text-red-500' }}">
+            {{ 'Completed' if ub.completed else 'Not Completed' }}
+          </span>
+        </div>
 
-    {% include 'subtask.html' %}
+        <div class="flex flex-wrap gap-2 mt-auto">
+          {% if not ub.completed %}
+            <button type="button" class="btn btn-sm btn-outline-primary flex-1 sm:flex-none"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#subtaskModal{{ ub.id }}">
+              <i class="fas fa-tasks"></i> Steps
+            </button>
+          {% endif %}
+  
+          <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST" class="flex-1 sm:flex-none">
+            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+            <input type="submit" class="btn btn-sm btn-outline-success w-full sm:w-auto" 
+                   value="{% if ub.completed %}Reset{% else %}Mark{% endif %}">
+          </form>
+  
+          <form action="/remove_from_my_list" method="POST" class="flex-1 sm:flex-none">
+            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+            <input type="submit" class="btn btn-sm btn-outline-danger w-full sm:w-auto" value="Delete">
+          </form>
+        </div>
+  
+      </div>
+    {% endfor %}
+  </div>
+  
+  {% include 'subtask.html' %}
   {% endif %}
 
   <a href="/global">Back to Global List</a>
