@@ -66,7 +66,7 @@
         background-color: #0056b3;
     }
 
-    .progress-bar, .cards-container {
+    .cards-container {
         margin: 20px auto;
         max-width: 80%;
     }
@@ -79,19 +79,70 @@
         justify-content: center;
         padding: 20px;
     }
+    
+    .card {
+      min-height: 300px;
+    }
+  
   </style>
 </head>
 <body>
 
-  {% include 'header.html' %}
+  <section class="text-center my-6">
+    <h1 class="text-3xl font-bold text-blue-600">Your Bucket List</h1>
+    <p class="text-gray-600">Explore your personal bucket list and track your progress!</p>
+  </section>
 
-  <h1 class="title">My Bucket List</h1>
+  {% if user_items|length == 0 %}
+   <p>You have no items in your personal list yet.</p>
+  {% else %}
+  <div class="w-full max-w-xl mx-auto mt-4">
+    <p class="text-sm font-medium text-gray-700 text-center mb-1">Progress: {{ progress | int }}%</p>
+    <div class="w-full bg-gray-200 rounded-full h-3">
+      <div class="bg-green-500 h-3 rounded-full transition-all duration-300" style="width: {{ progress }}%"></div>
+    </div>
+  </div>
+  
+  </div><div class="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for ub, bucket in user_items %}
+      <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full justify-between">
+        
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold text-gray-700">{{ bucket.item }}</h3>
+          <p class="text-gray-600">{{ bucket.area }}</p>
+          <p class="text-gray-600 max-h-24 overflow-y-auto break-words">{{ bucket.descrip }}</p>
+          <span class="mt-2 inline-block text-sm {{ 'text-green-500' if ub.completed else 'text-red-500' }}">
+            {{ 'Completed' if ub.completed else 'Not Completed' }}
+          </span>
+        </div>
 
-  <!-- Create New Event Button -->
-  <form action="/show_item" method="post">
-    <input type="hidden" name="priv" value="True">
-    <input type="submit" class="add-button" value="Create new event for my Personal Bucket List">
-  </form>
+        <div class="flex flex-wrap gap-2 mt-auto">
+          {% if not ub.completed %}
+            <button type="button" class="btn btn-sm btn-outline-primary flex-1 sm:flex-none"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#subtaskModal{{ ub.id }}">
+              <i class="fas fa-tasks"></i> Steps
+            </button>
+          {% endif %}
+  
+          <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST" class="flex-1 sm:flex-none">
+            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+            <input type="submit" class="btn btn-sm btn-outline-success w-full sm:w-auto" 
+                    value="{% if ub.completed %}Reset{% else %}Mark{% endif %}">
+          </form>
+  
+          <form action="/remove_from_my_list" method="POST" class="flex-1 sm:flex-none">
+            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+            <input type="submit" class="btn btn-sm btn-outline-danger w-full sm:w-auto" value="Delete">
+          </form>
+        </div>
+  
+      </div>
+    {% endfor %}
+  </div>
+  
+  {% include 'subtask.html' %}
+  {% endif %}
 
   <!-- Map and Search Box -->
   <div>
@@ -147,102 +198,11 @@
     async defer>
   </script>
 
-  <!-- Progress Bar and Event List -->
-  {% if user_items|length == 0 %}
-    <p>You have no items in your personal list yet.</p>
-  {% else %}
-  <div class="max-w-3xl mx-auto my-6">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-lg font-semibold text-gray-700">Your Progress: {{progress |int}}%</h3>
-    </div>
-    <div class="bg-gray-600 rounded-full h-2.5">
-      <div class="bg-blue-600 rounded-full h-2.5" 
-          style="width: {{ progress }}%;" 
-          aria-valuenow="{{ progress }}" 
-          aria-valuemin="0" 
-          aria-valuemax="100">
-      </div>
-    </div>
-  </div>
-  <!-- User Items Table -->
-  <div class="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {% for ub, bucket in user_items %}
-      <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full justify-between">
-        
-        <!-- Top Section -->
-        <div class="mb-4">
-          <h3 class="text-lg font-semibold text-gray-700">{{ bucket.item }}</h3>
-          <p class="text-gray-600">{{ bucket.area }}</p>
-          <p class="text-gray-600 max-h-24 overflow-y-auto break-words">{{ bucket.descrip }}</p>
-          <span class="mt-2 inline-block text-sm {{ 'text-green-500' if ub.completed else 'text-red-500' }}">
-            {{ 'Completed' if ub.completed else 'Not Completed' }}
-          </span>
-        </div>
-  
-        <!-- Action Buttons -->
-        <div class="flex flex-wrap gap-2 mt-auto">
-          {% if not ub.completed %}
-            <button type="button" class="btn btn-sm btn-outline-primary flex-1 sm:flex-none"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#subtaskModal{{ ub.id }}">
-              <i class="fas fa-tasks"></i> Steps
-            </button>
-          {% endif %}
-  
-          <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST" class="flex-1 sm:flex-none">
-            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-            <input type="submit" class="btn btn-sm btn-outline-success w-full sm:w-auto" 
-                   value="{% if ub.completed %}Reset{% else %}Mark{% endif %}">
-          </form>
-  
-          <form action="/remove_from_my_list" method="POST" class="flex-1 sm:flex-none">
-            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-            <input type="submit" class="btn btn-sm btn-outline-danger w-full sm:w-auto" value="Delete">
-          </form>
-        </div>
-  
-      </div>
-    {% endfor %}
-  </div><div class="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {% for ub, bucket in user_items %}
-      <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full justify-between">
-        
-        <div class="mb-4">
-          <h3 class="text-lg font-semibold text-gray-700">{{ bucket.item }}</h3>
-          <p class="text-gray-600">{{ bucket.area }}</p>
-          <p class="text-gray-600 max-h-24 overflow-y-auto break-words">{{ bucket.descrip }}</p>
-          <span class="mt-2 inline-block text-sm {{ 'text-green-500' if ub.completed else 'text-red-500' }}">
-            {{ 'Completed' if ub.completed else 'Not Completed' }}
-          </span>
-        </div>
-
-        <div class="flex flex-wrap gap-2 mt-auto">
-          {% if not ub.completed %}
-            <button type="button" class="btn btn-sm btn-outline-primary flex-1 sm:flex-none"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#subtaskModal{{ ub.id }}">
-              <i class="fas fa-tasks"></i> Steps
-            </button>
-          {% endif %}
-  
-          <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST" class="flex-1 sm:flex-none">
-            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-            <input type="submit" class="btn btn-sm btn-outline-success w-full sm:w-auto" 
-                   value="{% if ub.completed %}Reset{% else %}Mark{% endif %}">
-          </form>
-  
-          <form action="/remove_from_my_list" method="POST" class="flex-1 sm:flex-none">
-            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-            <input type="submit" class="btn btn-sm btn-outline-danger w-full sm:w-auto" value="Delete">
-          </form>
-        </div>
-  
-      </div>
-    {% endfor %}
-  </div>
-  
-  {% include 'subtask.html' %}
-  {% endif %}
+  <!-- Create New Event Button -->
+  <form action="/show_item" method="post">
+    <input type="hidden" name="priv" value="True">
+    <input type="submit" class="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"><i class="fas fa-plus"></i> Add new event</input>
+  </form>
 
   <a href="/global">Back to Global List</a>
 
