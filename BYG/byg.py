@@ -315,12 +315,27 @@ def my_bucket():
     # user_netid = 'jg2783'
     # given_name = 'Judah'    
 
-    # Query the user_bucket table, joined with the bucket_list table
     with sqlalchemy.orm.Session(database._engine) as session_db:
         user_items = session_db.query(UserBucket, database.Bucket) \
             .join(database.Bucket, UserBucket.bucket_id == database.Bucket.bucket_id) \
             .filter(UserBucket.user_netid == user_netid).all()
-    
+
+        # Get subtasks for each user bucket and calculate progress
+        subtasks_by_bucket = {}
+        progress_by_bucket = {}
+        
+        for ub, _ in user_items:
+            subtasks = session_db.query(database.SubTask).filter_by(
+                user_bucket_id=ub.id).all()
+            subtasks_by_bucket[ub.id] = subtasks
+            
+            total = len(subtasks)
+            if total > 0:
+                completed = sum(1 for st in subtasks if st.completed)
+                progress_by_bucket[ub.id] = int((completed / total) * 100)
+            else:
+                progress_by_bucket[ub.id] = 100 if ub.completed else 0
+
     total_items = len(user_items)
     completed = sum(1 for item in user_items if item[0].completed)
     progress = 0 if total_items == 0 else (completed/total_items)* 100
@@ -347,6 +362,8 @@ def my_bucket():
         current_time=get_current_time(),
         progress=progress,
         pins=pins,
+        subtasks_by_bucket = subtasks_by_bucket,
+        progress_by_bucket = progress_by_bucket,
         api_key=os.getenv("GOOGLE_API_KEY")
     )
 
@@ -534,6 +551,68 @@ def add__item():
         return flask.redirect('/my_bucket')
     else:
         return flask.redirect('/global')
+    
+# Add these routes after your existing routes
+
+@app.route('/add_subtask', methods=['POST'])
+def add_subtask():
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
+    user_bucket_id = request.form.get('user_bucket_id')
+    description = request.form.get('description')
+    
+    if not user_bucket_id or not description:
+        return flask.redirect('/my_bucket')
+    
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        ub_item = session_db.query(UserBucket).filter_by(
+            id=user_bucket_id, user_netid=user_netid).first()
+        
+        if ub_item:
+            success, result = database.add_subtask(user_bucket_id, description)
+    
+    return flask.redirect('/my_bucket')
+
+@app.route('/toggle_subtask', methods=['POST'])
+def toggle_subtask():
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
+    subtask_id = request.form.get('subtask_id')
+    if not subtask_id:
+        return flask.redirect('/my_bucket')
+    
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        subtask = session_db.query(database.SubTask).join(UserBucket).filter(
+            database.SubTask.id == subtask_id,
+            UserBucket.user_netid == user_netid
+        ).first()
+        
+        if subtask:
+            database.toggle_subtask(subtask_id)
+    
+    return flask.redirect('/my_bucket')
+
+@app.route('/delete_subtask', methods=['POST'])
+def delete_subtask():
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
+    subtask_id = request.form.get('subtask_id')
+    if not subtask_id:
+        return flask.redirect('/my_bucket')
+    
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        subtask = session_db.query(database.SubTask).join(UserBucket).filter(
+            database.SubTask.id == subtask_id,
+            UserBucket.user_netid == user_netid
+        ).first()
+        
+        if subtask:
+            database.delete_subtask(subtask_id)
+    
+    return flask.redirect('/my_bucket')
 
 @app.route('/logoutapp')
 def logout_app():

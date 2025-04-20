@@ -139,43 +139,63 @@ def get_all_categories():
 def get_subtasks(user_bucket_id):
     with sqlalchemy.orm.Session(_engine) as session:
         subtasks = session.query(SubTask).filter(SubTask.user_bucket_id == user_bucket_id).all()
-        return [{'id': subtask.id, 'description': subtask.description, 'completed': subtask.completed} for subtask in subtasks]
+        return subtasks
 
 def add_subtask(user_bucket_id, description):
     with sqlalchemy.orm.Session(_engine) as session:
-        subtask = SubTask(user_bucket_id=user_bucket_id, description=description)
-        session.add(subtask)
+        user_bucket = session.query(UserBucket).filter_by(id=user_bucket_id).first()
+        if not user_bucket:
+            return False, "User bucket not found"
+        
+        new_subtask = SubTask(
+            user_bucket_id=user_bucket_id,
+            description=description,
+            completed=False
+        )
+        session.add(new_subtask)
         session.commit()
-        return subtask.id
+        return True, new_subtask.id
 
-def update_subtask(subtask_id, completed):
+def toggle_subtask(subtask_id, completed):
     with sqlalchemy.orm.Session(_engine) as session:
         subtask = session.query(SubTask).filter(SubTask.id == subtask_id).first()
-        if subtask:
-            subtask.completed = completed
-            session.commit()
-            return True
-        return False
+        if not subtask:
+            return False, "Subtask not found"
+        
+        subtask.completed = not subtask.completed
+        
+        user_bucket = session.query(UserBucket).filter_by(id=subtask.user_bucket_id).first()
+        if user_bucket:
+            subtasks = session.query(SubTask).filter_by(user_bucket_id=user_bucket.id).all()
+            if subtasks and all(st.completed for st in subtasks):
+                user_bucket.completed = True
+            else:
+                user_bucket.completed = False
+        
+        session.commit()
+        return True, subtask.completed
 
 def delete_subtask(subtask_id):
     with sqlalchemy.orm.Session(_engine) as session:
-        subtask = session.query(SubTask).filter(SubTask.id == subtask_id).first()
-        if subtask:
-            session.delete(subtask)
-            session.commit()
-            return True
-        return False
-    
-def get_progress(user_bucket_id):
-    with sqlalchemy.orm.Session(_engine) as session:
-        subtasks = session.query(SubTask).filter(SubTask.user_bucket_id == user_bucket_id).all()
-        if not subtasks:
-            user_bucket = session.query(UserBucket).filter_by(id=user_bucket_id).first()
-            return 100 if user_bucket and user_bucket.completed else 0
+        subtask = session.query(SubTask).filter_by(id=subtask_id).first()
+        if not subtask:
+            return False, "Subtask not found"
         
-        total = len(subtasks)
-        completed = sum(1 for st in subtasks if st.completed)
-        return (completed / total) * 100
+        user_bucket_id = subtask.user_bucket_id
+        
+        session.delete(subtask)
+        
+        user_bucket = session.query(UserBucket).filter_by(id=user_bucket_id).first()
+        if user_bucket:
+            remaining_subtasks = session.query(SubTask).filter_by(user_bucket_id=user_bucket_id).all()
+            if remaining_subtasks and all(st.completed for st in remaining_subtasks):
+                user_bucket.completed = True
+            else:
+                user_bucket.completed = False
+        
+        session.commit()
+        return True, "Subtask deleted successfully"
+    
 #-----------------------------------------------------------------------
 # For testing:
 
