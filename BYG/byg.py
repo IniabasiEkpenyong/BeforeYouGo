@@ -559,8 +559,8 @@ def add_subtask():
     user_info = auth.authenticate()
     user_netid = user_info['user']
     
-    user_bucket_id = request.form.get('user_bucket_id')
-    description = request.form.get('description')
+    user_bucket_id = int(request.form.get('user_bucket_id'))
+    description = request.form.get('subtask')
     
     if not user_bucket_id or not description:
         return flask.redirect('/my_bucket')

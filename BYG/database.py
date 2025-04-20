@@ -156,7 +156,7 @@ def add_subtask(user_bucket_id, description):
         session.commit()
         return True, new_subtask.id
 
-def toggle_subtask(subtask_id, completed):
+def toggle_subtask(subtask_id):
     with sqlalchemy.orm.Session(_engine) as session:
         subtask = session.query(SubTask).filter(SubTask.id == subtask_id).first()
         if not subtask:
