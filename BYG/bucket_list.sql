@@ -22,6 +22,17 @@ CREATE TABLE user_bucket (
     completed BOOLEAN DEFAULT FALSE
 );
 
+CREATE TABLE subtasks (
+    id SERIAL PRIMARY KEY,
+    user_bucket_id INTEGER NOT NULL REFERENCES user_bucket(id) ON DELETE CASCADE,
+    description TEXT NOT NULL,
+    completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_subtasks_user_bucket_id ON subtasks(user_bucket_id);
+
+
 -- We can improve this logic later so we can linearize adding items
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Ceramics Studio', '903-328-1390', 'New College West', 40.3422959650295, -74.65496351594201, 'Make clay pots.', 'creative', 'ceramic.jpg', FALSE);
@@ -67,25 +78,26 @@ VALUES ('PPPL', '609-555-1013', 'Plasma Physics Lab', 40.35074928704113, -74.602
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Poe field stargazing', '609-555-1014', 'Poe Field', 40.34364531909187, -74.6550066803598, 'Relax and stargaze under the open sky.', 'reflective', 'XXX', FALSE);
+
 /*
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Farminary', '609-555-1015', 'Route 206', 40.3253, -74.6835, 'Visit the farm run by the seminary.', 'sustainable', 'XXX', FALSE);
+VALUES ('Farminary', '609-555-1015', 'Princeton Theological Seminary', 40.35338378714052, -74.66249214546603, 'Visit the farm run by the seminary.', 'sustainable', 'XXX', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Forbes Garden', '609-555-1016', 'Forbes College', 40.3441, -74.6602, 'Walk through the student-run garden.', 'nature', 'XXX', FALSE);
+VALUES ('Forbes Garden', '609-555-1016', 'Forbes College', 40.343533275910026, -74.6619073582709, 'Walk through the student-run garden.', 'nature', 'XXX', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Map room (Lewis basement)', '609-555-1017', 'Lewis Library', 40.3503, -74.6523, 'Explore rare maps in the basement.', 'academic', 'XXX', FALSE);
+VALUES ('Map room (Lewis basement)', '609-555-1017', 'Lewis Library', 40.346556961590686, -74.65256226746669, 'Explore rare maps in the basement.', 'academic', 'XXX', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Forbes Brunch', '609-555-1018', 'Forbes College', 40.3441, -74.6602, 'Have a fancy brunch at Forbes.', 'food', 'XXX', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Prospect 12', NULL, 'Prospect Avenue', 40.3463, -74.6540, 'Have a drink at every eating club in one night', 'Social', 'XXX', FALSE);
+VALUES ('Prospect 12', NULL, 'Prospect Avenue', 40.347845, -74.655036, 'Have a drink at every eating club in one night', 'Social', 'XXX', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('Visit the mae machine shop', NULL, 'MAE Machine Shop', NULL, NULL, 'Cool place to be, get to cut up some plastic or metal, and learn tools.', 'Academic', 'XXX', FALSE);
-
+VALUES ('Visit the mae machine shop', NULL, 'MAE Machine Shop', 40.35100559326346, -74.65064961594179, 'Cool place to be, get to cut up some plastic or metal, and learn tools.', 'Academic', 'XXX', FALSE);
+/*
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Learn the wheel at the pottery studio', NULL, 'New College West', 40.3444, -74.6577, 'Sign up for a class and learn to throw clay.', 'Creative', 'XXX', FALSE);
 
@@ -106,9 +118,6 @@ VALUES ('Visit the Danny DeVito Shrine', NULL, 'Frist basement', 40.3480, -74.65
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('Roof Climbing', NULL, 'Forbes, Campus Club, Blair, etc.', NULL, NULL, 'Climb all the roofs on campus.', 'Adventurous', 'XXX', FALSE);
-
-INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
-VALUES ('NCW Ceramics Studio', NULL, 'New College West', 40.3444, -74.6577, 'Make and take home your own ceramic piece!', 'Creative', 'XXX', FALSE);
 
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv) 
 VALUES ('FreeFood ListServ Day', NULL, 'Princeton University', 40.3431, -74.6551, 'Eat at every free‐food email from the ListServ in one day.', 'Princetonia', 'XXX', FALSE);

@@ -49,6 +49,24 @@ class UserBucket(Base):
                                   sqlalchemy.ForeignKey('bucket_list.bucket_id'))
     completed = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
+class SubTask(Base):
+    __tablename__ = 'subtasks'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    user_bucket_id = sqlalchemy.Column(sqlalchemy.Integer, 
+                                       sqlalchemy.ForeignKey('user_bucket.id', ondelete='CASCADE'),
+                                       nullable=False)
+    description = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    completed = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    created_at = sqlalchemy.Column(sqlalchemy.DateTime, 
+                                   server_default=sqlalchemy.sql.func.now())
+    
+    user_bucket = sqlalchemy.orm.relationship("UserBucket", 
+                                             back_populates="subtasks")
+
+UserBucket.subtasks = sqlalchemy.orm.relationship("SubTask", 
+                                                 back_populates="user_bucket",
+                                                 cascade="all, delete-orphan")
+
 #-----------------------------------------------------------------------
 
 def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort='', exclude_ids=None):
@@ -117,6 +135,67 @@ def get_all_categories():
     
         # Filter out categories that are private
         return sorted(set(category for category, in categories if category))
+    
+def get_subtasks(user_bucket_id):
+    with sqlalchemy.orm.Session(_engine) as session:
+        subtasks = session.query(SubTask).filter(SubTask.user_bucket_id == user_bucket_id).all()
+        return subtasks
+
+def add_subtask(user_bucket_id, description):
+    with sqlalchemy.orm.Session(_engine) as session:
+        user_bucket = session.query(UserBucket).filter_by(id=user_bucket_id).first()
+        if not user_bucket:
+            return False, "User bucket not found"
+        
+        new_subtask = SubTask(
+            user_bucket_id=user_bucket_id,
+            description=description,
+            completed=False
+        )
+        session.add(new_subtask)
+        session.commit()
+        return True, new_subtask.id
+
+def toggle_subtask(subtask_id):
+    with sqlalchemy.orm.Session(_engine) as session:
+        subtask = session.query(SubTask).filter(SubTask.id == subtask_id).first()
+        if not subtask:
+            return False, "Subtask not found"
+        
+        subtask.completed = not subtask.completed
+        
+        user_bucket = session.query(UserBucket).filter_by(id=subtask.user_bucket_id).first()
+        if user_bucket:
+            subtasks = session.query(SubTask).filter_by(user_bucket_id=user_bucket.id).all()
+            if subtasks and all(st.completed for st in subtasks):
+                user_bucket.completed = True
+            else:
+                user_bucket.completed = False
+        
+        session.commit()
+        return True, subtask.completed
+
+def delete_subtask(subtask_id):
+    with sqlalchemy.orm.Session(_engine) as session:
+        subtask = session.query(SubTask).filter_by(id=subtask_id).first()
+        if not subtask:
+            return False, "Subtask not found"
+        
+        user_bucket_id = subtask.user_bucket_id
+        
+        session.delete(subtask)
+        
+        user_bucket = session.query(UserBucket).filter_by(id=user_bucket_id).first()
+        if user_bucket:
+            remaining_subtasks = session.query(SubTask).filter_by(user_bucket_id=user_bucket_id).all()
+            if remaining_subtasks and all(st.completed for st in remaining_subtasks):
+                user_bucket.completed = True
+            else:
+                user_bucket.completed = False
+        
+        session.commit()
+        return True, "Subtask deleted successfully"
+    
 #-----------------------------------------------------------------------
 # For testing:
 

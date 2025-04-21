@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title class="title">My Bucket List</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bucket List</title>
+
+  <!-- External CSS and JS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inline Styles -->
   <style>
     body {
         font-family: 'Roboto', sans-serif;
@@ -16,107 +25,52 @@
         flex-direction: column;
         min-height: 100vh;
     }
+
     .title {
         text-align: center;
         margin-top: 20px;
         color: #007bff;
     }
+
     #map {
-      height: 500px;
-      width: 100%;
-      margin-top: 30px;
-    }
-    #search-box {
-      width: 300px;
-      margin: 10px auto;
-      display: block;
-      padding: 10px;
-      font-size: 16px;
-    }
-    .progress-bar {
+        height: 500px;
         width: 100%;
-        background-color: #e0e0e0;
-        border-radius: 5px;
-        overflow: hidden;
-        margin: 20px 0;
-        position: relative;
+        margin-top: 30px;
     }
-    .progress-bar::before {
-        content: attr(data-label);
+
+    #search-box {
+        width: 300px;
+        margin: 10px auto;
         display: block;
-        text-align: center;
-        color: #fff;
-        background-color: #007bff;
-        width: var(--width);
-        height: 20px;
-        line-height: 20px;
-        border-radius: 5px;
-        position: absolute;
-        top: 60%;
-        left: 0;
-        transform: translateY(-50%);
+        padding: 10px;
+        font-size: 16px;
     }
+
     .cards-container {
         width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
+        margin: 20px auto;
     }
-    .cards-container th, .cards-container td {
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: center;
-    }
-    .cards-container tr:hover {
-        background-color: #f1f1f1;
-    }
+
     .add-button, input[type="submit"] {
         background-color: #007bff;
         color: white;
         border: none;
         padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
         font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
         border-radius: 5px;
+        cursor: pointer;
         transition: background-color 0.3s ease;
     }
+
     .add-button:hover, input[type="submit"]:hover {
         background-color: #0056b3;
     }
-    a {
-        color: #007bff;
-        text-decoration: none;
-    }
-    a:hover {
-        text-decoration: underline;
-    }
-    .progress-bar, .cards-container, .add-button {
+
+    .cards-container {
         margin: 20px auto;
         max-width: 80%;
     }
-    .cards-container {
-        margin-top: 20px;
-    }
-    .add-button {
-        display: block;
-        margin: 20px auto;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-    }
-    .add-button:hover {
-        background-color: #0056b3;
-    }
+
     main {
         flex: 1;
         display: flex;
@@ -125,22 +79,79 @@
         justify-content: center;
         padding: 20px;
     }
+    
+    .card {
+      min-height: 300px;
+    }
+  
   </style>
 </head>
 <body>
-  {% include 'header.html' %}
+
+  <section class="text-center my-6">
+    <h1 class="text-3xl font-bold text-blue-600">Your Bucket List</h1>
+    <p class="text-gray-600">Explore your personal bucket list and track your progress!</p>
+  </section>
+
+  {% if user_items|length == 0 %}
+   <p>You have no items in your personal list yet.</p>
+  {% else %}
+  <div class="w-full max-w-xl mx-auto mt-4">
+    <p class="text-sm font-medium text-gray-700 text-center mb-1">Progress: {{ progress | int }}%</p>
+    <div class="w-full bg-gray-200 rounded-full h-3">
+      <div class="bg-green-500 h-3 rounded-full transition-all duration-300" style="width: {{ progress }}%"></div>
+    </div>
+  </div>
   
-  <h1 class="title">My Bucket List</h1>
-  <form action="/show_item" method="post">
-    <input type="hidden" name="priv" value="True">
-    <input type="submit" class="add-button" value="Create new event for my Personal Bucket List">
-  </form>
+  </div><div class="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for ub, bucket in user_items %}
+      <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full justify-between">
+        
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold text-gray-700">{{ bucket.item }}</h3>
+          <p class="text-gray-600">{{ bucket.area }}</p>
+          <p class="text-gray-600 max-h-24 overflow-y-auto break-words">{{ bucket.descrip }}</p>
+          <span class="mt-2 inline-block text-sm {{ 'text-green-500' if ub.completed else 'text-red-500' }}">
+            {{ 'Completed' if ub.completed else 'Not Completed' }}
+          </span>
+        </div>
 
-  <!-- <a href="/map">Map</a> -->
-  My Events:
-  <input id="search-box" type="text" placeholder="Search for a location" />
-  <div id="map"></div>
+        <div class="flex flex-wrap gap-2 mt-auto">
+          {% if not ub.completed %}
+            <button type="button" class="btn btn-sm btn-outline-primary flex-1 sm:flex-none"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#subtaskModal{{ ub.id }}">
+              <i class="fas fa-tasks"></i> Steps
+            </button>
+          {% endif %}
+  
+          <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST" class="flex-1 sm:flex-none">
+            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+            <input type="submit" class="btn btn-sm btn-outline-success w-full sm:w-auto" 
+                    value="{% if ub.completed %}Reset{% else %}Mark{% endif %}">
+          </form>
+  
+          <form action="/remove_from_my_list" method="POST" class="flex-1 sm:flex-none">
+            <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
+            <input type="submit" class="btn btn-sm btn-outline-danger w-full sm:w-auto" value="Delete">
+          </form>
+        </div>
+  
+      </div>
+    {% endfor %}
+  </div>
+  
+  {% include 'subtask.html' %}
+  {% endif %}
 
+  <!-- Map and Search Box -->
+  <div>
+    My Events:
+    <input id="search-box" type="text" placeholder="Search for a location" />
+    <div id="map"></div>
+  </div>
+
+  <!-- Google Maps Integration -->
   <script>
     let map;
     let marker;
@@ -167,12 +178,17 @@
           map,
           position: place.geometry.location,
         });
+      });
 
-        console.log("Selected place:", {
-          name: place.name,
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng()
-        });
+      // Add personal bucket list pins
+      pins.forEach(pin => {
+        if (pin.lat && pin.lng) {
+          new google.maps.Marker({
+            position: { lat: pin.lat, lng: pin.lng },
+            map: map,
+            title: pin.title
+          });
+        }
       });
     }
   </script>
@@ -182,58 +198,13 @@
     async defer>
   </script>
 
-  {% if user_items|length == 0 %}
-    <p>You have no items in your personal list yet.</p>
-  {% else %}
-    <div class="progress-bar" style="--width: {{progress}}" data-label="Percent Completed"></div>
-    <!--<table class="cards-container">-->
-    <table class="table table-striped align-middle">
-      <tr>
-        <th>Title</th>
-        <th>Location</th>
-        <th>Description</th>
-        <th>Completed?</th>
-        <th><!-- Completed button column --></th>
-        <th><!-- Delete button column --></th>
-      </tr>
-      {% for ub, bucket in user_items %}
-        <tr>
-          <td>{{ bucket.item }}</td>
-          <td>{{ bucket.area }}</td>
-          <td>{{ bucket.descrip }}</td>
-          <td>
-            {% if ub.completed %}
-              Yes
-            {% else %}
-              No
-            {% endif %}
-          </td>
-          <td>
-            {% if not ub.completed %}
-              <form action="/mark_completed" method="POST" style="display:inline;">
-                <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-                <input type="submit" value="Mark Completed">
-              </form>
-            {% else %}
-                <form action="/reset_completed" method="POST" style="display:inline;">
-                    <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-                    <input type="submit" value="Reset">
-                </form>
-            {% endif %}
-          </td>
-          <td>
-            <form action="/remove_from_my_list" method="POST" style="display:inline;">
-                <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-                <input type="submit" value="Delete">
-            </form>
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
-  {% endif %}
+  <!-- Create New Event Button -->
+  <form action="/show_item" method="post">
+    <input type="hidden" name="priv" value="True">
+    <input type="submit" class="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"><i class="fas fa-plus"></i> Add new event</input>
+  </form>
 
   <a href="/global">Back to Global List</a>
-  <!-- Took out footer for now bc it got in the way -->
-  <!-- {% include 'footer.html' %} --> 
+
 </body>
 </html>
