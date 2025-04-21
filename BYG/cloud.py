@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -88,5 +87,3 @@ if __name__ == "__main__":
 
 
     
-=======
->>>>>>> e173fa7794e95ddba9a3803615ccb820fdc1a612

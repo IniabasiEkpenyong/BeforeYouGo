@@ -1,35 +1,57 @@
 <style>
     .footer {
-        background-color: #295078;
-        color: white;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        z-index: 1000;
-        padding: 10px 0;
-        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(to right, #295078, #3b6ca7);
+      color: white;
+      width: 100%;
+      padding: 15px 0;
+      font-size: 0.9rem;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
     }
+  
     .footer a {
-        color: white;
-        text-decoration: none;
-        margin: 0 15px;
-        font-weight: bold;
+      color: #ffffff;
+      font-weight: 600;
+      text-decoration: none;
+      margin: 0 10px;
+      transition: all 0.2s ease;
     }
+  
     .footer a:hover {
-        text-decoration: underline;
+      text-decoration: underline;
+      color: #ffdfdf;
     }
-</style>
-
-<div class="footer">
-    <center>
-        <div style="display: flex; justify-content: space-between; width: 100%;">
-            <a href="{{ url_for('logout_app') }}">Log out of the app</a>
-            <a href="{{ url_for('logout_cas') }}">Log out of the app and end the CAS session</a>
-        </div>
-        <hr>
-        <p>Created by <a href="https://www.linkedin.com/in/iniabasi-ekpenyong-5715ba26a/"> Ini</a>,
-        <a href="https://www.linkedin.com/in/judah-guggenheim-6b1a39208/"> Judah</a>,
-        and <a href="https://www.linkedin.com/in/itoro-ekpenyong-a561a5335/"> Itoro</a>.</p>
-        <hr>
-    </center>
-</div>
+  
+    .footer .link-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+  
+    .footer .credit {
+      font-size: 0.85rem;
+    }
+  
+    .footer hr {
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+      width: 80%;
+      margin: 10px auto;
+    }
+  </style>
+  
+  <div class="footer text-center">
+    <div class="link-row">
+      <a href="{{ url_for('logout_app') }}">Log out of the app</a>
+      <a href="{{ url_for('logout_cas') }}">Log out of app & CAS session</a>
+    </div>
+    <hr>
+    <div class="credit">
+      Created by 
+      <a href="https://www.linkedin.com/in/iniabasi-ekpenyong-5715ba26a/" target="_blank">Ini</a>,
+      <a href="https://www.linkedin.com/in/judah-guggenheim-6b1a39208/" target="_blank">Judah</a>,
+      and
+      <a href="https://www.linkedin.com/in/itoro-ekpenyong-a561a5335/" target="_blank">Itoro</a>.
+    </div>
+  </div>
+  
