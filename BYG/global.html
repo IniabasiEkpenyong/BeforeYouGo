@@ -105,10 +105,11 @@
                         </form>
 
                         <form action="/create_shared_event" method="POST" class="mt-2">
-                            <input type="hidden" name="bucket_id" value="{{ item.bucket_id }}">
+                            <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
                             <input type="text" name="friend_netid" placeholder="Friend's NetID" class="form-control mb-1" required>
                             <input type="submit" class="btn btn-sm btn-outline-secondary" value="Do with a Friend">
-                        </form>
+                          </form>
+                          
 
                         {% if is_admin %}
                            <form action="/remove_from_global_list" method="POST">
