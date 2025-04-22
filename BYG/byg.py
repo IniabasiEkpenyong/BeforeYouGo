@@ -13,6 +13,7 @@ import os
 from flask import session, redirect, render_template, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 # Import the app from package
 try:
     from . import app
@@ -22,6 +23,9 @@ except ImportError:
     from BYG import app
     from BYG.database import Bucket, UserBucket
     import BYG.database as database
+
+from .database import get_shared_events_for_user
+from .database import mark_shared_event_completed
 
 # Set the secret key
 app.secret_key = os.environ['APP_SECRET_KEY']
@@ -347,11 +351,13 @@ def my_bucket():
             'title': bucket.item,
             'lat': bucket.lat,
             'lng': bucket.lng,
-            'completed': ub.completed
+            'completed': ub.completed,
+            'description': bucket.descrip
         }
         for ub, bucket in user_items if bucket.lat and bucket.lng
     ]
     
+    shared_events = get_shared_events_for_user(user_netid)
     
     # Pass it to a template
     return flask.render_template('my_bucket.html',
@@ -364,6 +370,7 @@ def my_bucket():
         pins=pins,
         subtasks_by_bucket = subtasks_by_bucket,
         progress_by_bucket = progress_by_bucket,
+        shared_events=shared_events,
         api_key=os.getenv("GOOGLE_API_KEY")
     )
 
@@ -388,6 +395,8 @@ def mark_completed():
             session_db.commit()
     return flask.redirect('/my_bucket')
 
+
+
 # Honestly could prob just use the same function as above,
 # replace: ub_item.completed = True' 
 # with:    ub_item.completed = !ub_item.completed' 
@@ -409,6 +418,37 @@ def reset_completed():
     return flask.redirect('/my_bucket')
 
 
+
+@app.route("/create_shared_event", methods=["POST"])
+def create_shared_event_route():
+    bucket_id = flask.request.form["bucket_id"]
+    friend_netid = flask.request.form["friend_netid"].strip().lower()
+    
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    if not user_netid:
+        return flask.redirect("/")
+
+    success, shared_event_id = database.create_shared_event(
+        bucket_id=int(bucket_id),
+        creator_netid=user_netid,
+        participant_netids=[friend_netid]
+    )
+
+    if success:
+        flask.flash("Shared event created!")
+    else:
+        flask.flash("Something went wrong.")
+    
+    return flask.redirect("/global")
+
+
+@app.route("/complete_shared_event", methods=["POST"])
+def complete_shared_event():
+    shared_event_id = flask.request.form["shared_event_id"]
+    mark_shared_event_completed(shared_event_id)
+    return flask.redirect("/my_bucket")
 
 #-----------------------------------------------------------------------
 
@@ -632,3 +672,8 @@ def logout_cas():
     
     # Redirect to the home page or login page
     return flask.render_template('loggedout.html')
+
+
+if __name__ == "__main__":
+    from database import Base, _engine
+    Base.metadata.create_all(_engine)

@@ -144,12 +144,20 @@
   {% include 'subtask.html' %}
   {% endif %}
 
+  {% include 'shared_items.html' %}
+
   <!-- Map and Search Box -->
+  <!--
   <div>
     My Events:
     <input id="search-box" type="text" placeholder="Search for a location" />
     <div id="map"></div>
   </div>
+  -->
+
+  <script>
+    let pins = {{ pins | tojson | safe }};
+  </script>
 
   <!-- Google Maps Integration -->
   <script>
@@ -183,11 +191,37 @@
       // Add personal bucket list pins
       pins.forEach(pin => {
         if (pin.lat && pin.lng) {
-          new google.maps.Marker({
+          /*new google.maps.Marker({
             position: { lat: pin.lat, lng: pin.lng },
             map: map,
             title: pin.title
-          });
+          });*/
+
+          const iconUrl = pin.completed
+          ? "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+          : "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+
+          
+          const marker = new google.maps.Marker({
+            position: { lat: pin.lat, lng: pin.lng },
+            map: map,
+            title: pin.title,
+            icon: iconUrl
+        });
+        
+        const infoWindow = new google.maps.InfoWindow({
+            content: `
+            <div style="font-family: Roboto, sans-serif; padding: 4px;">
+                <strong style="font-size: 14px;">${pin.title}</strong><br/>
+                ${pin.description}<br/>
+            </div>
+            `
+        });
+        
+        marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+        });
+
         }
       });
     }

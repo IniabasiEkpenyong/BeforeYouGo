@@ -30,9 +30,8 @@
       </div>
 
       <div class="location-search-container"> 
-        <form action="/global" method="get" class="search-form" id="searchForm"> -->
+        <form action="/global" method="get" class="search-form" id="searchForm"> 
            <label for="loc">Find:</label>
-           <!-- NOTE: I took out the word 'required '-->
            <input type="text" id="locationInput" name="loc"
                value="{{ request.args.get('loc', '') }}"
                placeholder="Search by Location">
@@ -104,6 +103,13 @@
                            <input type="hidden" name="cat" value="{{ request.args.get('cat', '') }}">
                            <button type="submit" class="add-button">Add to My List</button>
                         </form>
+
+                        <form action="/create_shared_event" method="POST" class="mt-2">
+                            <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
+                            <input type="text" name="friend_netid" placeholder="Friend's NetID" class="form-control mb-1" required>
+                            <input type="submit" class="btn btn-sm btn-outline-secondary" value="Do with a Friend">
+                          </form>
+                          
 
                         {% if is_admin %}
                            <form action="/remove_from_global_list" method="POST">
