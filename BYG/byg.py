@@ -12,7 +12,6 @@ import sqlalchemy.orm
 import os
 from flask import session, redirect, render_template, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-from database import get_shared_events_for_user
 
 
 # Import the app from package
@@ -24,6 +23,8 @@ except ImportError:
     from BYG import app
     from BYG.database import Bucket, UserBucket
     import BYG.database as database
+
+from database import get_shared_events_for_user
 
 # Set the secret key
 app.secret_key = os.environ['APP_SECRET_KEY']
