@@ -154,7 +154,7 @@
   <script>
     let pins = {{ pins | tojson | safe }};
   </script>
-  
+
   <!-- Google Maps Integration -->
   <script>
     let map;
@@ -187,11 +187,26 @@
       // Add personal bucket list pins
       pins.forEach(pin => {
         if (pin.lat && pin.lng) {
-          new google.maps.Marker({
+          /*new google.maps.Marker({
             position: { lat: pin.lat, lng: pin.lng },
             map: map,
             title: pin.title
-          });
+          });*/
+          
+          const marker = new google.maps.Marker({
+            position: { lat: pin.lat, lng: pin.lng },
+            map: map,
+            title: pin.title
+        });
+        
+        const infoWindow = new google.maps.InfoWindow({
+            content: `<strong>${pin.title}</strong>`
+        });
+        
+        marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+        });
+
         }
       });
     }
