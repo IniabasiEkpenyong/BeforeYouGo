@@ -24,7 +24,7 @@ except ImportError:
     from BYG.database import Bucket, UserBucket
     import BYG.database as database
 
-from database import get_shared_events_for_user
+from .database import get_shared_events_for_user
 
 # Set the secret key
 app.secret_key = os.environ['APP_SECRET_KEY']
