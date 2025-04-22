@@ -25,6 +25,7 @@ except ImportError:
     import BYG.database as database
 
 from .database import get_shared_events_for_user
+from .database import mark_shared_event_completed
 
 # Set the secret key
 app.secret_key = os.environ['APP_SECRET_KEY']
@@ -394,6 +395,8 @@ def mark_completed():
             session_db.commit()
     return flask.redirect('/my_bucket')
 
+
+
 # Honestly could prob just use the same function as above,
 # replace: ub_item.completed = True' 
 # with:    ub_item.completed = !ub_item.completed' 
@@ -415,6 +418,35 @@ def reset_completed():
     return flask.redirect('/my_bucket')
 
 
+
+@app.route("/create_shared_event", methods=["POST"])
+def create_shared_event_route():
+    bucket_id = flask.request.form["bucket_id"]
+    friend_netid = flask.request.form["friend_netid"].strip().lower()
+    user_netid = flask.session.get("netid") or flask.request.cookies.get("user")
+
+    if not user_netid:
+        return flask.redirect("/")
+
+    success, shared_event_id = database.create_shared_event(
+        bucket_id=int(bucket_id),
+        creator_netid=user_netid,
+        participant_netids=[friend_netid]
+    )
+
+    if success:
+        flask.flash("Shared event created!")
+    else:
+        flask.flash("Something went wrong.")
+    
+    return flask.redirect("/global")
+
+
+@app.route("/complete_shared_event", methods=["POST"])
+def complete_shared_event():
+    shared_event_id = flask.request.form["shared_event_id"]
+    mark_shared_event_completed(shared_event_id)
+    return flask.redirect("/my_bucket")
 
 #-----------------------------------------------------------------------
 
