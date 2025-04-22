@@ -58,64 +58,6 @@
       width: 50%;
       margin: auto;
     }
-
-    .card {
-      margin: 5rem auto 2rem;
-      width: 300px;
-      height: 180px;
-      perspective: 1000px;
-      cursor: pointer;
-    }
-
-    .card-page {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transition: transform 0.8s;
-      transform-style: preserve-3d;
-    }
-
-    .card.clicked .card-page {
-      transform: rotateY(180deg);
-    }
-
-    .card-side {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-
-    .card-front {
-      background-color: #fc76a1;
-      color: white;
-    }
-
-    .card-front a {
-      color: white;
-      text-decoration: none;
-    }
-
-    .card-front a:hover {
-      text-decoration: underline;
-    }
-
-    .card-back {
-      background-color: #ffb86b;
-      color: white;
-      transform: rotateY(180deg);
-    }
-
-    footer {
-      margin-top: auto;
-      padding: 1rem;
-    }
   </style>
 </head>
 <body>
@@ -130,64 +72,6 @@
     </div>
   </div>
 
-  <!-- Greeting and Main Title Section -->
-  <div class="header-content mt-5 pt-4 text-center">
-    <h2 class="fw-light">Good {{ ampm }} {{ given_name }} and welcome to</h2>
-    <h1 class="fw-bold display-4 text-primary">Before You Go</h1>
-    <hr class="w-50 mx-auto">
-  </div>
-
-  <!-- Main Content (Card Section or Other Elements) -->
-  <div class="card" onclick="this.classList.toggle('clicked')">
-    <div class="card-page">
-      <div class="card-side card-back">BEFORE YOU GO</div>
-      <div class="card-side card-front">
-        <a href="/global">START</a>
-      </div>
-    </div>
-  </div>
-
-  {% include 'footer.html' %}
-
-  <!-- Bootstrap Bundle (for functionality) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   
-  <!-- Confetti Script -->
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const sound = new Audio("{{ url_for('static', filename='sounds/fireworks.mp3') }}");
-      sound.volume = 0.4;
-      let hasPlayedOnce = false;
-
-      function launchConfetti() {
-        confetti({
-          particleCount: 100,
-          spread: 80,
-          origin: {
-            x: Math.random(),
-            y: Math.random() * 0.8
-          }
-        });
-
-        if (!hasPlayedOnce) {
-          sound.play().catch(() => {
-            document.addEventListener("click", () => sound.play(), { once: true });
-          });
-          hasPlayedOnce = true;
-        }
-      }
-
-      // Confetti once on load
-      launchConfetti();
-
-      // Confetti again on user clicks (not buttons/links)
-      document.body.addEventListener('click', (e) => {
-        const tag = e.target.tagName.toLowerCase();
-        if (tag !== 'a' && tag !== 'button') {
-          launchConfetti();
-        }
-      });
-    });
-  </script>
 </body>
 </html>

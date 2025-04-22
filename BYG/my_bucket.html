@@ -87,7 +87,7 @@
   </style>
 </head>
 <body>
-
+  {% include 'header.html' %}
   <section class="text-center my-6">
     <h1 class="text-3xl font-bold text-blue-600">Your Bucket List</h1>
     <p class="text-gray-600">Explore your personal bucket list and track your progress!</p>
@@ -198,10 +198,12 @@
     async defer>
   </script>
 
-  <!-- Create New Event Button -->
   <form action="/show_item" method="post">
     <input type="hidden" name="priv" value="True">
-    <input type="submit" class="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-blue-700 transition"><i class="fas fa-plus"></i> Add new event</input>
+    <button type="submit" class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg flex items-center justify-center w-14 h-14 transition-all duration-300 hover:scale-110 z-50">
+    <i class="fas fa-plus text-xl"></i>
+    <span class="ml-0 opacity-0 max-w-0 transition-all duration-300 whitespace-nowrap add-text">Add Event</span>
+  </button>
   </form>
 
   <a href="/global">Back to Global List</a>

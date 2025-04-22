@@ -115,7 +115,7 @@
 </head>
 <body>
 
-  <!-- Hero Section with Background Image -->
+
   <div class="hero-image">
     <h2>Good {{ ampm }} {{ given_name }} and welcome to</h2>
     <h1 class="fw-bold display-4 text-primary">Before You Go</h1>
@@ -124,15 +124,10 @@
     <hr class="w-50 mx-auto">
   </div>
 
-  <!-- Start Button -->
   <div class="text-center mt-5">
     <a href="{{ url_for('global_page') }}" class="start-button">Start Your List</a>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 Before You Go. All rights reserved.</p>
-  </footer>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -174,6 +169,10 @@
     });
   </script>
 
+
+    <footer class="sticky-bottom">
+        <p>© 2025 Before You Go. All rights reserved.</p>
+  </footer>
 </body>
 </html>
 
