@@ -67,6 +67,26 @@ UserBucket.subtasks = sqlalchemy.orm.relationship("SubTask",
                                                  back_populates="user_bucket",
                                                  cascade="all, delete-orphan")
 
+class SharedEvent(Base):
+    __tablename__ = 'shared_events'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    bucket_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('bucket_list.bucket_id'), nullable=False)
+    created_by = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
+    is_completed = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+
+    bucket = sqlalchemy.orm.relationship("Bucket")
+    participants = sqlalchemy.orm.relationship("SharedParticipant", back_populates="shared_event", cascade="all, delete-orphan")
+
+class SharedParticipant(Base):
+    __tablename__ = 'shared_participants'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    shared_event_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('shared_events.id', ondelete='CASCADE'), nullable=False)
+    user_netid = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+
+    shared_event = sqlalchemy.orm.relationship("SharedEvent", back_populates="participants")
+
+
 #-----------------------------------------------------------------------
 
 def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort='', exclude_ids=None):
@@ -195,6 +215,36 @@ def delete_subtask(subtask_id):
         
         session.commit()
         return True, "Subtask deleted successfully"
+    
+def create_shared_event(bucket_id, creator_netid, participant_netids, date=None):
+    with sqlalchemy.orm.Session(_engine) as session:
+        event = SharedEvent(bucket_id=bucket_id, created_by=creator_netid, date=date)
+        session.add(event)
+        session.flush()  # get event.id before commit
+
+        for netid in set(participant_netids + [creator_netid]):
+            participant = SharedParticipant(shared_event_id=event.id, user_netid=netid)
+            session.add(participant)
+
+        session.commit()
+        return True, event.id
+
+def get_shared_events_for_user(user_netid):
+    with sqlalchemy.orm.Session(_engine) as session:
+        shared_items = session.query(SharedEvent).join(SharedParticipant).filter(
+            SharedParticipant.user_netid == user_netid
+        ).all()
+        return shared_items
+
+def mark_shared_event_completed(shared_event_id):
+    with sqlalchemy.orm.Session(_engine) as session:
+        event = session.query(SharedEvent).filter_by(id=shared_event_id).first()
+        if event:
+            event.is_completed = True
+            session.commit()
+            return True
+        return False
+
     
 #-----------------------------------------------------------------------
 # For testing:

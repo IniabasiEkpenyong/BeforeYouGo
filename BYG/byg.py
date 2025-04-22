@@ -12,6 +12,8 @@ import sqlalchemy.orm
 import os
 from flask import session, redirect, render_template, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
+from database import get_shared_events_for_user
+
 
 # Import the app from package
 try:
@@ -353,6 +355,7 @@ def my_bucket():
         for ub, bucket in user_items if bucket.lat and bucket.lng
     ]
     
+    shared_events = get_shared_events_for_user(user_netid)
     
     # Pass it to a template
     return flask.render_template('my_bucket.html',
@@ -365,6 +368,7 @@ def my_bucket():
         pins=pins,
         subtasks_by_bucket = subtasks_by_bucket,
         progress_by_bucket = progress_by_bucket,
+        shared_events=shared_events,
         api_key=os.getenv("GOOGLE_API_KEY")
     )
 
@@ -633,3 +637,8 @@ def logout_cas():
     
     # Redirect to the home page or login page
     return flask.render_template('loggedout.html')
+
+
+if __name__ == "__main__":
+    from database import Base, _engine
+    Base.metadata.create_all(_engine)
