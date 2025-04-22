@@ -200,7 +200,12 @@
         });
         
         const infoWindow = new google.maps.InfoWindow({
-            content: `<strong>${pin.title}</strong>`
+            content: `
+            <div style="font-family: Roboto, sans-serif; padding: 4px;">
+                <strong style="font-size: 14px;">${pin.title}</strong><br/>
+                ${pin.description}<br/>
+            </div>
+            `
         });
         
         marker.addListener("click", () => {

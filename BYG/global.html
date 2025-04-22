@@ -30,9 +30,8 @@
       </div>
 
       <div class="location-search-container"> 
-        <form action="/global" method="get" class="search-form" id="searchForm"> -->
+        <form action="/global" method="get" class="search-form" id="searchForm"> 
            <label for="loc">Find:</label>
-           <!-- NOTE: I took out the word 'required '-->
            <input type="text" id="locationInput" name="loc"
                value="{{ request.args.get('loc', '') }}"
                placeholder="Search by Location">
