@@ -9,9 +9,20 @@
       <p class="text-sm text-gray-500">Shared with: 
         {{ event.participants | map(attribute='user_netid') | join(', ') }}
       </p>
+      
       {% if event.date %}
-        <p class="text-sm text-gray-500">{ if event.is_completed }Happened on: {% else %}Planned for: { endif }{{ event.date.strftime('%b %d, %Y') }}</p>
+
+      <p class="text-sm text-gray-500">
+        {% if event.date %}
+          {% if event.is_completed %}Happened on:{% else %}Planned for:{% endif %}
+          {{ event.date.strftime('%b %d, %Y') }}
+        {% else %}
+          {% if event.is_completed %}Happened{% else %}Planned{% endif %}
+        {% endif %}
+      </p>
+
       {% endif %}
+      
       <span class="mt-2 inline-block text-sm {{ 'text-green-500' if event.is_completed else 'text-red-500' }}">
         {{ 'Completed' if event.is_completed else 'Not Completed' }}
       </span>
