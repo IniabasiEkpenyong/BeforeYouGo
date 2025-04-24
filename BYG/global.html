@@ -139,35 +139,6 @@
                               <span>{{event['descrip'] }}</span>
                            </div>
                         {% endif %}
-
-                                             <!-- Rating Section -->
-                        <div class="rating-section">
-                           <div class="section-title">Rate this item:</div>
-                           <div class="rating-stars mb-2">
-                              {% for i in range(1, 6) %}
-                              <i class="far fa-star rating-star" data-value="{{ i }}" data-event-id="{{ event['bucket_id'] }}"></i>
-                              {% endfor %}
-                           </div>
-                           <div id="avgRating{{ event['bucket_id'] }}" class="text-muted small">
-                              Not yet rated
-                           </div>
-                        </div>
-                        
-                        <!-- Comments Section -->
-                        <div class="comments-section">
-                           <div class="section-title">Comments:</div>
-                           <div id="comments{{ event['bucket_id'] }}" class="comments-container mb-3">
-                              <div class="text-muted small">No comments yet</div>
-                           </div>
-                           <form id="commentForm{{ event['bucket_id'] }}" class="comment-form">
-                              <input type="hidden" name="event_id" value="{{ event['bucket_id'] }}">
-                              <textarea class="form-control" name="comment" placeholder="Add your comment..." rows="2" required></textarea>
-                              <button type="submit" class="btn btn-sm btn-outline-primary mt-2">
-                                 Add Comment
-                              </button>
-                           </form>
-                        </div>
-                        
                         
                         
                         <form action="/add_to_my_list" method="POST">
@@ -200,13 +171,8 @@
                                </form>
                            </div>
                        </div>
-                        <!--
-                        <form action="/create_shared_event" method="POST" class="mt-2">
-                            <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
-                            <input type="text" name="friend_netid" placeholder="Friend's NetID" class="form-control mb-1" required>
-                            <input type="submit" class="btn btn-sm btn-outline-secondary" value="Do with a Friend">
-                          </form>
-                          -->
+
+                     
 
                         {% if is_admin %}
                            <form action="/remove_from_global_list" method="POST">
@@ -217,6 +183,35 @@
                               <button type="submit" class="add-button">Delete</button>
                            </form>
                         {% endif %}
+
+                                             <!-- Rating Section -->
+                                             <div class="rating-section">
+                                                <div class="section-title">Rate this item:</div>
+                                                <div class="rating-stars mb-2">
+                                                   {% for i in range(1, 6) %}
+                                                   <i class="far fa-star rating-star" data-value="{{ i }}" data-event-id="{{ event['bucket_id'] }}"></i>
+                                                   {% endfor %}
+                                                </div>
+                                                <div id="avgRating{{ event['bucket_id'] }}" class="text-muted small">
+                                                   Not yet rated
+                                                </div>
+                                             </div>
+                                             
+                              
+                                             <div class="comments-section">
+                                                <div class="section-title">Comments:</div>
+                                                <div id="comments{{ event['bucket_id'] }}" class="comments-container mb-3">
+                                                   <div class="text-muted small">No comments yet</div>
+                                                </div>
+                                                <form id="commentForm{{ event['bucket_id'] }}" class="comment-form">
+                                                   <input type="hidden" name="event_id" value="{{ event['bucket_id'] }}">
+                                                   <textarea class="form-control" name="comment" placeholder="Add your comment..." rows="2" required></textarea>
+                                                   <button type="submit" class="btn btn-sm btn-outline-primary mt-2">
+                                                      Add Comment
+                                                   </button>
+                                                </form>
+                                             </div>
+                                             
                      </div>
                   </div>
                {% endif %}

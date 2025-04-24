@@ -114,7 +114,30 @@
           <span class="mt-2 inline-block text-sm {{ 'text-green-500' if ub.completed else 'text-red-500' }}">
             {{ 'Completed' if ub.completed else 'Not Completed' }}
           </span>
+
         </div>
+
+        {% if ub.id in subtasks_by_bucket and not ub.completed %}
+          <div class="subtask-progress-container mt-3">
+            <div class="flex justify-between text-xs text-gray-500 mb-1">
+              <span>Subtasks: 
+                {{ subtasks_by_bucket[ub.id]|selectattr('completed', 'eq', true)|list|length }}/{{ subtasks_by_bucket[ub.id]|length }}
+              </span>
+              <span>{{ progress_by_bucket[ub.id] }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="
+                {% if progress_by_bucket[ub.id] < 33 %}bg-red-500
+                {% elif progress_by_bucket[ub.id] < 67 %}bg-yellow-500
+                {% else %}bg-green-500{% endif %} 
+                h-2 rounded-full transition-all duration-300" 
+                style="width: {{ progress_by_bucket[ub.id] }}%">
+              </div>
+            </div>
+          </div>
+        {% endif %}
+        
+
 
         <div class="flex flex-wrap gap-2 mt-auto">
           {% if not ub.completed %}
