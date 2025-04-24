@@ -454,7 +454,12 @@ def reset_completed():
 
 @app.route("/create_shared_event", methods=["POST"])
 def create_shared_event_route():
-    current_user_netid = get_current_user()
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    if not user_netid or not bucket_id or not netids:
+        return flask.redirect("/global")
+
 
     bucket_id = flask.request.form.get("bucket_id")
     if not bucket_id:
@@ -472,13 +477,14 @@ def create_shared_event_route():
         return flask.redirect(flask.url_for("global_page"))
 
     try:
-        create_shared_event(current_user_netid, bucket_id, friend_netids)
+        create_shared_event(user_netid, bucket_id, friend_netids)
         flask.flash("Shared event created successfully!", "success")
     except Exception as e:
         print("Error creating shared event:", e)
         flask.flash("Failed to create shared event.", "danger")
 
-    return flask.redirect(flask.url_for("global_page"))
+    return flask.redirect("/global")
+
 
 
 
