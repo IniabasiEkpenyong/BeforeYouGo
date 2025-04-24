@@ -55,7 +55,7 @@ app = flask.Flask(__name__, template_folder='.')
 app.secret_key = os.environ['APP_SECRET_KEY']
 
 #-----------------------------------------------------------------------
-admins = ['jg2783', 'ie9117']
+admins = ['jg2783', 'ie9117', 'cs-jiaweim']
 
 def get_ampm():
     if time.strftime('%p') == 'AM':
