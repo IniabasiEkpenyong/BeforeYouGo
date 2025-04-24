@@ -7,6 +7,7 @@
 import os
 import sqlalchemy
 import sqlalchemy.orm
+from sqlalchemy.orm import joinedload
 import dotenv
 from pathlib import Path
 # import queue
@@ -231,7 +232,9 @@ def create_shared_event(bucket_id, creator_netid, participant_netids, date=None)
 
 def get_shared_events_for_user(user_netid):
     with sqlalchemy.orm.Session(_engine) as session:
-        shared_items = session.query(SharedEvent).join(SharedParticipant).filter(
+        shared_items = session.query(SharedEvent).options(
+            joinedload(SharedEvent.bucket)
+        ).join(SharedParticipant).filter(
             SharedParticipant.user_netid == user_netid
         ).all()
         return shared_items
