@@ -321,6 +321,13 @@ def my_bucket():
     user_netid = user_info['user']
     given_name = auth.get_name(user_info)
 
+    is_admin = user_netid in admins
+    
+    pending_count = 0
+    if is_admin:
+        with sqlalchemy.orm.Session(database._engine) as session_db:
+            pending_count = session_db.query(Bucket).filter_by(status='pending').count()
+
     #TEMP hard coding until OIT whitelists
     # user_netid = 'jg2783'
     # given_name = 'Judah'    
@@ -377,6 +384,8 @@ def my_bucket():
         subtasks_by_bucket = subtasks_by_bucket,
         progress_by_bucket = progress_by_bucket,
         shared_events=shared_events,
+        pending_count=pending_count,
+        is_admin=is_admin,
         api_key=os.getenv("GOOGLE_API_KEY")
     )
 

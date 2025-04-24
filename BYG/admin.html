@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - BeforeYouGo</title>
-  
+
   <!-- External CSS and JS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -67,6 +67,7 @@
 <body>
 
   <div class="container mt-4 mb-5">
+    {% include 'header.html' %}
     <h1 class="mb-4">Admin Dashboard</h1>
     
     <ul class="nav nav-tabs mb-4">

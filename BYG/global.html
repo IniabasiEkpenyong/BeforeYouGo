@@ -66,7 +66,7 @@
          {% else %}
             {% for event in events %}
                {% if event['priv'] == False %}
-                  <div class="bucket-card">
+                  <div class="bucket-card" data-bs-toggle="modal" data-bs-target="#eventModal{{ event['bucket_id'] }}">
                      <div class="card-header">
                         <h3>{{ event['title'] }}</h3>
                      </div>
@@ -95,6 +95,37 @@
                               <span>{{event['descrip'] }}</span>
                            </div>
                         {% endif %}
+
+                                             <!-- Rating Section -->
+                        <div class="rating-section">
+                           <div class="section-title">Rate this item:</div>
+                           <div class="rating-stars mb-2">
+                              {% for i in range(1, 6) %}
+                              <i class="far fa-star rating-star" data-value="{{ i }}" data-event-id="{{ event['bucket_id'] }}"></i>
+                              {% endfor %}
+                           </div>
+                           <div id="avgRating{{ event['bucket_id'] }}" class="text-muted small">
+                              Not yet rated
+                           </div>
+                        </div>
+                        
+                        <!-- Comments Section -->
+                        <div class="comments-section">
+                           <div class="section-title">Comments:</div>
+                           <div id="comments{{ event['bucket_id'] }}" class="comments-container mb-3">
+                              <!-- Comments will be loaded here -->
+                              <div class="text-muted small">No comments yet</div>
+                           </div>
+                           <form id="commentForm{{ event['bucket_id'] }}" class="comment-form">
+                              <input type="hidden" name="event_id" value="{{ event['bucket_id'] }}">
+                              <textarea class="form-control" name="comment" placeholder="Add your comment..." rows="2" required></textarea>
+                              <button type="submit" class="btn btn-sm btn-outline-primary mt-2">
+                                 Add Comment
+                              </button>
+                           </form>
+                        </div>
+                        
+                        
                         
                         <form action="/add_to_my_list" method="POST">
                            <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
