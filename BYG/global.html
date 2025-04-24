@@ -234,14 +234,21 @@
           `;
           document.getElementById(`friendFields-${bucketId}`).appendChild(fieldGroup);
         }
-      </script>
 
-      <script>
+         function startCommentRefresh() {
+            setInterval(() => {
+               document.querySelectorAll('[id^="comments"]').forEach(container => {
+                  const eventId = container.id.replace('comments', '');
+                  loadComments(eventId, true);
+               });
+            }, 3000);
+         }  
+        
          document.addEventListener('DOMContentLoaded', function() {
          loadAllRatingsAndComments();
-         
+         startCommentRefresh();
          const stars = document.querySelectorAll('.rating-star');
-         stars.forEach(star => {
+      stars.forEach(star => {
             star.addEventListener('click', function() {
                const value = this.getAttribute('data-value');
                const eventId = this.getAttribute('data-event-id');
@@ -316,6 +323,15 @@
             });
          });
          
+         function startCommentRefresh() {
+            setInterval(() => {
+               document.querySelectorAll('[id^="comments"]').forEach(container => {
+                  const eventId = container.id.replace('comments', '');
+                  loadComments(eventId, true);
+               });
+            }, 30000);
+         }
+
          function loadAllRatingsAndComments() {
             const eventIds = [];
             document.querySelectorAll('[id^="avgRating"]').forEach(el => {

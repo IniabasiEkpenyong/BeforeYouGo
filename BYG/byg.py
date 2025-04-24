@@ -788,62 +788,39 @@ def add_comment_route():
     user_info = auth.authenticate()
     user_netid = user_info['user']
     
-    event_id = flask.request.form.get('event_id')
-    comment_text = flask.request.form.get('comment')
+    event_id = request.form.get('event_id')
+    comment_text = request.form.get('comment')
     
     if not event_id or not comment_text:
         return flask.jsonify({'success': False, 'message': 'Missing data'})
     
     # Add comment to database
-    with sqlalchemy.orm.Session(database._engine) as session:
-        comment = database.Comment(
-            bucket_id=int(event_id),
-            user_netid=user_netid,
-            text=comment_text,
-            created_at=datetime.datetime.now()
-        )
-        session.add(comment)
-        try:
-            session.commit()
-            return flask.jsonify({
-                'success': True,
-                'comment': {
-                    'id': comment.id,
-                    'text': comment.text,
-                    'user': user_netid,
-                    'date': comment.created_at.strftime('%Y-%m-%d %H:%M')
-                }
-            })
-        except Exception as e:
-            session.rollback()
-            print(f"Error adding comment: {e}")
-            return flask.jsonify({'success': False, 'message': str(e)})
+    comment = database.add_comment(event_id, user_netid, comment_text)
+    if comment:
+        return flask.jsonify({
+            'success': True,
+            'comment': {
+                'id': comment.id,
+                'text': comment.text,
+                'user': user_netid,
+                'date': comment.created_at.strftime('%Y-%m-%d %H:%M')
+            }
+        })
+    else:
+        return flask.jsonify({'success': False, 'message': 'Failed to add comment'})
 
 @app.route('/get_comments/<int:event_id>', methods=['GET'])
 def get_comments_route(event_id):
-    with sqlalchemy.orm.Session(database._engine) as session:
-        comments = session.query(database.Comment).filter(
-            database.Comment.bucket_id == event_id
-        ).order_by(database.Comment.created_at.desc()).all()
-        
-        comment_list = []
-        for comment in comments:
-            comment_list.append({
-                'id': comment.id,
-                'text': comment.text,
-                'user': comment.user_netid,
-                'date': comment.created_at.strftime('%Y-%m-%d %H:%M')
-            })
-        
-        return flask.jsonify({'comments': comment_list})
+    comments = database.get_comments(event_id)
+    return flask.jsonify({'comments': comments})
 
 @app.route('/add_rating', methods=['POST'])
 def add_rating_route():
     user_info = auth.authenticate()
     user_netid = user_info['user']
     
-    event_id = flask.request.form.get('event_id')
-    rating = flask.request.form.get('rating')
+    event_id = request.form.get('event_id')
+    rating = request.form.get('rating')
     
     if not event_id or not rating:
         return flask.jsonify({'success': False, 'message': 'Missing data'})
@@ -855,71 +832,16 @@ def add_rating_route():
     except ValueError:
         return flask.jsonify({'success': False, 'message': 'Invalid rating'})
     
-    # Add or update rating in database
-    with sqlalchemy.orm.Session(database._engine) as session:
-        existing_rating = session.query(database.Rating).filter(
-            database.Rating.bucket_id == int(event_id),
-            database.Rating.user_netid == user_netid
-        ).first()
-        
-        if existing_rating:
-            existing_rating.rating = rating
-        else:
-            new_rating = database.Rating(
-                bucket_id=int(event_id),
-                user_netid=user_netid,
-                rating=rating
-            )
-            session.add(new_rating)
-        
-        try:
-            session.commit()
-            
-            # Calculate average rating
-            avg_rating = session.query(sqlalchemy.func.avg(database.Rating.rating)).filter(
-                database.Rating.bucket_id == int(event_id)
-            ).scalar() or 0
-            
-            count = session.query(database.Rating).filter(
-                database.Rating.bucket_id == int(event_id)
-            ).count()
-            
-            return flask.jsonify({
-                'success': True,
-                'avg_rating': round(float(avg_rating), 1),
-                'count': count
-            })
-        except Exception as e:
-            session.rollback()
-            print(f"Error adding/updating rating: {e}")
-            return flask.jsonify({'success': False, 'message': str(e)})
+    result = database.add_or_update_rating(event_id, user_netid, rating)
+    return flask.jsonify(result)
 
 @app.route('/get_rating/<int:event_id>', methods=['GET'])
 def get_rating_route(event_id):
     user_info = auth.authenticate()
     user_netid = user_info['user']
     
-    with sqlalchemy.orm.Session(database._engine) as session:
-        # Get user's rating
-        user_rating = session.query(database.Rating).filter(
-            database.Rating.bucket_id == event_id,
-            database.Rating.user_netid == user_netid
-        ).first()
-        
-        # Get average rating
-        avg_rating = session.query(sqlalchemy.func.avg(database.Rating.rating)).filter(
-            database.Rating.bucket_id == event_id
-        ).scalar() or 0
-        
-        count = session.query(database.Rating).filter(
-            database.Rating.bucket_id == event_id
-        ).count()
-        
-        return flask.jsonify({
-            'user_rating': user_rating.rating if user_rating else 0,
-            'avg_rating': round(float(avg_rating), 1) if avg_rating else 0,
-            'count': count
-        })
+    rating_info = database.get_rating_info(event_id, user_netid)
+    return flask.jsonify(rating_info)
 
 @app.route('/logoutapp')
 def logout_app():
