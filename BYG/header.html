@@ -69,6 +69,16 @@
       <a href="{{ url_for('my_bucket') }}" class="nav-bubble">My Bucket List</a>
       <a href="{{ url_for('global_page') }}" class="nav-bubble">Global List</a>
       <a href="{{ url_for('logout_app') }}" class="nav-bubble">Logout</a>
+      {% if is_admin %}
+      <a href="/admin" class="nav-bubble" style="background-color: #8e44ad;">
+        <i class="fas fa-shield-alt"></i> Admin
+        {% if pending_count > 0 %}
+          <span class="badge bg-warning text-dark" style="position: relative; top: -8px; right: -5px; border-radius: 50%;">
+            {{ pending_count }}
+          </span>
+        {% endif %}
+      </a>
+    {% endif %}
     </div>
   </div>
 
