@@ -129,6 +129,8 @@
       {% endif %}
       
       {% include 'footer.html' %}
+      
+      <!-- DOESN'T REALLY MAKE SENSE TO SEARCH BY LOCATION
       <script>
         function initGlobalSearch() {
             const input = document.getElementById("locationInput");
@@ -144,7 +146,7 @@
         }
 
       </script>
-      
+      -->
       <script
         src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initGlobalSearch"
         async defer></script>
