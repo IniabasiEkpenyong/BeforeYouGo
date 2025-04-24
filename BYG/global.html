@@ -90,8 +90,10 @@
          <form action="/global" method="get" class="filter-form">
             <label for="sort">Sort By:</label>
             <select name="sort" id="sortInput" onchange="this.form.submit();">
-                <option value="alphabetical" {% if request.args.get('sort') == 'alphabetical' %}selected{% endif %}>Alphabetical</option>
-                <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Most Recently Added</option>
+               <option value="az" {% if request.args.get('sort') == 'az' %}selected{% endif %}>A to Z</option>
+               <option value="za" {% if request.args.get('sort') == 'za' %}selected{% endif %}>Z to A</option>
+               <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Most Recent</option>
+               <option value="oldest" {% if request.args.get('sort') == 'oldest' %}selected{% endif %}>Oldest First</option>
             </select>
 
             <label for="cat">Category:</label>

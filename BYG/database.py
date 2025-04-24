@@ -133,6 +133,18 @@ def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort=''
         
         query = query.filter(Bucket.status == status)
 
+        if sort == 'az':
+            query = query.order_by(sqlalchemy.func.lower(Bucket.item))
+        elif sort == 'za':
+            query = query.order_by(sqlalchemy.func.lower(Bucket.item).desc())
+        elif sort == 'recent':
+            query = query.order_by(Bucket.created_at.desc())
+        elif sort == 'oldest':
+            query = query.order_by(Bucket.created_at)
+        else:
+            # Default sorting (A-Z)
+            query = query.order_by(sqlalchemy.func.lower(Bucket.item))
+
         query = query.filter(
             ~Bucket.bucket_id.in_(exclude_ids),
             sqlalchemy.or_(
