@@ -10,8 +10,11 @@
         {{ event.participants | map(attribute='user_netid') | join(', ') }}
       </p>
       {% if event.date %}
-        <p class="text-sm text-gray-500">Planned for: {{ event.date.strftime('%b %d, %Y') }}</p>
+        <p class="text-sm text-gray-500">{ if event.is_completed }Happened on: {% else %}Planned for: { endif }{{ event.date.strftime('%b %d, %Y') }}</p>
       {% endif %}
+      <span class="mt-2 inline-block text-sm {{ 'text-green-500' if event.is_completed else 'text-red-500' }}">
+        {{ 'Completed' if event.is_completed else 'Not Completed' }}
+      </span>
       <form action="/complete_shared_event" method="POST" class="mt-3">
         <input type="hidden" name="shared_event_id" value="{{ event.id }}">
         <input type="submit" class="btn btn-sm btn-outline-success" value="{% if event.is_completed %}Completed{% else %}Mark Completed{% endif %}">

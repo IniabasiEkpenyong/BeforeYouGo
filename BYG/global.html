@@ -105,19 +105,20 @@
                         </form>
 
                         <form>
+                            <!-- class="btn btn-sm btn-outline-primary open-friend-modal"  -->
                             <button type="button"
-                                    class="btn btn-sm btn-outline-primary open-friend-modal"
+                                    
                                     data-bucketid="{{ event.bucket_id }}">
                               Do With Friends
                             </button>
                         </form>
-
+                        <!--
                         <form action="/create_shared_event" method="POST" class="mt-2">
                             <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
                             <input type="text" name="friend_netid" placeholder="Friend's NetID" class="form-control mb-1" required>
                             <input type="submit" class="btn btn-sm btn-outline-secondary" value="Do with a Friend">
                           </form>
-                          
+                          -->
 
                         {% if is_admin %}
                            <form action="/remove_from_global_list" method="POST">
