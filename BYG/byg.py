@@ -428,18 +428,21 @@ def reset_completed():
 @app.route("/create_shared_event", methods=["POST"])
 def create_shared_event_route():
     bucket_id = flask.request.form["bucket_id"]
-    friend_netid = flask.request.form["friend_netid"].strip().lower()
+    netids = flask.request.form.getlist("friend_netids[]")
+    netids = [n.strip().lower() for n in netids if n.strip()]
     
     user_info = auth.authenticate()
     user_netid = user_info['user']
 
-    if not user_netid:
-        return flask.redirect("/")
+    # if not user_netid:
+    #     return flask.redirect("/")
+    if not user_netid or not bucket_id or not netids:
+        return flask.redirect("/global")
 
     success, shared_event_id = database.create_shared_event(
         bucket_id=int(bucket_id),
         creator_netid=user_netid,
-        participant_netids=[friend_netid]
+        participant_netids=netids
     )
 
     if success:
