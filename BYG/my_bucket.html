@@ -128,7 +128,7 @@
           <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST" class="flex-1 sm:flex-none">
             <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
             <input type="submit" class="btn btn-sm btn-outline-success w-full sm:w-auto" 
-                    value="{% if ub.completed %}Reset{% else %}Mark{% endif %}">
+                    value="{% if ub.completed %}Reset{% else %}Mark Completed{% endif %}">
           </form>
   
           <form action="/remove_from_my_list" method="POST" class="flex-1 sm:flex-none">
@@ -147,13 +147,12 @@
   {% include 'shared_items.html' %}
 
   <!-- Map and Search Box -->
-  <!--
+  
   <div>
-    My Events:
-    <input id="search-box" type="text" placeholder="Search for a location" />
+    <input type="hidden" id="search-box" type="text" placeholder="Search for a location" />
     <div id="map"></div>
   </div>
-  -->
+  
 
   <script>
     let pins = {{ pins | tojson | safe }};
@@ -240,7 +239,7 @@
   </button>
   </form>
 
-  <a href="/global">Back to Global List</a>
+  <!-- <a href="/global">Back to Global List</a> -->
 
 </body>
 </html>

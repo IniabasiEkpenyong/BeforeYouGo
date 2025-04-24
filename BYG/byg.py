@@ -17,11 +17,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Import the app from package
 try:
     from . import app
-    from .database import Bucket, UserBucket
+    from .database import Bucket, UserBucket, create_shared_event
     from . import database
 except ImportError:
     from BYG import app
-    from BYG.database import Bucket, UserBucket
+    from BYG.database import Bucket, UserBucket, create_shared_event
     import BYG.database as database
 
 from .database import get_shared_events_for_user
@@ -434,21 +434,55 @@ def reset_completed():
 
 
 
+# @app.route("/create_shared_event", methods=["POST"])
+# def create_shared_event_route():
+#     bucket_id = flask.request.form["bucket_id"]
+#     netids = flask.request.form.getlist("friend_netids[]")
+#     netids = [n.strip().lower() for n in netids if n.strip()]
+#     
+#     user_info = auth.authenticate()
+#     user_netid = user_info['user']
+# 
+#     # if not user_netid:
+#     #     return flask.redirect("/")
+#     if not user_netid or not bucket_id or not netids:
+#         return flask.redirect("/global")
+# 
+#     success, shared_event_id = database.create_shared_event(
+#         bucket_id=int(bucket_id),
+#         creator_netid=user_netid,
+#         participant_netids=netids
+#     )
+# 
+#     if success:
+#         flask.flash("Shared event created!")
+#     else:
+#         flask.flash("Something went wrong.")
+#     
+#     return flask.redirect("/global")
+
 @app.route("/create_shared_event", methods=["POST"])
 def create_shared_event_route():
-    bucket_id = flask.request.form["bucket_id"]
-    friend_netid = flask.request.form["friend_netid"].strip().lower()
-    
-    user_info = auth.authenticate()
-    user_netid = user_info['user']
+    try:
+        bucket_id = int(flask.request.form["bucket_id"])
+        netids = flask.request.form.getlist("friend_netids[]")
+        netids = [n.strip().lower() for n in netids if n.strip()]
+    except Exception as e:
+        print("Error parsing form:", e)
+        flask.flash("Invalid form submission.")
+        return flask.redirect("/global")
 
-    if not user_netid:
-        return flask.redirect("/")
+    user_info = auth.authenticate()
+    user_netid = user_info.get('user')
+
+    if not user_netid or not bucket_id or not netids:
+        flask.flash("Missing information for shared event.")
+        return flask.redirect("/global")
 
     success, shared_event_id = database.create_shared_event(
-        bucket_id=int(bucket_id),
+        bucket_id=bucket_id,
         creator_netid=user_netid,
-        participant_netids=[friend_netid]
+        participant_netids=netids
     )
 
     if success:
@@ -457,6 +491,9 @@ def create_shared_event_route():
         flask.flash("Something went wrong.")
     
     return flask.redirect("/global")
+
+
+
 
 
 @app.route("/complete_shared_event", methods=["POST"])
