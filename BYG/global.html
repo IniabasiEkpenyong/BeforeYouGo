@@ -105,10 +105,12 @@
                         </form>
 
                         <form>
-                            <!-- class="btn btn-sm btn-outline-primary open-friend-modal"  -->
-                            <button type="button"
-                                    
-                                    data-bucketid="{{ event.bucket_id }}">
+                            <!-- class="btn btn-sm btn-outline-primary open-friend-modal" 
+                                data-bucketid="{{ event.bucket_id }}" -->
+                            <button type="button" class="btn btn-sm btn-outline-primary flex-1 sm:flex-none"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#friendModal{{ event['bucket_id'] }}"
+                                    >
                               Do With Friends
                             </button>
                         </form>
@@ -140,6 +142,67 @@
       {% include 'footer.html' %}
 
       <!-- Modal for shared events -->
+      {% for event in events %}
+      <div class="modal fade" id="friendModal{{ event['bucket_id'] }}" tabindex="-1" aria-labelledby="friendModalLabel{{ event['bucket_id'] }}" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+          <div class="modal-content">
+            <form action="/create_shared_event" method="POST">
+              <div class="modal-header">
+                <h5 class="modal-title" id="friendModalLabel{{ event['bucket_id'] }}">Share "{{ event['item'] }}"</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+      
+              <div class="modal-body">
+                <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
+                <div class="friend-fields">
+                  <div class="mb-3 d-flex align-items-center">
+                    <input type="text" name="friend_netid_1" class="form-control me-2" placeholder="Friend's NetID" required>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-link text-sm" onclick="addFriendField(this)">
+                  + Add Another Friend
+                </button>
+              </div>
+      
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Invite</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      
+      <script>
+        function addFriendField(button) {
+          const wrapper = button.closest('.modal-body').querySelector('.friend-fields');
+          const inputCount = wrapper.querySelectorAll('input').length;
+          const newIndex = inputCount + 1;
+      
+          const container = document.createElement('div');
+          container.className = "mb-3 d-flex align-items-center";
+          container.innerHTML = `
+            <input type="text" name="friend_netid_${newIndex}" class="form-control me-2" placeholder="Friend's NetID" required>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeFriendField(this)">
+              <i class="fas fa-trash"></i>
+            </button>
+          `;
+          wrapper.appendChild(container);
+        }
+      
+        function removeFriendField(button) {
+          const container = button.parentElement;
+          container.remove();
+        }
+      </script>
+      
+
+
+
+
+
+      <!-- Old version 
 <div id="friendModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
       <h3 class="text-lg font-semibold mb-4">Share with Friends</h3>
@@ -197,7 +260,7 @@
         </div>
       `;
     });
-  </script>
+  </script> -->
   
       
       <!-- DOESN'T REALLY MAKE SENSE TO SEARCH BY LOCATION
