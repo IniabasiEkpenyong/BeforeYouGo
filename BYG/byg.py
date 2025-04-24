@@ -17,11 +17,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Import the app from package
 try:
     from . import app
-    from .database import Bucket, UserBucket
+    from .database import Bucket, UserBucket, create_shared_event
     from . import database
 except ImportError:
     from BYG import app
-    from BYG.database import Bucket, UserBucket
+    from BYG.database import Bucket, UserBucket, create_shared_event
     import BYG.database as database
 
 from .database import get_shared_events_for_user
@@ -425,32 +425,61 @@ def reset_completed():
 
 
 
+# @app.route("/create_shared_event", methods=["POST"])
+# def create_shared_event_route():
+#     bucket_id = flask.request.form["bucket_id"]
+#     netids = flask.request.form.getlist("friend_netids[]")
+#     netids = [n.strip().lower() for n in netids if n.strip()]
+#     
+#     user_info = auth.authenticate()
+#     user_netid = user_info['user']
+# 
+#     # if not user_netid:
+#     #     return flask.redirect("/")
+#     if not user_netid or not bucket_id or not netids:
+#         return flask.redirect("/global")
+# 
+#     success, shared_event_id = database.create_shared_event(
+#         bucket_id=int(bucket_id),
+#         creator_netid=user_netid,
+#         participant_netids=netids
+#     )
+# 
+#     if success:
+#         flask.flash("Shared event created!")
+#     else:
+#         flask.flash("Something went wrong.")
+#     
+#     return flask.redirect("/global")
+
 @app.route("/create_shared_event", methods=["POST"])
 def create_shared_event_route():
-    bucket_id = flask.request.form["bucket_id"]
-    netids = flask.request.form.getlist("friend_netids[]")
-    netids = [n.strip().lower() for n in netids if n.strip()]
-    
-    user_info = auth.authenticate()
-    user_netid = user_info['user']
+    current_user_netid = get_current_user()
 
-    # if not user_netid:
-    #     return flask.redirect("/")
-    if not user_netid or not bucket_id or not netids:
-        return flask.redirect("/global")
+    bucket_id = flask.request.form.get("bucket_id")
+    if not bucket_id:
+        flask.flash("Missing bucket ID.", "danger")
+        return flask.redirect(flask.url_for("global_page"))
 
-    success, shared_event_id = database.create_shared_event(
-        bucket_id=int(bucket_id),
-        creator_netid=user_netid,
-        participant_netids=netids
-    )
+    # Get all inputs that begin with 'friend_netid'
+    friend_netids = [
+        val.strip() for key, val in flask.request.form.items()
+        if key.startswith("friend_netid") and val.strip()
+    ]
 
-    if success:
-        flask.flash("Shared event created!")
-    else:
-        flask.flash("Something went wrong.")
-    
-    return flask.redirect("/global")
+    if not friend_netids:
+        flask.flash("Please provide at least one friend's NetID.", "warning")
+        return flask.redirect(flask.url_for("global_page"))
+
+    try:
+        create_shared_event(current_user_netid, bucket_id, friend_netids)
+        flask.flash("Shared event created successfully!", "success")
+    except Exception as e:
+        print("Error creating shared event:", e)
+        flask.flash("Failed to create shared event.", "danger")
+
+    return flask.redirect(flask.url_for("global_page"))
+
 
 
 @app.route("/complete_shared_event", methods=["POST"])
