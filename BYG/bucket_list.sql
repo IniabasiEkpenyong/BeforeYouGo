@@ -1,6 +1,8 @@
 DROP TABLE IF EXISTS bucket_list CASCADE;
 DROP TABLE IF EXISTS user_bucket CASCADE;
 DROP TABLE IF EXISTS subtasks CASCADE;
+DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS ratings CASCADE;
 
 CREATE TABLE bucket_list (
     bucket_id SERIAL PRIMARY KEY,
@@ -33,8 +35,26 @@ CREATE TABLE subtasks (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_subtasks_user_bucket_id ON subtasks(user_bucket_id);
+CREATE TABLE comments (
+    id SERIAL PRIMARY KEY,
+    bucket_id INTEGER NOT NULL REFERENCES bucket_list(bucket_id) ON DELETE CASCADE,
+    user_netid VARCHAR NOT NULL,
+    text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
+CREATE TABLE ratings (
+    id SERIAL PRIMARY KEY,
+    bucket_id INTEGER NOT NULL REFERENCES bucket_list(bucket_id) ON DELETE CASCADE,
+    user_netid VARCHAR NOT NULL,
+    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (bucket_id, user_netid)  -- Ensures one rating per user per bucket item
+);
+
+
+CREATE INDEX idx_subtasks_user_bucket_id ON subtasks(user_bucket_id);
+CREATE INDEX idx_ratings_bucket_id ON ratings(bucket_id);
 
 -- We can improve this logic later so we can linearize adding items
 INSERT INTO bucket_list (item, contact, area, lat, lng, descrip, category, cloudinary_id, priv, status, created_by) 

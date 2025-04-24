@@ -90,6 +90,28 @@ class SharedParticipant(Base):
 
     shared_event = sqlalchemy.orm.relationship("SharedEvent", back_populates="participants")
 
+class Comment(Base):
+    __tablename__ = 'comments'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    bucket_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('bucket_list.bucket_id', ondelete='CASCADE'))
+    user_netid = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    text = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
+    created_at = sqlalchemy.Column(sqlalchemy.DateTime, default=sqlalchemy.sql.func.now())
+    bucket = sqlalchemy.orm.relationship("Bucket", back_populates="comments")
+
+class Rating(Base):
+    __tablename__ = 'ratings'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    bucket_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('bucket_list.bucket_id', ondelete='CASCADE'))
+    user_netid = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    rating = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
+    created_at = sqlalchemy.Column(sqlalchemy.DateTime, default=sqlalchemy.sql.func.now())
+    bucket = sqlalchemy.orm.relationship("Bucket", back_populates="ratings")
+    __table_args__ = (
+        sqlalchemy.CheckConstraint('rating >= 1 AND rating <= 5', name='check_rating_range'),
+        sqlalchemy.UniqueConstraint('bucket_id', 'user_netid', name='unique_user_rating'),
+    )
+
 
 #-----------------------------------------------------------------------
 
