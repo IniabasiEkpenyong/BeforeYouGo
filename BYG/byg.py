@@ -783,6 +783,66 @@ def admin_reject():
     
     return flask.redirect('/admin?status=pending')
 
+@app.route('/add_comment', methods=['POST'])
+def add_comment_route():
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
+    event_id = request.form.get('event_id')
+    comment_text = request.form.get('comment')
+    
+    if not event_id or not comment_text:
+        return flask.jsonify({'success': False, 'message': 'Missing data'})
+    
+    # Add comment to database
+    comment = database.add_comment(event_id, user_netid, comment_text)
+    if comment:
+        return flask.jsonify({
+            'success': True,
+            'comment': {
+                'id': comment.id,
+                'text': comment.text,
+                'user': user_netid,
+                'date': comment.created_at.strftime('%Y-%m-%d %H:%M')
+            }
+        })
+    else:
+        return flask.jsonify({'success': False, 'message': 'Failed to add comment'})
+
+@app.route('/get_comments/<int:event_id>', methods=['GET'])
+def get_comments_route(event_id):
+    comments = database.get_comments(event_id)
+    return flask.jsonify({'comments': comments})
+
+@app.route('/add_rating', methods=['POST'])
+def add_rating_route():
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
+    event_id = request.form.get('event_id')
+    rating = request.form.get('rating')
+    
+    if not event_id or not rating:
+        return flask.jsonify({'success': False, 'message': 'Missing data'})
+    
+    try:
+        rating = int(rating)
+        if rating < 1 or rating > 5:
+            raise ValueError("Rating must be between 1 and 5")
+    except ValueError:
+        return flask.jsonify({'success': False, 'message': 'Invalid rating'})
+    
+    result = database.add_or_update_rating(event_id, user_netid, rating)
+    return flask.jsonify(result)
+
+@app.route('/get_rating/<int:event_id>', methods=['GET'])
+def get_rating_route(event_id):
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
+    rating_info = database.get_rating_info(event_id, user_netid)
+    return flask.jsonify(rating_info)
+
 @app.route('/logoutapp')
 def logout_app():
     # Clear the session data

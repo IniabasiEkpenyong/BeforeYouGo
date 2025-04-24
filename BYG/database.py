@@ -41,6 +41,8 @@ class Bucket (Base):
     status = sqlalchemy.Column(sqlalchemy.String, default='pending')
     created_at = sqlalchemy.Column(sqlalchemy.DateTime, server_default=sqlalchemy.sql.func.now())
     created_by = sqlalchemy.Column(sqlalchemy.String)
+    comments = sqlalchemy.orm.relationship("Comment", back_populates="bucket", cascade="all, delete-orphan")
+    ratings = sqlalchemy.orm.relationship("Rating", back_populates="bucket", cascade="all, delete-orphan")
 
 _engine = sqlalchemy.create_engine(_DATABASE_URL)
 
@@ -52,6 +54,7 @@ class UserBucket(Base):
     bucket_id = sqlalchemy.Column(sqlalchemy.Integer, 
                                   sqlalchemy.ForeignKey('bucket_list.bucket_id'))
     completed = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    
 
 class SubTask(Base):
     __tablename__ = 'subtasks'
@@ -111,6 +114,7 @@ class Rating(Base):
         sqlalchemy.CheckConstraint('rating >= 1 AND rating <= 5', name='check_rating_range'),
         sqlalchemy.UniqueConstraint('bucket_id', 'user_netid', name='unique_user_rating'),
     )
+    
 
 
 #-----------------------------------------------------------------------
@@ -252,7 +256,7 @@ def create_shared_event(bucket_id, creator_netid, participant_netids, date=None)
     with sqlalchemy.orm.Session(_engine) as session:
         event = SharedEvent(bucket_id=bucket_id, created_by=creator_netid, date=date)
         session.add(event)
-        session.flush()  # get event.id before commit
+        session.flush() 
 
         for netid in set(participant_netids + [creator_netid]):
             participant = SharedParticipant(shared_event_id=event.id, user_netid=netid)
@@ -280,7 +284,102 @@ def mark_shared_event_completed(shared_event_id):
             return True
         return False
 
-    
+def add_comment(bucket_id, user_netid, text):
+    """Add a comment to a bucket list item."""
+    with sqlalchemy.orm.Session(_engine) as session:
+        comment = Comment(
+            bucket_id=bucket_id,
+            user_netid=user_netid,
+            text=text
+        )
+        session.add(comment)
+        try:
+            session.commit()
+            return comment
+        except Exception as e:
+            session.rollback()
+            print(f"Error adding comment: {e}")
+            return None
+
+def get_comments(bucket_id):
+    """Get all comments for a bucket list item, sorted by newest first."""
+    with sqlalchemy.orm.Session(_engine) as session:
+        comments = session.query(Comment).filter(
+            Comment.bucket_id == bucket_id
+        ).order_by(Comment.created_at.desc()).all()
+        
+        result = []
+        for comment in comments:
+            result.append({
+                'id': comment.id,
+                'text': comment.text,
+                'user': comment.user_netid,
+                'date': comment.created_at.strftime('%Y-%m-%d %H:%M')
+            })
+        return result
+
+def add_or_update_rating(bucket_id, user_netid, rating_value):
+    with sqlalchemy.orm.Session(_engine) as session:
+        existing_rating = session.query(Rating).filter(
+            Rating.bucket_id == bucket_id,
+            Rating.user_netid == user_netid
+        ).first()
+        
+        if existing_rating:
+            existing_rating.rating = rating_value
+        else:
+            new_rating = Rating(
+                bucket_id=bucket_id,
+                user_netid=user_netid,
+                rating=rating_value
+            )
+            session.add(new_rating)
+        
+        try:
+            session.commit()
+            
+            avg = session.query(sqlalchemy.func.avg(Rating.rating)).filter(
+                Rating.bucket_id == bucket_id
+            ).scalar() or 0
+            
+            count = session.query(Rating).filter(
+                Rating.bucket_id == bucket_id
+            ).count()
+            
+            return {
+                'success': True,
+                'avg_rating': round(float(avg), 1),
+                'count': count
+            }
+        except Exception as e:
+            session.rollback()
+            print(f"Error adding/updating rating: {e}")
+            return {'success': False, 'error': str(e)}
+
+def get_rating_info(bucket_id, user_netid=None):
+    with sqlalchemy.orm.Session(_engine) as session:
+        avg = session.query(sqlalchemy.func.avg(Rating.rating)).filter(
+            Rating.bucket_id == bucket_id
+        ).scalar() or 0
+        
+        count = session.query(Rating).filter(
+            Rating.bucket_id == bucket_id
+        ).count()
+        
+        user_rating = 0
+        if user_netid:
+            rating_obj = session.query(Rating).filter(
+                Rating.bucket_id == bucket_id,
+                Rating.user_netid == user_netid
+            ).first()
+            if rating_obj:
+                user_rating = rating_obj.rating
+        
+        return {
+            'avg_rating': round(float(avg), 1),
+            'count': count,
+            'user_rating': user_rating
+        }
 #-----------------------------------------------------------------------
 # For testing:
 

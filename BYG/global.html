@@ -3,6 +3,51 @@
    <head>
       <title>Before You Go</title>
       <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+      <head>
+         <!-- Add these styles after your existing CSS -->
+         <style>
+            .rating-stars {
+               color: #ffc107;
+               cursor: pointer;
+               margin-bottom: 10px;
+            }
+            
+            .rating-star {
+               font-size: 1.25rem;
+               margin-right: 0.25rem;
+            }
+            
+            .comments-container {
+               max-height: 200px;
+               overflow-y: auto;
+               border: 1px solid #dee2e6;
+               border-radius: 0.25rem;
+               padding: 0.5rem;
+               margin-bottom: 10px;
+               background-color: #f8f9fa;
+            }
+            
+            .comment {
+               border-left: 3px solid #007bff;
+               padding: 8px 10px;
+               margin-bottom: 8px;
+               background-color: white;
+               border-radius: 4px;
+            }
+            
+            .comment-header {
+               display: flex;
+               justify-content: space-between;
+               font-size: 0.85rem;
+               margin-bottom: 3px;
+            }
+            
+            .section-title {
+               font-weight: bold;
+               margin-bottom: 8px;
+            }
+         </style>
+      </head>
    </head>
    <body>
       {% include 'header.html' %}
@@ -217,6 +262,179 @@
           `;
           document.getElementById(`friendFields-${bucketId}`).appendChild(fieldGroup);
         }
+      </script>
+
+      <script>
+         document.addEventListener('DOMContentLoaded', function() {
+         loadAllRatingsAndComments();
+         
+         const stars = document.querySelectorAll('.rating-star');
+         stars.forEach(star => {
+            star.addEventListener('click', function() {
+               const value = this.getAttribute('data-value');
+               const eventId = this.getAttribute('data-event-id');
+               
+               const formData = new FormData();
+               formData.append('event_id', eventId);
+               formData.append('rating', value);
+               
+               fetch('/add_rating', {
+               method: 'POST',
+               body: formData
+               })
+               .then(response => response.json())
+               .then(data => {
+               if (data.success) {
+                  updateStars(eventId, value);
+                  document.getElementById('avgRating' + eventId).textContent = 
+                     `Average rating: ${data.avg_rating} out of 5`;
+               }
+               });
+            });
+            
+            star.addEventListener('mouseover', function() {
+               const value = this.getAttribute('data-value');
+               const eventId = this.getAttribute('data-event-id');
+               
+               const starsForEvent = document.querySelectorAll(`.rating-star[data-event-id="${eventId}"]`);
+               starsForEvent.forEach(s => {
+               if (s.getAttribute('data-value') <= value) {
+                  s.classList.remove('far');
+                  s.classList.add('fas');
+               } else {
+                  s.classList.remove('fas');
+                  s.classList.add('far');
+               }
+               });
+            });
+            
+            star.addEventListener('mouseout', function() {
+               const eventId = this.getAttribute('data-event-id');
+               fetch('/get_rating/' + eventId)
+               .then(response => response.json())
+               .then(data => {
+                  updateStars(eventId, data.user_rating);
+               });
+            });
+         });
+         
+         document.querySelectorAll('.comment-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+               e.preventDefault();
+               const eventId = this.querySelector('input[name="event_id"]').value;
+               const comment = this.querySelector('textarea[name="comment"]').value;
+               
+               if (!comment.trim()) return;
+               
+               const formData = new FormData();
+               formData.append('event_id', eventId);
+               formData.append('comment', comment);
+               
+               fetch('/add_comment', {
+               method: 'POST',
+               body: formData
+               })
+               .then(response => response.json())
+               .then(data => {
+               if (data.success) {
+                  addCommentToUI(eventId, data.comment);
+                  this.querySelector('textarea').value = '';
+               }
+               });
+            });
+         });
+         
+         function loadAllRatingsAndComments() {
+            const eventIds = [];
+            document.querySelectorAll('[id^="avgRating"]').forEach(el => {
+               const id = el.id.replace('avgRating', '');
+               eventIds.push(id);
+            });
+            
+            eventIds.forEach(eventId => {
+               loadRating(eventId);
+               loadComments(eventId);
+            });
+         }
+         
+         function updateStars(eventId, rating) {
+            const stars = document.querySelectorAll(`.rating-star[data-event-id="${eventId}"]`);
+            stars.forEach(star => {
+               const value = star.getAttribute('data-value');
+               if (value <= rating) {
+               star.classList.remove('far');
+               star.classList.add('fas');
+               } else {
+               star.classList.remove('fas');
+               star.classList.add('far');
+               }
+            });
+         }
+         
+         function loadComments(eventId) {
+            fetch('/get_comments/' + eventId)
+               .then(response => response.json())
+               .then(data => {
+               const container = document.getElementById('comments' + eventId);
+               container.innerHTML = '';
+               
+               if (data.comments.length === 0) {
+                  container.innerHTML = '<div class="text-muted small">No comments yet</div>';
+                  return;
+               }
+               
+               data.comments.forEach(comment => {
+                  addCommentToUI(eventId, comment, false);
+               });
+               })
+               .catch(error => {
+               console.error('Error loading comments:', error);
+               });
+         }
+         
+         function addCommentToUI(eventId, comment, prepend = true) {
+            const container = document.getElementById('comments' + eventId);
+            
+            const noComments = container.querySelector('.text-muted.small');
+            if (noComments) {
+               container.removeChild(noComments);
+            }
+            
+            const commentEl = document.createElement('div');
+            commentEl.className = 'comment';
+            commentEl.innerHTML = `
+               <div class="comment-header">
+               <strong>${comment.user}</strong>
+               <small class="text-muted">${comment.date}</small>
+               </div>
+               <p class="mb-0">${comment.text}</p>
+            `;
+            
+            if (prepend) {
+               container.insertBefore(commentEl, container.firstChild);
+            } else {
+               container.appendChild(commentEl);
+            }
+         }
+         
+         function loadRating(eventId) {
+            fetch('/get_rating/' + eventId)
+               .then(response => response.json())
+               .then(data => {
+               updateStars(eventId, data.user_rating);
+               
+               const avgRatingEl = document.getElementById('avgRating' + eventId);
+               if (data.count > 0) {
+                  avgRatingEl.textContent = `Average rating: ${data.avg_rating} out of 5 (${data.count} ${data.count === 1 ? 'rating' : 'ratings'})`;
+               } else {
+                  avgRatingEl.textContent = 'Not yet rated';
+               }
+               })
+               .catch(error => {
+               console.error('Error loading ratings:', error);
+               });
+         }
+         });
       </script>
       
 <!--
