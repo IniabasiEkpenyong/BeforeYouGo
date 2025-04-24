@@ -151,7 +151,7 @@
               <h5 class="modal-title" id="friendModalLabel{{ event['bucket_id'] }}">Invite Friends to Join</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="{{ url_for('create_shared_event') }}">
+            <form method="POST" action="{{ url_for('create_shared_event_route') }}">
               <div class="modal-body">
                 <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
       
