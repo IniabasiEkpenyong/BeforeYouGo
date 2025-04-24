@@ -169,12 +169,17 @@ def global_page():
         title=title, cat=cat,
         loc=loc, descrip=descrip, sort=sort,
         exclude_ids=user_bucket_ids,
-        lat=lat, lng =lng)
+        lat=lat, lng =lng, status='approved')
     
     user_info = auth.authenticate()
     username = user_info['user']
     given_name = auth.get_name(user_info)
     is_admin = username in admins
+
+    pending_count = 0
+    if is_admin:
+        with sqlalchemy.orm.Session(database._engine) as session_db:
+            pending_count = session_db.query(Bucket).filter_by(status='pending').count()
 
     #TEMP hard coding until OIT whitelists
     # username = 'jg2783'
@@ -196,6 +201,7 @@ def global_page():
         given_name = given_name,
         categories=categories,
         is_admin = is_admin,
+        pending_count = pending_count,
         api_key=os.getenv("GOOGLE_API_KEY")
     )
 
@@ -555,13 +561,13 @@ def add__item():
     category = request.form.get('category')
     priv = eval(request.form.get('priv'))
 
-    # Validate that all required fields are present
-    # NOTE: I got rid of this bc it was causing problems, and
-    # bc we can now just make it 'required' on the form itself
-    # # if not all([title, contact, area, descrip, category]):
-    # if not all([title, area, descrip, category]):
-    #     # return flask.redirect(flask.url_for('/show_item', priv=priv))
-    #     return flask.redirect(flask.url_for('show_item', priv=priv))
+    # Get user info
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+
+    # Set initial status
+    # If user is admin, auto-approve. Otherwise, set as pending
+    initial_status = 'approved' if user_netid in admins else 'pending'
 
     # Add the new item to the database
     with sqlalchemy.orm.Session(database._engine) as session_db:
@@ -574,22 +580,24 @@ def add__item():
             descrip=descrip,
             category=category,
             cloudinary_id='XXX',
-            priv=priv
+            priv=priv,
+            status=initial_status,
+            created_by=user_netid
         )
         session_db.add(new_item)
         session_db.commit()
         
         if priv == True:
-            user_info = auth.authenticate()
-            user_netid = user_info['user']
-            new_item = UserBucket(user_netid=user_netid, bucket_id=new_item.bucket_id)
-            session_db.add(new_item)
+            new_user_bucket = UserBucket(user_netid=user_netid, bucket_id=new_item.bucket_id)
+            session_db.add(new_user_bucket)
             session_db.commit()
    
     # Redirect back to the global list
     if priv == True:
         return flask.redirect('/my_bucket')
     else:
+        if initial_status == 'pending':
+            flask.flash("Your item has been submitted for approval!")
         return flask.redirect('/global')
     
 # Add these routes after your existing routes
@@ -653,6 +661,81 @@ def delete_subtask():
             database.delete_subtask(subtask_id)
     
     return flask.redirect('/my_bucket')
+
+@app.route('/admin', methods=['GET'])
+def admin_dashboard():
+    # Verify the user is an admin
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
+    if user_netid not in admins:
+        flask.flash("You don't have permission to access the admin dashboard")
+        return flask.redirect('/')
+    
+    # Get filter status
+    status = flask.request.args.get('status', 'pending')
+    
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        # Count items by status
+        counts = {
+            'pending': session_db.query(Bucket).filter_by(status='pending').count(),
+            'approved': session_db.query(Bucket).filter_by(status='approved').count(),
+            'rejected': session_db.query(Bucket).filter_by(status='rejected').count(),
+            'all': session_db.query(Bucket).count()
+        }
+        
+        # Get items based on filter
+        if status == 'all':
+            items = session_db.query(Bucket).order_by(Bucket.created_at.desc()).all()
+        else:
+            items = session_db.query(Bucket).filter_by(status=status).order_by(Bucket.created_at.desc()).all()
+    
+    return flask.render_template('admin.html', 
+                               items=items, 
+                               status=status, 
+                               counts=counts,
+                               ampm=get_ampm(),
+                               current_time=get_current_time())
+
+@app.route('/admin/approve', methods=['POST'])
+def admin_approve():
+    # Verify the user is an admin
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
+    if user_netid not in admins:
+        flask.flash("You don't have permission to perform this action")
+        return flask.redirect('/')
+    
+    bucket_id = flask.request.form.get('bucket_id')
+    
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        item = session_db.query(Bucket).filter_by(bucket_id=bucket_id).first()
+        if item:
+            item.status = 'approved'
+            session_db.commit()
+    
+    return flask.redirect('/admin?status=pending')
+
+@app.route('/admin/reject', methods=['POST'])
+def admin_reject():
+    # Verify the user is an admin
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    
+    if user_netid not in admins:
+        flask.flash("You don't have permission to perform this action")
+        return flask.redirect('/')
+    
+    bucket_id = flask.request.form.get('bucket_id')
+    
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        item = session_db.query(Bucket).filter_by(bucket_id=bucket_id).first()
+        if item:
+            item.status = 'rejected'
+            session_db.commit()
+    
+    return flask.redirect('/admin?status=pending')
 
 @app.route('/logoutapp')
 def logout_app():

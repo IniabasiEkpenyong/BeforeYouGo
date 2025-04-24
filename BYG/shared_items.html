@@ -19,3 +19,14 @@
     </div>
   {% endfor %}
 </div>
+
+{% if is_admin %}
+<li class="nav-item">
+  <a class="nav-link {{ 'active' if request.path == '/admin' }}" href="/admin">
+    <i class="fas fa-lock"></i> Admin
+    {% if pending_count > 0 %}
+      <span class="badge bg-warning text-dark">{{ pending_count }}</span>
+    {% endif %}
+  </a>
+</li>
+{% endif %}

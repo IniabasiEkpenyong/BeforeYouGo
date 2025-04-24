@@ -38,6 +38,9 @@ class Bucket (Base):
     category = sqlalchemy.Column(sqlalchemy.String)
     cloudinary_id = sqlalchemy.Column(sqlalchemy.String)
     priv = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    status = sqlalchemy.Column(sqlalchemy.String, default='pending')
+    created_at = sqlalchemy.Column(sqlalchemy.DateTime, server_default=sqlalchemy.sql.func.now())
+    created_by = sqlalchemy.Column(sqlalchemy.String)
 
 _engine = sqlalchemy.create_engine(_DATABASE_URL)
 
@@ -90,7 +93,7 @@ class SharedParticipant(Base):
 
 #-----------------------------------------------------------------------
 
-def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort='', exclude_ids=None):
+def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort='', exclude_ids=None, status='approved'):
     if exclude_ids is None:
         exclude_ids = []
 
@@ -100,12 +103,18 @@ def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort=''
         print("Raw lat:", lat, "type:", type(lat))
         print("Raw lng:", lng, "type:", type(lng))
 
-        query = session.query(Bucket).filter(
+        query = session.query(Bucket)
+        
+        query = query.filter(Bucket.status == status)
+
+        query = query.filter(
             ~Bucket.bucket_id.in_(exclude_ids),
             sqlalchemy.or_(
-            Bucket.descrip.ilike('%' + descrip + '%'),
-            Bucket.item.ilike('%' + title + '%')
-            ))
+                Bucket.descrip.ilike('%' + descrip + '%'),
+                Bucket.item.ilike('%' + title + '%')
+            )
+        )
+
 
         if loc:
             query = query.filter(Bucket.area.ilike('%' + loc + '%'))
