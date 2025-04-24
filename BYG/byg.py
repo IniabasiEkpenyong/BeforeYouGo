@@ -454,36 +454,35 @@ def reset_completed():
 
 @app.route("/create_shared_event", methods=["POST"])
 def create_shared_event_route():
-    user_info = auth.authenticate()
-    user_netid = user_info['user']
-
-    if not user_netid or not bucket_id or not netids:
+    try:
+        bucket_id = int(flask.request.form["bucket_id"])
+        netids = flask.request.form.getlist("friend_netids[]")
+        netids = [n.strip().lower() for n in netids if n.strip()]
+    except Exception as e:
+        print("Error parsing form:", e)
+        flask.flash("Invalid form submission.")
         return flask.redirect("/global")
 
+    user_info = auth.authenticate()
+    user_netid = user_info.get('user')
 
-    bucket_id = flask.request.form.get("bucket_id")
-    if not bucket_id:
-        flask.flash("Missing bucket ID.", "danger")
-        return flask.redirect(flask.url_for("global_page"))
+    if not user_netid or not bucket_id or not netids:
+        flask.flash("Missing information for shared event.")
+        return flask.redirect("/global")
 
-    # Get all inputs that begin with 'friend_netid'
-    friend_netids = [
-        val.strip() for key, val in flask.request.form.items()
-        if key.startswith("friend_netid") and val.strip()
-    ]
+    success, shared_event_id = database.create_shared_event(
+        bucket_id=bucket_id,
+        creator_netid=user_netid,
+        participant_netids=netids
+    )
 
-    if not friend_netids:
-        flask.flash("Please provide at least one friend's NetID.", "warning")
-        return flask.redirect(flask.url_for("global_page"))
-
-    try:
-        create_shared_event(user_netid, bucket_id, friend_netids)
-        flask.flash("Shared event created successfully!", "success")
-    except Exception as e:
-        print("Error creating shared event:", e)
-        flask.flash("Failed to create shared event.", "danger")
-
+    if success:
+        flask.flash("Shared event created!")
+    else:
+        flask.flash("Something went wrong.")
+    
     return flask.redirect("/global")
+
 
 
 
