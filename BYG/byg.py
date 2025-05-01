@@ -81,7 +81,7 @@ def debug_locations():
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
-def home_page():
+def start_page():
 
     user_info = auth.authenticate()    
     username = user_info['user']    
@@ -101,6 +101,18 @@ def home_page():
     response = flask.make_response(html_code)
     return response
 
+@app.route('/home', methods=['GET'])
+def home_page():
+    user_info = auth.authenticate()
+    given_name = auth.get_name(user_info)
+
+    html_code = flask.render_template('home.html',
+        ampm=get_ampm(),
+        given_name = given_name
+    )
+
+    response = flask.make_response(html_code)
+    return response
 
 
 @app.route('/global', methods = ['GET'])
