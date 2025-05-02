@@ -63,8 +63,9 @@
             <input type="hidden" name="priv" value="False">
             <input type="submit"  class="add-button" value="Create Global Bucket List Item" style="display: inline-block; max-width: 300px;text-decoration: none;">
          </form>   
-        
-        <!-- <button class="add-button" onclick="openAddNewModal()">Create Public Bucket List Item</button> -->
+    
+         <!--<button id="openModalBtn" class="add-button" style="display: inline-block; max-width: 300px;">Create Public Bucket List Item</button>-->
+
       </div>
 
       <div class="container">
@@ -229,7 +230,9 @@
       {% endif %}
       
     {% include 'globalMod.html' %}
-    {% include 'new_item.html' %}
+    <!--{% include 'new_item.html' %}-->
+    <!-- Add New Item Modal -->
+  
 
 
     <script>
@@ -458,8 +461,6 @@ stars.forEach(star => {
       }
    }
 </script>
-    
-
   
   <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAddItemAutocomplete" async defer></script>
 

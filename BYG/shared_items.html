@@ -33,6 +33,22 @@
           <input type="hidden" name="shared_event_id" value="{{ event.id }}">
           <input type="submit" class="btn btn-sm btn-outline-success" value="{% if event.is_completed %}Completed{% else %}Mark Completed{% endif %}">
         </form>
+
+        <!--
+        <form action="/exit_shared_event" method="POST" class="mt-2">
+            <input type="hidden" name="shared_event_id" value="{{ event.id }}">
+            <button type="submit" class="btn bg-red-600 text-white hover:bg-red-700 w-full">
+              <i class="fas fa-sign-out-alt"></i> Exit Group Event
+            </button>
+          </form>
+        -->
+        <form action="/exit_shared_event" method="POST" class="mt-2">
+            <input type="hidden" name="shared_event_id" value="{{ event.id }}">
+            <button type="submit" class="btn btn-sm btn-outline-danger mt-2 w-full">
+              <i class="fas fa-sign-out-alt"></i> Exit Group Event
+            </button>
+          </form>
+          
       </div>
     {% endfor %}
   {% endif %}
