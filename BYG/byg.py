@@ -26,6 +26,7 @@ except ImportError:
 
 from .database import get_shared_events_for_user
 from .database import mark_shared_event_completed
+from .database import remove_user_from_shared_event
 
 # Set the secret key
 app.secret_key = os.environ['APP_SECRET_KEY']
@@ -496,7 +497,7 @@ def exit_shared_event():
     if not shared_event_id:
         return flask.redirect("/my_bucket")
 
-    from database import remove_user_from_shared_event
+    # from database import remove_user_from_shared_event
     success, msg = remove_user_from_shared_event(int(shared_event_id), user_netid)
     return flask.redirect("/my_bucket")
 
