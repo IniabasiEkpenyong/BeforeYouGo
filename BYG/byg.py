@@ -105,10 +105,18 @@ def start_page():
 def home_page():
     user_info = auth.authenticate()
     given_name = auth.get_name(user_info)
+    is_admin = user_info['user'] in admins
+
+    pending_count = 0
+    if is_admin:
+        with sqlalchemy.orm.Session(database._engine) as session_db:
+            pending_count = session_db.query(Bucket).filter_by(status='pending').count()
 
     html_code = flask.render_template('home.html',
         ampm=get_ampm(),
-        given_name = given_name
+        given_name = given_name,
+        is_admin=is_admin,
+        pending_count = pending_count
     )
 
     response = flask.make_response(html_code)
