@@ -58,13 +58,13 @@
       <h2 class="title">Global Bucket List</h2>
 
       <div style="text-align: center; margin-bottom: 20px;">
-        <!--
+        
         <form action="/show_item" method="post">
             <input type="hidden" name="priv" value="False">
             <input type="submit"  class="add-button" value="Create Global Bucket List Item" style="display: inline-block; max-width: 300px;text-decoration: none;">
          </form>   
-        -->
-         <button id="openModalBtn" class="add-button" style="display: inline-block; max-width: 300px;">Create Public Bucket List Item</button>
+    
+         <!--<button id="openModalBtn" class="add-button" style="display: inline-block; max-width: 300px;">Create Public Bucket List Item</button>-->
 
       </div>
 
@@ -232,50 +232,6 @@
     {% include 'globalMod.html' %}
     <!--{% include 'new_item.html' %}-->
     <!-- Add New Item Modal -->
-<div id="addNewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-xl overflow-hidden">
-      <div class="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-        <h3 class="text-lg font-medium text-gray-900">Add New Public Bucket List Item</h3>
-        <button type="button" onclick="closeAddNewModal()" class="text-gray-400 hover:text-gray-500">
-          <span class="text-2xl">&times;</span>
-        </button>
-      </div>
-      <form id="addItemForm" action="/create_item" method="POST" class="px-6 py-4 space-y-4">
-        <input type="hidden" name="priv" value="False" />
-  
-        <div>
-          <label for="titleInput" class="block font-medium">Title:</label>
-          <input type="text" name="title" id="titleInput" required class="w-full border rounded px-3 py-2" />
-        </div>
-  
-        <div>
-          <label for="contactInput" class="block font-medium">Contact:</label>
-          <input type="text" name="contact" id="contactInput" required class="w-full border rounded px-3 py-2" />
-        </div>
-  
-        <div>
-          <label for="areaInput" class="block font-medium">Location:</label>
-          <input type="text" name="area" id="areaInput" required class="w-full border rounded px-3 py-2" />
-          <input type="hidden" name="lat" id="latInput">
-          <input type="hidden" name="lng" id="lngInput">
-        </div>
-  
-        <div>
-          <label for="descripInput" class="block font-medium">Description:</label>
-          <input type="text" name="descrip" id="descripInput" required class="w-full border rounded px-3 py-2" />
-        </div>
-  
-        <div>
-          <label for="categoryInput" class="block font-medium">Category:</label>
-          <input type="text" name="category" id="categoryInput" required class="w-full border rounded px-3 py-2" />
-        </div>
-  
-        <div class="text-right">
-          <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">Submit</button>
-        </div>
-      </form>
-    </div>
-  </div>
   
 
 
@@ -505,45 +461,6 @@ stars.forEach(star => {
       }
    }
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const openBtn = document.getElementById("openModalBtn");
-      const modal = document.getElementById("addNewModal");
-      const closeBtn = modal.querySelector("button[type='button']");
-  
-      if (openBtn && modal && closeBtn) {
-        openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
-        closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
-      }
-  
-      // Google Maps Autocomplete
-      const input = document.getElementById("areaInput");
-      const latInput = document.getElementById("latInput");
-      const lngInput = document.getElementById("lngInput");
-      const form = document.getElementById("addItemForm");
-  
-      if (input && latInput && lngInput && form) {
-        const autocomplete = new google.maps.places.Autocomplete(input);
-        let used = false;
-  
-        autocomplete.addListener("place_changed", () => {
-          const place = autocomplete.getPlace();
-          if (!place.geometry || !place.geometry.location) return;
-          latInput.value = place.geometry.location.lat();
-          lngInput.value = place.geometry.location.lng();
-          used = true;
-        });
-  
-        form.addEventListener("submit", (e) => {
-          if (!used) {
-            e.preventDefault();
-            alert("Please select a location from the dropdown.");
-            input.focus();
-          }
-        });
-      }
-    });
-  </script>
   
   <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAddItemAutocomplete" async defer></script>
 
