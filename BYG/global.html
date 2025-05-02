@@ -210,7 +210,8 @@
                            <input type="hidden" name="search" value="{{ request.args.get('search', '') }}">
                            <input type="hidden" name="sort" value="{{ request.args.get('sort', '') }}">
                            <input type="hidden" name="cat" value="{{ request.args.get('cat', '') }}">
-                           <button type="submit" class="add-button">Delete</button>
+                           <button type="submit" class="add-button bg-red-600 text-white hover:bg-red-700">
+                            <i class="fas fa-shield-alt"></i>Delete</button>
                         </form>
                      {% endif %}
 
