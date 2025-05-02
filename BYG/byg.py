@@ -662,7 +662,7 @@ def show_item():
                 )
 
 @app.route('/create_item', methods=['POST'])
-def add__item():
+def add_item():
     # Get form data
     title = request.form.get('title')
     contact = request.form.get('contact')
