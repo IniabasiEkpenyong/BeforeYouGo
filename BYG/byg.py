@@ -114,7 +114,7 @@ def home_page():
 
     html_code = flask.render_template('home.html',
         ampm=get_ampm(),
-        given_name = given_name,
+        net_id=user_info['user'],
         is_admin=is_admin,
         pending_count = pending_count
     )
@@ -219,6 +219,7 @@ def global_page():
         prev_cat = prev_cat,
         username = username,
         given_name = given_name,
+        net_id = user_netid,
         categories=categories,
         is_admin = is_admin,
         pending_count = pending_count,

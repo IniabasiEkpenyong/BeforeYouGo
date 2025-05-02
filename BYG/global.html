@@ -98,11 +98,10 @@
       {% if events|length == 0 %}
          <p>No items found.</p>
       {% else %}
-         <div class="cards-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
+         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
          {% for event in events %}
             {% if event['priv'] == False %}
                <div class="border-2 border-orange-400 rounded-lg p-6 w-60 bg-white shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
-                  <div class="card-header">
                      <div class="text-4xl mb-2">
                         {% if event['cat'] == 'Food' %}🍽️
                         {% elif event['cat'] == 'Adventure' %}🏔️
@@ -146,7 +145,6 @@
                                  </div>
                               </form>
                         </div>
-                     </div>
 
                   
 
@@ -575,29 +573,6 @@ stars.forEach(star => {
       `;
     });
   </script> -->
-  
-      
-      <!-- DOESN'T REALLY MAKE SENSE TO SEARCH BY LOCATION
-      <script>
-        function initGlobalSearch() {
-            const input = document.getElementById("locationInput");
-            const autocomplete = new google.maps.places.Autocomplete(input);
-            
-            autocomplete.addListener("place_changed", () => {
-                const place = autocomplete.getPlace();
-                if (!place.geometry || !place.geometry.location) return;
-                
-                document.getElementById("latSearch").value = place.geometry.location.lat();
-                document.getElementById("lngSearch").value = place.geometry.location.lng();
-            });
-        }
-
-      </script>
-      
-      <script
-        src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initGlobalSearch"
-        async defer></script> -->
-
    </body>
 </html>
 
