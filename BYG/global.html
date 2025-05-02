@@ -64,7 +64,8 @@
             <input type="submit"  class="add-button" value="Create Global Bucket List Item" style="display: inline-block; max-width: 300px;text-decoration: none;">
          </form>   
         -->
-         <button onclick="openAddNewModal()" class="add-button" style="display: inline-block; max-width: 300px;">Create Public Bucket List Item</button>
+         <button id="openModalBtn" class="add-button" style="display: inline-block; max-width: 300px;">Create Public Bucket List Item</button>
+
       </div>
 
       <div class="container">
@@ -539,42 +540,39 @@ stars.forEach(star => {
   </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      window.openAddNewModal = function () {
-        document.getElementById("addNewModal").classList.remove("hidden");
-      };
-  
-      window.closeAddNewModal = function () {
-        document.getElementById("addNewModal").classList.add("hidden");
-      };
-  
-      // Google Places Autocomplete logic
+    document.addEventListener("DOMContentLoaded", () => {
+      const openBtn = document.getElementById("openModalBtn");
+      const modal = document.getElementById("addNewModal");
+      const closeBtn = modal.querySelector("button[onclick='closeAddNewModal()']");
+    
+      openBtn?.addEventListener("click", () => modal.classList.remove("hidden"));
+      closeBtn?.addEventListener("click", () => modal.classList.add("hidden"));
+    
+      // Google Maps Autocomplete
       const input = document.getElementById("areaInput");
       if (input) {
         const autocomplete = new google.maps.places.Autocomplete(input);
-        let autocompleteUsed = false;
-  
+        let used = false;
+    
         autocomplete.addListener("place_changed", () => {
           const place = autocomplete.getPlace();
           if (!place.geometry || !place.geometry.location) return;
           document.getElementById("latInput").value = place.geometry.location.lat();
           document.getElementById("lngInput").value = place.geometry.location.lng();
-          autocompleteUsed = true;
+          used = true;
         });
-  
-        const form = document.getElementById("addItemForm");
-        if (form) {
-          form.addEventListener("submit", function (e) {
-            if (!autocompleteUsed) {
-              e.preventDefault();
-              alert("Please select a valid location.");
-              input.focus();
-            }
-          });
-        }
+    
+        document.getElementById("addItemForm").addEventListener("submit", (e) => {
+          if (!used) {
+            e.preventDefault();
+            alert("Please select a location from the dropdown.");
+            input.focus();
+          }
+        });
       }
     });
-  </script>
+    </script>
+    
   
   
   <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAddItemAutocomplete" async defer></script>
