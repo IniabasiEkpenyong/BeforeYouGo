@@ -496,6 +496,19 @@ stars.forEach(star => {
   </script>
   
   <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAddItemAutocomplete" async defer></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      window.openAddNewModal = function () {
+        document.getElementById("addNewModal").classList.remove("hidden");
+      };
+  
+      window.closeAddNewModal = function () {
+        document.getElementById("addNewModal").classList.add("hidden");
+      };
+    });
+  </script>
+  
+
   
 <!--
     <script>
