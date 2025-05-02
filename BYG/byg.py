@@ -115,6 +115,7 @@ def home_page():
     html_code = flask.render_template('home.html',
         ampm=get_ampm(),
         net_id=user_info['user'],
+        given_name = given_name,
         is_admin=is_admin,
         pending_count = pending_count
     )
