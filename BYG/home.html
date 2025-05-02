@@ -3,10 +3,14 @@
         <meta charset="UTF-8">
         <title>Before You Go</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     </head>
-    <body class="bg-white text-black font-serif" style="background-image: url(url_for('static', filename='background.jpg'))">
+    <body class="bg-white text-black font-serif" style="background-image: url('/static/images/nassau.jpg')
+        ; background-size: cover; background-position: center; background-attachment: fixed;">
+        {% include 'header.html' %}
+        
         <section class="relative bg-cover bg-center h-[90vh]">
-            <div class="absolute inset-0 bg-black flex flex-col items-center justify-center text-center text-white px-4">
+            <div class="absolute inset-0 bg-opacity-50 bg-black flex flex-col items-center justify-center text-center text-white px-4">
                 <h1 class="text-4xl md:text-5xl font-bold">Before You Go</h1>
                 <p class="mt-2 text-xl">Make Every Tiger Moment Count</p>
                 <div class="mt-6 space-x-4">

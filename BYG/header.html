@@ -4,31 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Before You Go</title>
-  <link rel="stylesheet" href="https:" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<body>
-
-  <!-- Fixed Header with Bubble Navigation -->
-  <div class="header py-3 shadow-sm">
-    <div class="container-fluid d-flex justify-content-center flex-wrap gap-3">
-      <a href="{{ url_for('home_page') }}" class="nav-bubble">Home</a>
-      <a href="{{ url_for('global_page') }}" class="nav-bubble">Global List</a>
-      <a href="{{ url_for('my_bucket') }}" class="nav-bubble">My Bucket List</a>
-      <a href="{{ url_for('logout_app') }}" class="nav-bubble">Logout</a>
-      {% if is_admin %}
-      <a href="/admin" class="nav-bubble" style="background-color: #8e44ad;">
-        <i class="fas fa-shield-alt"></i> Admin
-        {% if pending_count > 0 %}
-          <span class="badge bg-warning text-dark" style="position: relative; top: -8px; right: -5px; border-radius: 50%;">
-            {{ pending_count }}
-          </span>
-        {% endif %}
-      </a>
-    {% endif %}
-    </div>
-  </div>
-
-  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>  
+<body class="bg-white text-black font-serif">
+    <header class="bg-white shadow sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="text-2xl font-bold text-orange-600">
+          Before You Go
+        </div>
+        <nav class="space-x-6 text-sm font-medium">
+          <a href="/global" class="text-gray-700 hover:text-orange-500">Browse</a>
+          <a href="/my_bucket" class="text-gray-700 hover:text-orange-500">My List</a>
+          <a href="#" class="text-gray-700 hover:text-orange-500">About</a>
+          {% if is_admin %}
+          <a href="/admin" class="text-gray-700 hover:text-orange-500">
+            <i class="fas fa-shield-alt"></i> Admin
+            {% if pending_count > 0 %}
+              <span class="badge bg-warning text-dark" style="position: relative; top: -8px; right: -5px; border-radius: 50%;">
+                {{ pending_count }}
+              </span>
+            {% endif %}
+          </a>
+          {% endif %}
+          <a href="{{ url_for('logout_app') }}" class="text-orange-500 border border-orange-500 rounded-full px-4 py-1 hover:bg-orange-500 hover:text-white">Log Out</a>
+        </nav>
+      </div>
+    </header>
 </body>
+
 </html>
