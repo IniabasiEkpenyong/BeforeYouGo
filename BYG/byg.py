@@ -282,25 +282,40 @@ def remove_from_my_list():
     if not user_bucket_id:
         return flask.redirect('/my_bucket')
 
-    with sqlalchemy.orm.Session(database._engine) as session_db:
-        # Ensure the item belongs to the user before deleting
-        ub_item = session_db.query(UserBucket).filter_by(
-            id=user_bucket_id, user_netid=user_netid).first()
-        if ub_item:
-            bucket_id = ub_item.bucket_id
-            session_db.delete(ub_item)
-            session_db.commit()
-
-            # Check if the item is public before deleting from the global list
-            item = session_db.query(Bucket).filter_by(
-                bucket_id=bucket_id).first()
-            if item and not item.priv:
-                # Do not delete from the global list if the item is public
-                pass
-            else:
-                session_db.delete(item)
+    try:
+        with sqlalchemy.orm.Session(database._engine) as session_db:
+            # Ensure the item belongs to the user before deleting
+            ub_item = session_db.query(UserBucket).filter_by(
+                id=user_bucket_id, user_netid=user_netid).first()
+            if ub_item:
+                bucket_id = ub_item.bucket_id
+                session_db.delete(ub_item)
                 session_db.commit()
 
+                # Check if the item is public before deleting from the global list
+                item = session_db.query(Bucket).filter_by(
+                    bucket_id=bucket_id).first()
+                if item and not item.priv:
+                    # Do not delete from the global list if the item is public
+                    pass
+                else:
+                    session_db.delete(item)
+                    session_db.commit()
+
+                user_items = session_db.query(UserBucket).filter_by(user_netid=user_netid).all()
+                total_items = len(user_items)
+                completed = sum(1 for item in user_items if item.completed)
+                overall_progress = 0 if total_items == 0 else (completed/total_items) * 100
+
+                if flask.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return flask.jsonify({
+                        'success': True, 
+                        'overall_progress': overall_progress
+                    })
+    except Exception as error:
+        if flask.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return flask.jsonify({'success': False, 'error': str(e)})
+        
     return flask.redirect('/my_bucket')
 
 @app.route('/remove_from_global_list', methods=['POST'])
@@ -450,7 +465,14 @@ def reset_completed():
             id=user_bucket_id, user_netid=user_netid).first()
         if ub_item:
             ub_item.completed = False
+            
+            subtasks = session_db.query(database.SubTask).filter_by(
+                user_bucket_id=user_bucket_id).all()
+            for subtask in subtasks:
+                subtask.completed = False
+
             session_db.commit()
+
     return flask.redirect('/my_bucket')
 
 
@@ -706,6 +728,11 @@ def toggle_subtask():
         
         if subtask:
             database.toggle_subtask(subtask_id)
+    
+    if flask.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return flask.jsonify({'success': True, 
+                        
+                              'completed': subtask.completed})
     
     return flask.redirect('/my_bucket')
 
