@@ -50,8 +50,8 @@
             }
          </style>
    </head>
-   {% include 'header.html' %}
    <body>
+      {% include 'header.html' %}
       {% if err_msg != '' %} 
             <p>{{ err_msg }}</p>
       {% else %}
@@ -74,6 +74,20 @@
             <input type="submit" value="Search" id="submitButton">
          </form>
       </div>
+
+      <!--
+      <div class="location-search-container"> 
+        <form action="/global" method="get" class="search-form" id="searchForm"> 
+           <label for="loc">Find:</label>
+           <input type="text" id="locationInput" name="loc"
+               value="{{ request.args.get('loc', '') }}"
+               placeholder="Search by Location">
+               <input type="hidden" name="lat" id="latSearch">
+               <input type="hidden" name="lng" id="lngSearch">               
+           <!--<input type="submit" value="Location" id="locSubmitButton">-->
+           <input type="submit" value="Search" id="submitButton">
+        </form>
+     </div>
 
       <div class="filter-container" style="text-align: center;">
          <form action="/global" method="get" class="filter-form">
@@ -411,9 +425,9 @@ stars.forEach(star => {
    function openItem(bucketId, title, loc, contact, descrip, cat) {
       document.getElementById('modTitle').innerText = title;
       document.getElementById('modId').value = bucketId;
-      document.getElementById('modSearch').value = '{{request.args.get('search', '')}}';
-      document.getElementById('modSort').value = '{{request.args.get('sort', '')}}';
-      document.getElementById('modCat').value = '{{request.args.get('cat', '')}}';
+      document.getElementById('modSearch').value = "{{ request.args.get('search', '') }}";
+      document.getElementById('modSort').value = "{{request.args.get('sort', '')}}";
+      document.getElementById('modCat').value = "{{request.args.get('cat', '')}}";
 
       if(location & location != 'None') {
          document.getElementById('modLocVal').innerHTML = loc;
