@@ -19,23 +19,38 @@
         </section>
 
         <section class="py-12 bg-white text-center">
-            <h2 class="text-2xl font-bold mb-6">Popular Bucket List Items</h2>
+            <h2 class="text-2xl font-bold mb-6">Latest Bucket List Additions</h2>
             <div class="flex flex-wrap justify-center gap-6 px-4">
-              <div class="border-2 border-orange-400 rounded-lg p-6 w-60 transition-all transition-colors duration-300 hover:bg-orange-50 hover:shadow-lg hover:translate-y-1">
-                <div class="text-4xl mb-2">🏃</div>
-                <p class="font-semibold mb-2">Run the P-rade</p>
-                <p class="text-orange-500 text-sm cursor-pointer">+ Add</p>
-              </div>
-              <div class="border-2 border-orange-400 rounded-lg p-6 w-60 transition-all transition-colors duration-300 hover:bg-orange-50 hover:shadow-lg hover:translate-y-1">
-                <div class="text-4xl mb-2">🗼</div>
-                <p class="font-semibold mb-2">Climb Cleveland Tower</p>
-                <p class="text-orange-500 text-sm cursor-pointer">+ Add</p>
-              </div>
-              <div class="border-2 border-orange-400 rounded-lg p-6 w-60 transition-all transition-colors duration-300 hover:bg-orange-50 hover:shadow-lg hover:translate-y-1">
-                <div class="text-4xl mb-2">🎸</div>
-                <p class="font-semibold mb-2">Attend Lawnparties</p>
-                <p class="text-orange-500 text-sm cursor-pointer">+ Add</p>
-              </div>
+              {% if new_items %}
+                {% for event in new_items%}
+                  <div class="border-2 border-orange-400 rounded-lg p-6 w-60 transition-all transition-colors duration-300 hover:bg-orange-50 hover:shadow-lg hover:translate-y-1">
+                    <div class="text-4xl mb-2 text-center">
+                      {% if event.category  == 'food' %}🍽️
+                      {% elif event.category  == 'adventure' %}🏔️
+                      {% elif event.category  == 'music' %}🎸
+                      {% elif event.category  == 'sports' %}🏀
+                      {% elif event.category  == 'events' %}🎉
+                      {% elif event.category == 'academic' %}📚
+                      {% else %}✨{% endif %}
+                    </div>
+                    
+                    <p class="font-semibold mb-2">{{ event.item }}</p>
+                    
+                    {% if event.area %}
+                      <p class="text-sm text-gray-500 mb-3"><i class="fas fa-map-marker-alt"></i> {{ event.area }}</p>
+                    {% endif %}
+                    
+                    <form action="/add_to_my_list" method="POST" class="w-full flex justify-center">
+                      <input type="hidden" name="bucket_id" value="{{ event.bucket_id }}">
+                      <button type="submit" class="text-orange-500 hover:text-orange-700 text-sm font-medium">
+                        + Add to My List
+                      </button>
+                    </form>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="text-gray-500 italic">No new bucket list items available.</div>
+              {% endif %}
             </div>
           </section>
         

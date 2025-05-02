@@ -112,12 +112,23 @@ def home_page():
         with sqlalchemy.orm.Session(database._engine) as session_db:
             pending_count = session_db.query(Bucket).filter_by(status='pending').count()
 
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        user_bucket_ids = session_db.query(UserBucket.bucket_id).filter_by(user_netid=user_info['user']).all()
+        user_bucket_ids = [id for (id,) in user_bucket_ids]
+
+        new_items = session_db.query(Bucket).filter(
+            Bucket.bucket_id.notin_(user_bucket_ids),
+            Bucket.priv == False,
+            Bucket.status == 'approved'
+        ).order_by(sqlalchemy.desc(Bucket.created_at)).limit(3).all()
+
     html_code = flask.render_template('home.html',
         ampm=get_ampm(),
         net_id=user_info['user'],
         given_name = given_name,
         is_admin=is_admin,
-        pending_count = pending_count
+        pending_count = pending_count,
+        new_items=new_items
     )
 
     response = flask.make_response(html_code)
@@ -898,7 +909,7 @@ def logout_app():
     session.clear()
     
     # Redirect to the home page or login page
-    return flask.render_template('loggedout.html')
+    return flask.render_template('index.html')
 
 @app.route('/logoutcas')
 def logout_cas():
@@ -909,7 +920,7 @@ def logout_cas():
     # This might involve redirecting to a CAS logout URL
     
     # Redirect to the home page or login page
-    return flask.render_template('loggedout.html')
+    return flask.render_template('index.html')
 
 
 if __name__ == "__main__":
