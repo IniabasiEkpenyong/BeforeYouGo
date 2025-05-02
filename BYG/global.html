@@ -505,64 +505,36 @@ stars.forEach(star => {
       }
    }
 </script>
-    
-<script>
-    function openAddNewModal() {
-      document.getElementById("addNewModal").classList.remove("hidden");
-    }
-  
-    function closeAddNewModal() {
-      document.getElementById("addNewModal").classList.add("hidden");
-    }
-  
-    let autocompleteUsed = false;
-  
-    function initAddItemAutocomplete() {
-      const input = document.getElementById("areaInput");
-      const autocomplete = new google.maps.places.Autocomplete(input);
-  
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-        if (!place.geometry || !place.geometry.location) return;
-        document.getElementById("latInput").value = place.geometry.location.lat();
-        document.getElementById("lngInput").value = place.geometry.location.lng();
-        autocompleteUsed = true;
-      });
-  
-      document.getElementById("addItemForm").addEventListener("submit", function (e) {
-        if (!autocompleteUsed) {
-          e.preventDefault();
-          alert("Please select a valid location from the dropdown.");
-          input.focus();
-        }
-      });
-    }
-  </script>
-
 <script>
     document.addEventListener("DOMContentLoaded", () => {
       const openBtn = document.getElementById("openModalBtn");
       const modal = document.getElementById("addNewModal");
-      const closeBtn = modal.querySelector("button[onclick='closeAddNewModal()']");
-    
-      openBtn?.addEventListener("click", () => modal.classList.remove("hidden"));
-      closeBtn?.addEventListener("click", () => modal.classList.add("hidden"));
-    
+      const closeBtn = modal.querySelector("button[type='button']");
+  
+      if (openBtn && modal && closeBtn) {
+        openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+        closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+      }
+  
       // Google Maps Autocomplete
       const input = document.getElementById("areaInput");
-      if (input) {
+      const latInput = document.getElementById("latInput");
+      const lngInput = document.getElementById("lngInput");
+      const form = document.getElementById("addItemForm");
+  
+      if (input && latInput && lngInput && form) {
         const autocomplete = new google.maps.places.Autocomplete(input);
         let used = false;
-    
+  
         autocomplete.addListener("place_changed", () => {
           const place = autocomplete.getPlace();
           if (!place.geometry || !place.geometry.location) return;
-          document.getElementById("latInput").value = place.geometry.location.lat();
-          document.getElementById("lngInput").value = place.geometry.location.lng();
+          latInput.value = place.geometry.location.lat();
+          lngInput.value = place.geometry.location.lng();
           used = true;
         });
-    
-        document.getElementById("addItemForm").addEventListener("submit", (e) => {
+  
+        form.addEventListener("submit", (e) => {
           if (!used) {
             e.preventDefault();
             alert("Please select a location from the dropdown.");
@@ -571,9 +543,7 @@ stars.forEach(star => {
         });
       }
     });
-    </script>
-    
-  
+  </script>
   
   <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAddItemAutocomplete" async defer></script>
 
