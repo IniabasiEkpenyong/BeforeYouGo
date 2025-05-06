@@ -23,11 +23,27 @@
         color: #007bff;
     }
 
-    #map {
-        height: 500px;
-        width: 100%;
-        margin-top: 30px;
-    }
+    #map-container {
+    width: 80%;
+    max-width: 1000px;
+    margin: 30px auto;
+    border: 4px solid rgb(255, 111, 0);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: height 0.3s ease;
+    cursor: pointer;
+}
+
+#map {
+    width: 100%;
+    height: 300px;
+    transition: height 0.3s ease;
+}
+
+#map-container.expanded #map {
+    height: 500px;
+}
+
 
     #search-box {
         width: 300px;
@@ -165,7 +181,8 @@
   
   <div>
     <input type="hidden" id="search-box" type="text" placeholder="Search for a location" />
-    <div id="map"></div>
+    <div id="map-container" onclick="toggleMapSize()">
+      <div id="map"></div>
   </div>
   
 
