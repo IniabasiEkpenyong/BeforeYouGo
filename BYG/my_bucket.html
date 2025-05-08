@@ -439,46 +439,7 @@
     });
   </script>
 
-<script>
-  function openAddNewModal() {
-    document.getElementById("addNewModal").classList.remove("hidden");
-    document.body.classList.add("overflow-hidden");
-  }
 
-  function closeAddNewModal() {
-    document.getElementById("addNewModal").classList.add("hidden");
-    document.body.classList.remove("overflow-hidden");
-  }
-
-  // Handle clicks outside the modal to close it
-  document.addEventListener("click", function(event) {
-    const modal = document.getElementById("addNewModal");
-    if (event.target === modal) {
-      closeAddNewModal();
-    }
-  });
-
-  // Google Places Autocomplete for location field
-  function initAddItemAutocomplete() {
-    const input = document.getElementById("areaInput");
-    const autocomplete = new google.maps.places.Autocomplete(input);
-
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      if (!place.geometry || !place.geometry.location) return;
-
-      document.getElementById("latInput").value = place.geometry.location.lat();
-      document.getElementById("lngInput").value = place.geometry.location.lng();
-    });
-  }
-
-  // Initialize Google Places when Maps API loads
-  if (typeof google !== 'undefined' && google.maps) {
-    initAddItemAutocomplete();
-  } else {
-    // It will be initialized by the callback in the script tag
-  }
-</script>
 
 </body>
 </html>
