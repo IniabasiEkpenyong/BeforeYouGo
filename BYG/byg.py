@@ -83,21 +83,7 @@ def debug_locations():
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def start_page():
-
-    user_info = auth.authenticate()    
-    username = user_info['user']    
-    given_name = auth.get_name(user_info)
-
-    #TEMP hard coding until OIT whitelists
-    # username = 'jg2783'
-    # given_name = 'Judah'
-
-    html_code = flask.render_template('index.html',
-        ampm=get_ampm(),
-        current_time=get_current_time(),
-        username = username,
-        given_name = given_name
-    )
+    html_code = flask.render_template('index.html')
 
     response = flask.make_response(html_code)
     return response
@@ -715,7 +701,6 @@ def add_item():
         return flask.redirect('/global')
     
 # Add these routes after your existing routes
-
 @app.route('/add_subtask', methods=['POST'])
 def add_subtask():
     user_info = auth.authenticate()
