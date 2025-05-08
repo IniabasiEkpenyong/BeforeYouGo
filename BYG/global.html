@@ -233,6 +233,62 @@
     <!--{% include 'new_item.html' %}-->
     <!-- Add New Item Modal -->
   
+    <div id="addNewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-xl overflow-hidden">
+        <div class="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+          <h3 class="text-lg font-medium text-gray-900">Add New Bucket List Item</h3>
+          <button type="button" onclick="closeAddNewModal()" class="text-gray-400 hover:text-gray-500">
+            <span class="text-2xl">&times;</span>
+          </button>
+        </div>
+        <form id="addItemForm" action="/create_item" method="POST" class="px-6 py-4 space-y-4">
+          <input type="hidden" name="priv" value="True" />
+          
+          <div>
+            <label for="titleInput" class="block font-medium">Title: <span class="text-red-500">*</span></label>
+            <input type="text" name="title" id="titleInput" required class="w-full border rounded px-3 py-2" />
+          </div>
+          
+          <div>
+            <label for="contactInput" class="block font-medium">Contact:<span class="text-gray-500">(optional)</span></label>
+            <input type="text" name="contact" id="contactInput" required class="w-full border rounded px-3 py-2" />
+          </div>
+          
+          <div>
+            <label for="areaInput" class="block font-medium">Location:<span class="text-red-500">*</span></label>
+            <input type="text" name="area" id="areaInput" required class="w-full border rounded px-3 py-2" />
+            <input type="hidden" name="lat" id="latInput">
+            <input type="hidden" name="lng" id="lngInput">
+          </div>
+          
+          <div>
+            <label for="descripInput" class="block font-medium">Description:</label>
+            <textarea name="descrip" id="descripInput" required class="w-full border rounded px-3 py-2 h-24"></textarea>
+          </div>
+    
+          <div>
+            <label for="categoryInput" class="block font-medium">Category: <span class="text-red-500">*</span></label>
+            <select name="category" id="categoryInput" required class="w-full border rounded px-3 py-2">
+              <option value="">Select a category</option>
+              <option value="food">Food 🍽️</option>
+              <option value="adventure">Adventure 🏔️</option>
+              <option value="music">Music 🎸</option>
+              <option value="sports">Sports 🏀</option>
+              <option value="events">Events 🎉</option>
+              <option value="academic">Academic 📚</option>
+              <option value="other">Other ✨</option>
+            </select>
+          </div>
+          
+          <div class="text-right mt-6">
+            <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
 
 
     <script>
