@@ -91,8 +91,14 @@
     }
 
     function closeAddNewModal() {
+      const modal = document.getElementById("addNewModal");
+      const content = document.getElementById("modContent");
       document.getElementById("addNewModal").classList.add("hidden");
       document.body.classList.remove("overflow-hidden");
+      setTimeout(() => {
+        content.classList.remove("scale-100", "opacity-100");
+        content.classList.add("scale-95", "opacity-0");
+      }, 10);
     }
 
     // Handle clicks outside the modal to close it
@@ -104,15 +110,14 @@
     });
 
     document.getElementById("privToggle").addEventListener("change", function() {
-      const isChecked = this.checked;
-      const privInput = document.querySelector('input[name="priv"]');
-      privInput.value = isChecked ? "True" : "False";
+      document.getElementById("privInput").value = this.checked ? 'True' : 'False';
     });
 
-    // Google Places Autocomplete for location field
+    // Google Places autocomplete
     function initAddItemAutocomplete() {
       const input = document.getElementById("areaInput");
       const autocomplete = new google.maps.places.Autocomplete(input);
+      let acUsed = false;
 
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
@@ -120,14 +125,21 @@
 
         document.getElementById("latInput").value = place.geometry.location.lat();
         document.getElementById("lngInput").value = place.geometry.location.lng();
+        acUsed = true;
       });
     }
+
+    document.getElementById("addItemForm").addEventListener("submit", function (e) {
+      if (!acUsed) {
+        e.preventDefault();
+        alert("Please select a valid location.");
+        input.focus();
+      }
+    });
 
     // Initialize Google Places when Maps API loads
     if (typeof google !== 'undefined' && google.maps) {
       initAddItemAutocomplete();
-    } else {
-      // It will be initialized by the callback in the script tag
     }
 </script>
   
