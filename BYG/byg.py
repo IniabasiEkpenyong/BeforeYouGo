@@ -836,6 +836,7 @@ def add_comment_route():
 
 @app.route('/get_comments/<int:event_id>', methods=['GET'])
 def get_comments_route(event_id):
+    user_info = auth.authenticate()
     comments = database.get_comments(event_id)
     return flask.jsonify({'comments': comments})
 

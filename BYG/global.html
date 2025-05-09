@@ -110,8 +110,7 @@
          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
          {% for event in events %}
             {% if event['priv'] == False %}
-            <div class="border-2 border-orange-400 rounded-lg overflow-hidden bg-white shadow hover:shadow-md transition-shadow duration-300">
-
+               <div class="border-2 border-orange-400 rounded-lg overflow-hidden bg-white shadow hover:shadow-md transition-shadow duration-300">
                   <div class="p-4">
                      <div class="flex items-center justify-between mb-2">
                         <h3 class="font-semibold text-gray-800 text-lg">
@@ -166,12 +165,18 @@
                            Loading...
                         </span>
                      </div>
-                       
+
          
                      <h4 class="text-sm font-medium text-gray-700 mb-2">Comments</h4>
                      <div id="comments{{ event['bucket_id'] }}" class="comments-container max-h-32 overflow-y-auto mb-3">
                         <div class="text-gray-400 text-sm italic">Loading comments...</div>
-                     </div>       
+                     </div> 
+                     
+                     <form class="comment-form mt-3">
+                        <input type="hidden" name="event_id" value="{{ event['bucket_id'] }}">
+                        <textarea name="comment" class="w-full border rounded p-2 text-sm" placeholder="Add your comment..."></textarea>
+                        <button type="submit" class="mt-2 bg-orange-500 text-white px-3 py-1 rounded text-sm">Post Comment</button>
+                      </form>      
 
                      <button onclick="$('#friendForm{{event.bucket_id}}').toggleClass('hidden')"
                               class="px-3 py-2 border border-orange-500 text-orange-500 hover:bg-orange-50 rounded-md text-sm">
@@ -212,7 +217,6 @@
                      {% endif %}            
                   </div>
                </div>
-            </div>
                {% endif %}
             {% endfor %}
          </div>
@@ -303,7 +307,7 @@
       function startCommentRefresh() {
          setInterval(function() {
             $('[id^="comments"]').each(function() {
-               const eventId = $(this).attr.('id').replace('comments', '');
+               const eventId = $(this).attr('id').replace('comments', '');
                loadComments(eventId, true);
             });
          }, 30000);
@@ -313,17 +317,17 @@
       function loadAllRatingsAndComments() {
          $('[id^="avgRating"]').each(function() {
             const id = $(this).attr('id').replace('avgRating', '');
-            loadRating(eventId);
-            loadComments(eventId);
+            loadRating(id);
+            loadComments(id);
          });
       }
      
       function updateStars(eventId, rating) {
          $(`.rating-star[data-event-id="${eventId}"]`).each(function() {
             if ($(this).data('value') <= rating) {
-               $(this).data('value').removeClass('far').addClass('fas');
+               $(this).removeClass('far').addClass('fas');
             } else {
-               $(this).data('value').removeClass('fas').addClass('far');
+               $(this).removeClass('fas').addClass('far');
             }
          });
       }
@@ -336,23 +340,27 @@
                const $container = $('#comments' + eventId);
                $container.empty();
                
-               if (data.comments.length === 0) {
-               $container.html('<div class="text-gray-400 text-sm italic">No comments yet</div>');
-               return;
+               if (!data.comments || data.comments.length === 0) {
+                  $container.html('<div class="text-gray-400 text-sm italic">No comments yet</div>');
+                  return;
                }
                
                data.comments.forEach(function(comment) {
-               addCommentToUI(eventId, comment, false);
+                  addCommentToUI(eventId, comment, false);
                });
+            },
+            error: function(error) {
+               console.error('Error loading comments:', error);
+               $('#comments' + eventId).html('<div class="text-red-500 text-sm">Failed to load comments</div>');
             }
          });
       }
      
       function addCommentToUI(eventId, comment, prepend = true) {
-         const $container = $('comments' + eventId);
+         const $container = $('#comments' + eventId);
          
-         const $comments = $('<div class="comment py-2 border-b border-gray-100"></div>');
-         $comments.html(`
+         const $commentInfo = $('<div class="comment py-2 border-b border-gray-100"></div>');
+         $commentInfo.html(`
             <div class="flex justify-between">
                <div>
                <div class="comment-header">
@@ -368,9 +376,9 @@
          `);
          
          if (prepend) {
-            container.prepend($comments);
+            $container.prepend($commentInfo);
          } else {
-            container.append($comments);
+            $container.append($commentInfo);
          }
       }
      
@@ -387,6 +395,10 @@
                } else {
                   $avgRating.text('Not yet rated');
                }
+            },
+            error: function(error) {
+               console.error('Error loading rating:', error);
+               $('#avgRating' + eventId).text('Error loading ratings');
             }
          });
       }
@@ -426,7 +438,7 @@
    </script>
    {% include 'new_item.html' %}
 
-   <!--Default is public-->
+   <!--Default is public on global page-->
    <script>
       $(document).ready( function() { 
         if ($('#privToggle').length) {

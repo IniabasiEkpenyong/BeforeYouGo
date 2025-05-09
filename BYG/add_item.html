@@ -2,17 +2,13 @@
 <html>
    <head>
       <title>Add New Item - Before You Go</title>
-      <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
    </head>
    <body>
       {% include 'header.html' %}
       <h1>Add New Item</h1>
-
       <div class="search-container">
-
          <form id = "addItemForm" action="/create_item" 
          method="POST" class="search-form">
-         
             <label for="title">Title:</label>
             <input type="text" id="titleInput" name="title" required>
             
