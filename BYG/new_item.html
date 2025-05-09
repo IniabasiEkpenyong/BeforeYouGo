@@ -16,7 +16,7 @@
         
         <div>
           <label for="contactInput" class="block font-medium">Contact <span class="text-gray-400">(optional)</span> </label>
-          <input type="text" name="contact" id="contactInput" required class="w-full border rounded px-3 py-2" />
+          <input type="text" name="contact" id="contactInput" class="w-full border rounded px-3 py-2" />
         </div>
         
         <div>
@@ -47,41 +47,57 @@
         
         <div class="flex items-center justify-between pt-2">
           <label class="font-medium text-gray-700">Event Privacy:</label>
-          <div class="flex items-center space-x-1"></div>
-            <span id="public" class="mr-2 text-sm text-gray-600">Public</span>
-            <div class="relative inline-block w-12 mr-2 align-middle select-none">
-              <input type="checkbox" id="privToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4
-              appearance-none cursor-pointer transition-transform duration-200 ease-in-out"/>
+          <div class="flex items-center">
+            <span id="public" class="mr-2 text-sm text-gray-400">Public</span>
+            <div class="relative inline-block w-12 align-middle select-none">
+              <input type="checkbox" id="privToggle" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4
+              appearance-none cursor-pointer"/>
               <label for="privToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
             </div>
+            <span id="private" class="ml-2 text-sm text-orange-600 font-medium">Private</span>
           </div>
-          <span id="private" class="ml-1 text-sm text-orange-600 font-medium">Private</span>
         </div>
+
         <div class="text-right pt-4">
-          <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+          <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 inline-flex items-center">
             <i class="fas fa-plus mr-2"></i>Create New Item
           </button>
         </div>
+
       </form>
     </div>
   </div>
   
   <style>
     .toggle-checkbox {
-      right: 0;
+      position: absolute;
+      left: 0;
       top: 0;
-      transition: transform 0.2s ease-in-out;
-      transform: translateX(0%);
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background-color:white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      z-index:2;
+      transition: all 0.2s ease-in-out;
+      margin: 0;
     }
     .toggle-checkbox:checked {
       border-color:#f97316;
-      transform: translateX(100%);
+      left: calc(100% - 24px);
     }
     .toggle-checkbox:checked + .toggle-label {
       background-color: #f97316;
     }
     .toggle-label {
     position: relative;
+    display: block;
+    height: 24px;
+    width: 100%;
+    background-color: gray;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
   }
   </style>
   
@@ -119,14 +135,22 @@
 
     document.getElementById("privToggle").addEventListener("change", function() {
       document.getElementById("privInput").value = this.checked ? 'True' : 'False';
-       const 
+      const pub = document.getElementById('public');
+      const priv = document.getElementById('private');
+    
+      if (this.checked) {
+        pub.className = 'mr-2 text-sm text-gray-400';
+        priv.className = 'ml-2 text-sm text-orange-600 font-medium';
+      } else {
+        pub.className = 'mr-2 text-sm text-orange-600 font-medium';
+        priv.className = 'ml-2 text-sm text-gray-400';
+      }
     });
 
     // Google Places autocomplete
     function initAddItemAutocomplete() {
       const input = document.getElementById("areaInput");
       const autocomplete = new google.maps.places.Autocomplete(input);
-      let acUsed = false;
 
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
@@ -134,12 +158,14 @@
 
         document.getElementById("latInput").value = place.geometry.location.lat();
         document.getElementById("lngInput").value = place.geometry.location.lng();
-        acUsed = true;
       });
     }
 
     document.getElementById("addItemForm").addEventListener("submit", function (e) {
-      if (!acUsed) {
+      const input = document.getElementById("areaInput");
+      const lat = document.getElementById("latInput").value;
+      const lng = document.getElementById("lngInput").value;
+      if (!lat || !lng) {
         e.preventDefault();
         alert("Please select a valid location.");
         input.focus();
@@ -151,5 +177,3 @@
       initAddItemAutocomplete();
     }
 </script>
-  
-  <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAddItemAutocomplete" async defer></script>
