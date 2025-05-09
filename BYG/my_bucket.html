@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Inline Styles -->
   <style>
     #map {
@@ -31,8 +31,10 @@
   <p class="text-center">You have no items in your personal list yet.</p>
   {% else %}
     <div class="w-full max-w-xl mx-auto mt-4">
-      <p class="text-sm font-medium text-gray-700 text-center mb-1">Progress: {{ progress | int }}%</p>
-      <div class="w-full bg-gray-200 rounded-full h-3">
+      <div class="flex justify-between text-sm mb-1">
+      <span class="font-medium text-gray-700">Progress: </span>
+      <span class="text-orange-600 font-medium">{{ progress | int }}%</span>
+      <div class="w-full bg-gray-200 rounded-full h-3 shadow-inner">
         <div class="bg-orange-500 h-3 rounded-full transition-all duration-300" style="width: {{ progress }}%"></div>
       </div>
     </div>
@@ -81,14 +83,20 @@
           <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST" class="flex-1 sm:flex-none">
             
             <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-            <input type="submit" class="btn btn-sm btn-outline-success w-full sm:w-auto" 
-                    value="{% if ub.completed %}Reset{% else %}Mark Completed{% endif %}">
+            <button type="submit" class="w-full sm:w-auto px-3 py-1 text-sm rounded transition-colors
+            {% if ub.completed %}
+              border border-gray-500 text-gray-700 hover:bg-gray-100
+            {% else %}
+              bg-green-500 text-white hover:bg-green-600
+            {% endif %}">
+            {% if ub.completed %}Reset{% else %}Mark Completed{% endif %}
+            </button>
           </form>
   
           <form action="/remove_from_my_list" method="POST" class="flex-1 sm:flex-none">
             
             <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
-            <button type="submit" class="btn bg-red-600 text-white hover:bg-red-700">
+            <button type="submit" class="w-full sm:w-auto bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 flex items-center justify-center gap-1">
                     <i class="fas fa-trash"></i>
                     <span>Remove from my List</span>
             </button>
@@ -106,14 +114,11 @@
 
   <div id="map"></div>
 
-  <script>
-    let pins = {{ pins | tojson | safe }};
-  </script>
-
   <!-- Google Maps Integration -->
   <script>
     let map;
     let marker;
+    let pins = {{ pins | tojson | safe }};
 
     function initMap() {
       map = new google.maps.Map(document.getElementById("map"), {
@@ -192,13 +197,7 @@
   </button>
 </div>
 
-<script
-  src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initMap"
-  async defer>
-</script>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!--Help from ChatGPT in drafting non-->
+<!--Help from ChatGPT in drafting non-->
 <script>
   $(document).ready(function() {
     // Find all forms with subtask checkboxes

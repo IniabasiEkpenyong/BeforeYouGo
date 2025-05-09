@@ -10,9 +10,9 @@ import flask
 import sqlalchemy
 import sqlalchemy.orm
 import os
+import datetime
 from flask import session, redirect, render_template, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-# from flask_wtf import CSRFProtect
 
 
 # Import the app from package
@@ -55,7 +55,6 @@ app = flask.Flask(__name__, template_folder='.')
 
 # app.secret_key = 'secret_key_here'
 app.secret_key = os.environ['APP_SECRET_KEY']
-# csrf = CSRFProtect(app)
 
 #-----------------------------------------------------------------------
 admins = ['jg2783', 'ie9117', 'cs-jiaweim']
@@ -482,23 +481,23 @@ def exit_shared_event():
 
     if not shared_event_id:
         return flask.redirect("/my_bucket")
-    
-    
 
-    # from database import remove_user_from_shared_event
-    success, msg = remove_user_from_shared_event(int(shared_event_id), user_netid)
+    database.remove_user_from_shared_event(int(shared_event_id), user_netid)
     return flask.redirect("/my_bucket")
 
 @app.route("/create_shared_event", methods=["POST"])
 def create_shared_event_route():
-    try:
-        bucket_id = int(flask.request.form["bucket_id"])
-        netids = flask.request.form.getlist("friend_netids[]")
-        netids = [n.strip().lower() for n in netids if n.strip()]
-    except Exception as e:
-        print("Error parsing form:", e)
-        flask.flash("Invalid form submission.")
-        return flask.redirect("/global")
+    bucket_id = int(flask.request.form["bucket_id"])
+    netids = flask.request.form.getlist("friend_netids[]")
+    netids = [n.strip().lower() for n in netids if n.strip()]
+    
+    event_date = flask.request.form.get("event_date")
+    date_obj = None
+    if event_date:
+        try:
+            date_obj = datetime.datetime.strptime(event_date, '%Y-%m-%d')
+        except ValueError:
+            pass
 
     user_info = auth.authenticate()
     user_netid = user_info.get('user')
@@ -520,14 +519,12 @@ def create_shared_event_route():
     
     return flask.redirect("/global")
 
-
-
-
-
 @app.route("/complete_shared_event", methods=["POST"])
 def complete_shared_event():
-    shared_event_id = flask.request.form["shared_event_id"]
-    
+    user_info = auth.authenticate()
+    shared_event_id = flask.request.form.get("shared_event_id")
+    if not shared_event_id:
+        return flask.redirect("/my_bucket")
     mark_shared_event_completed(shared_event_id)
     return flask.redirect("/my_bucket")
 
@@ -639,10 +636,9 @@ def add_item():
     # Get user info
     user_info = auth.authenticate()
     user_netid = user_info['user']
-
     # Set initial status
     # If user is admin, auto-approve. Otherwise, set as pending
-    initial_status = 'approved' if user_netid in admins else 'pending'
+    initial_status = 'approved' if user_netid in admins or priv else 'pending'
 
     # Add the new item to the database
     with sqlalchemy.orm.Session(database._engine) as session_db:
@@ -742,7 +738,6 @@ def delete_subtask():
 def admin_dashboard():
     # Verify the user is an admin
     user_info = auth.authenticate()
-    given_name = auth.get_name(user_info)
     user_netid = user_info['user']
     
     if user_netid not in admins:
@@ -771,7 +766,6 @@ def admin_dashboard():
                                items=items, 
                                status=status, 
                                counts=counts,
-                               given_name = given_name,
                                ampm=get_ampm(),
                                current_time=get_current_time())
 
