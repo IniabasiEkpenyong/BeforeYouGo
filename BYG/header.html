@@ -15,10 +15,11 @@
           <a href="/global" class="text-gray-700 hover:text-orange-500">Browse</a>
           <a href="/my_bucket" class="text-gray-700 hover:text-orange-500">My List</a>
           {% if is_admin %}
-          <a href="/admin" class="text-gray-700 hover:text-orange-500">
+          <a href="/admin" class="text-gray-700 hover:text-orange-500 relative">
             <i class="fas fa-shield-alt"></i> Admin
             {% if pending_count > 0 %}
-              <span class="badge bg-warning text-dark" style="position: relative; top: -8px; right: -5px; border-radius: 50%;">
+              <span class="absolute -top-2.5 -right-2 bg-orange-500 text-white text-xs rounded-full h-4 w-4 flex
+              items-center justify-center">
                 {{ pending_count }}
               </span>
             {% endif %}
