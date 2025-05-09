@@ -728,44 +728,20 @@ def toggle_subtask():
     
     subtask_id = request.form.get('subtask_id')
     if not subtask_id:
-        return flask.redirect('/my_bucket')
-    
-    with sqlalchemy.orm.Session(database._engine) as session_db:
-        subtask = session_db.query(database.SubTask).join(UserBucket).filter(
-            database.SubTask.id == subtask_id,
-            UserBucket.user_netid == user_netid
-        ).first()
+        return flask.jsonify({'success': False, 'message': 'Subtask ID is required'})
         
-        if not subtask:
-            if flask.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return flask.jsonify({'success': False, 'error': 'Subtask not found'})
-            return flask.redirect('/my_bucket')
-        
-        user_bucket_id = subtask.user_bucket_id
-        database.toggle_subtask(subtask_id)
-        subtask = session_db.query(database.SubTask).filter_by(id=subtask_id).first()
-
-        subtasks = session_db.query(database.SubTask).filter_by(
-            user_bucket_id=user_bucket_id).all()
-        total_count = len(subtasks)
-        completed_count = sum(1 for st in subtasks if st.completed)
-        progress = 0 if total_count == 0 else (completed_count / total_count) * 100
-
-        user_items = session_db.query(UserBucket).filter_by(user_netid=user_netid).all()
-        total_items = len(user_items)
-        completed = sum(1 for item in user_items if item.completed)
-        overall_progress = 0 if total_items == 0 else (completed/total_items) * 100
+    success, result = database.toggle_subtask(subtask_id)
     
-    if flask.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return flask.jsonify({'success': True, 
-                              'bucket_id': user_bucket_id,
-                              'progress': progress,
-                              'completed_count': completed_count,
-                              'total_count': total_count,
-                              'completed': subtask.completed,
-                              'overall_progress': overall_progress})
-    
-    return flask.redirect('/my_bucket')
+    if success:
+        return flask.jsonify({
+            'success': True, 
+            'progress': result['progress'],
+            'completed': result['completed'],
+            'total': result['total'],
+            'bucket_id': result['bucket_id']
+        })
+    else:
+        return flask.jsonify({'success': False, 'message': result})
 
 @app.route('/delete_subtask', methods=['POST'])
 def delete_subtask():

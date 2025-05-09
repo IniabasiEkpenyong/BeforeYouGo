@@ -231,17 +231,25 @@ def toggle_subtask(subtask_id):
             return False, "Subtask not found"
         
         subtask.completed = not subtask.completed
+        all_subs = session.query(SubTask).filter_by(user_bucket_id=subtask.user_bucket_id).all()
+        completed = sum (1 for s in all_subs if s.completed)
+        total = len(all_subs)
+        progress = round((completed/total) * 100, 2) if total > 0 else 0
         
         user_bucket = session.query(UserBucket).filter_by(id=subtask.user_bucket_id).first()
         if user_bucket:
-            subtasks = session.query(SubTask).filter_by(user_bucket_id=user_bucket.id).all()
-            if subtasks and all(st.completed for st in subtasks):
+            if completed == total and total > 0:
                 user_bucket.completed = True
-            else:
+            elif user_bucket.completed and completed < total:
                 user_bucket.completed = False
         
         session.commit()
-        return True, subtask.completed
+        return True, {
+            "progress": progress, 
+            "completed": completed, 
+            "total": total,
+            "bucket_id": subtask.user_bucket_id
+        }
 
 def delete_subtask(subtask_id):
     with sqlalchemy.orm.Session(_engine) as session:
