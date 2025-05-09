@@ -166,10 +166,16 @@
       const input = document.getElementById("areaInput");
       const lat = document.getElementById("latInput").value;
       const lng = document.getElementById("lngInput").value;
+      const priv = document.getElementById("privInput").value;
+
       if (!lat || !lng) {
         e.preventDefault();
         alert("Please select a valid location.");
         input.focus();
+      }
+      
+      if (priv === 'False') {
+        alert("Thank you! Your public event suggestion has been submitted and is pending approval from administrators.");
       }
     });
 
