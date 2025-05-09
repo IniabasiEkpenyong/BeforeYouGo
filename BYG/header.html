@@ -1,32 +1,40 @@
 <body class="bg-white text-black font-serif">
-    <header class="bg-white shadow sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-        <div class="text-2xl font-bold text-orange-600">
-          <a href="/home" class="flex items-center space-x-2">
-            <span>🐯Before You Go</span></a>
-        </div>
-        <div class="flex items-center space-x-6">
-          <div class="text-orange-700  text-sm font-medium">
-            <!-- Logged in as {{net_id}} -->
-            Logged in as {{given_name}}
-          </div>
-        </div>
-        <nav class="space-x-6 text-sm font-medium">
-          <a href="/global" class="text-gray-700 hover:text-orange-500">Browse</a>
-          <a href="/my_bucket" class="text-gray-700 hover:text-orange-500">My List</a>
-          {% if is_admin %}
-          <a href="/admin" class="text-gray-700 hover:text-orange-500 relative">
-            <i class="fas fa-shield-alt"></i> Admin
-            {% if pending_count > 0 %}
-              <span class="absolute -top-2.5 -right-2 bg-orange-500 text-white text-xs rounded-full h-4 w-4 flex
-              items-center justify-center">
-                {{ pending_count }}
-              </span>
-            {% endif %}
-          </a>
-          {% endif %}
-          <a href="{{ url_for('logout_app') }}" class="text-orange-500 border border-orange-500 rounded-full px-4 py-1 hover:bg-orange-500 hover:text-white">Log Out</a>
-        </nav>
+  <header class="bg-white shadow sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+      <!-- Logo and Title -->
+      <div class="text-2xl font-bold text-orange-600 flex justify-between items-center">
+        <a href="/home" class="flex items-center space-x-2">
+          <span>🐯Before You Go</span>
+        </a>
       </div>
-    </header>
-  </body>
+
+      <!-- User Info -->
+      <div class="text-orange-700 text-sm font-medium text-center sm:text-left">
+        Logged in as {{given_name}}
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex flex-wrap justify-center sm:justify-end items-center gap-4 text-sm font-medium">
+        <a href="/global" class="text-gray-700 hover:text-orange-500">Browse</a>
+        <a href="/my_bucket" class="text-gray-700 hover:text-orange-500">My List</a>
+
+        {% if is_admin %}
+        <a href="/admin" class="text-gray-700 hover:text-orange-500 relative">
+          <i class="fas fa-shield-alt"></i> Admin
+          {% if pending_count > 0 %}
+          <span class="absolute top-[-8px] right-[-5px] bg-yellow-400 text-black text-xs rounded-full px-2">
+            {{ pending_count }}
+          </span>
+          {% endif %}
+        </a>
+        {% endif %}
+
+        <a href="{{ url_for('logout_app') }}"
+           class="text-orange-500 border border-orange-500 rounded-full px-4 py-1 hover:bg-orange-500 hover:text-white whitespace-nowrap">
+          Log Out
+        </a>
+      </nav>
+    </div>
+  </header>
+</body>
+
