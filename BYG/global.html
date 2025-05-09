@@ -127,7 +127,7 @@
                      
                      <br>
                      <form action="/add_to_my_list" method="POST" class="w-full flex justify-center">
-                        <!-- {{ csrf_token() }} -->
+                        
                         <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
                         <input type="hidden" name="search" value="{{ request.args.get('search', '') }}">
                         <input type="hidden" name="sort" value="{{ request.args.get('sort', '') }}">
@@ -224,7 +224,7 @@
 
                      {% if is_admin %}
                         <form action="/remove_from_global_list" method="POST">
-                            <!-- {{ csrf_token() }} -->
+                            
                            <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
                            <input type="hidden" name="search" value="{{ request.args.get('search', '') }}">
                            <input type="hidden" name="sort" value="{{ request.args.get('sort', '') }}">
@@ -316,9 +316,9 @@
            
             fetch('/add_comment', {
             method: 'POST',
-            /*headers: {
-                'X-CSRFToken': csrfToken
-            },*/
+        
+        
+        
             body: formData
             })
             .then(response => response.json())
