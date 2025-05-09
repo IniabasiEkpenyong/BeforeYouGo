@@ -12,6 +12,7 @@ import sqlalchemy.orm
 import os
 from flask import session, redirect, render_template, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_wtf import CSRFProtect
 
 
 # Import the app from package
@@ -54,6 +55,7 @@ app = flask.Flask(__name__, template_folder='.')
 
 # app.secret_key = 'secret_key_here'
 app.secret_key = os.environ['APP_SECRET_KEY']
+csrf = CSRFProtect(app)
 
 #-----------------------------------------------------------------------
 admins = ['jg2783', 'ie9117', 'cs-jiaweim']

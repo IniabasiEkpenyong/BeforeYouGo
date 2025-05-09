@@ -79,12 +79,14 @@
           {% endif %}
   
           <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST" class="flex-1 sm:flex-none">
+            {{ csrf_token() }}
             <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
             <input type="submit" class="btn btn-sm btn-outline-success w-full sm:w-auto" 
                     value="{% if ub.completed %}Reset{% else %}Mark Completed{% endif %}">
           </form>
   
           <form action="/remove_from_my_list" method="POST" class="flex-1 sm:flex-none">
+            {{ csrf_token() }}
             <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
             <button type="submit" class="btn bg-red-600 text-white hover:bg-red-700">
                     <i class="fas fa-trash"></i>
