@@ -122,7 +122,7 @@
                      
                      <br>
                      <form action="/add_to_my_list" method="POST" class="w-full flex justify-center">
-                        {{ csrf_token() }}
+                        <!-- {{ csrf_token() }} -->
                         <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
                         <input type="hidden" name="search" value="{{ request.args.get('search', '') }}">
                         <input type="hidden" name="sort" value="{{ request.args.get('sort', '') }}">
@@ -192,7 +192,7 @@
                         
                         <div id="friendForm{{ event.bucket_id }}" class="mt-3 pt-3 border-t border-gray-200 hidden">
                               <form action="/create_shared_event" method="POST" class="space-y-3">
-                                {{ csrf_token() }}
+                                <!-- {{ csrf_token() }} -->
                                  <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
                                  
                                  <div class="mb-2">
@@ -215,7 +215,7 @@
 
                      {% if is_admin %}
                         <form action="/remove_from_global_list" method="POST">
-                            {{ csrf_token() }}
+                            <!-- {{ csrf_token() }} -->
                            <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
                            <input type="hidden" name="search" value="{{ request.args.get('search', '') }}">
                            <input type="hidden" name="sort" value="{{ request.args.get('sort', '') }}">

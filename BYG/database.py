@@ -147,6 +147,8 @@ def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort=''
             # Default sorting (A-Z)
             query = query.order_by(sqlalchemy.func.lower(Bucket.item))
 
+        descrip = escape_sql_wildcards(descrip)
+        title = escape_sql_wildcards(title)
         query = query.filter(
             ~Bucket.bucket_id.in_(exclude_ids),
             sqlalchemy.or_(
