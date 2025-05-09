@@ -110,10 +110,8 @@
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div data-progress-id="{{ub.id}}" 
-                class="h-2 rounded-full transition-all duration-300" 
-                style="width: {{ progress_by_bucket[ub.id] }}%; background-color:{% if progress_by_bucket[ub.id] < 33 %}#ef4444
-                {% elif progress_by_bucket[ub.id] < 67 %}#f59e0b
-                {% else %}#10b981{% endif %};">
+              class="h-2 rounded-full transition-all duration-300 {% if progress_by_bucket[ub.id] <= 33.33 %}bg-red-500{% elif progress_by_bucket[ub.id] <= 66.67 %}bg-amber-500{% else %}bg-emerald-500{% endif %}"
+              style="width: {{ progress_by_bucket[ub.id] | round(2) }}%;">
               </div>
             </div>
           </div>
