@@ -525,7 +525,7 @@ def complete_shared_event():
     shared_event_id = flask.request.form.get("shared_event_id")
     if not shared_event_id:
         return flask.redirect("/my_bucket")
-    mark_shared_event_completed(shared_event_id)
+    database.mark_shared_event_completed(shared_event_id)
     return flask.redirect("/my_bucket")
 
 #-----------------------------------------------------------------------
