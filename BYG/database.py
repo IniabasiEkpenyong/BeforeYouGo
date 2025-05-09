@@ -118,6 +118,8 @@ class Rating(Base):
 
 
 #-----------------------------------------------------------------------
+def escape_sql_wildcards(value):
+    return value.replace("_", r"\_").replace("%", r"\%")
 
 def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort='', exclude_ids=None, status='approved'):
     if exclude_ids is None:
