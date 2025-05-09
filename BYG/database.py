@@ -319,7 +319,7 @@ def mark_shared_event_completed(shared_event_id):
     with sqlalchemy.orm.Session(_engine) as session:
         event = session.query(SharedEvent).filter_by(id=shared_event_id).first()
         if event:
-            event.is_completed = True
+            event.is_completed = not event.is_completed
             session.commit()
             return True
         return False

@@ -636,10 +636,9 @@ def add_item():
     # Get user info
     user_info = auth.authenticate()
     user_netid = user_info['user']
-
     # Set initial status
     # If user is admin, auto-approve. Otherwise, set as pending
-    initial_status = 'approved' if user_netid in admins else 'pending'
+    initial_status = 'approved' if user_netid in admins or priv else 'pending'
 
     # Add the new item to the database
     with sqlalchemy.orm.Session(database._engine) as session_db:
