@@ -47,15 +47,15 @@
         
         <div class="flex items-center justify-between pt-2">
           <label class="font-medium text-gray-700">Event Privacy:</label>
-          <div class="flex items-center">
-            <span class="mr-2 text-sm text-gray-600">Public</span>
+          <div class="flex items-center space-x-1"></div>
+            <span id="public" class="mr-2 text-sm text-gray-600">Public</span>
             <div class="relative inline-block w-12 mr-2 align-middle select-none">
               <input type="checkbox" id="privToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4
               appearance-none cursor-pointer transition-transform duration-200 ease-in-out"/>
               <label for="privToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
             </div>
           </div>
-          <span class="text-sm text-orange-600 font-medium">Private</span>
+          <span id="private" class="ml-1 text-sm text-orange-600 font-medium">Private</span>
         </div>
         <div class="text-right pt-4">
           <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
@@ -67,14 +67,22 @@
   </div>
   
   <style>
-    .toggle-checkbox:checked {
+    .toggle-checkbox {
       right: 0;
-      border-color: #f97316;
+      top: 0;
+      transition: transform 0.2s ease-in-out;
+      transform: translateX(0%);
+    }
+    .toggle-checkbox:checked {
+      border-color:#f97316;
       transform: translateX(100%);
     }
     .toggle-checkbox:checked + .toggle-label {
       background-color: #f97316;
     }
+    .toggle-label {
+    position: relative;
+  }
   </style>
   
   <!--Configured with help-->
@@ -111,6 +119,7 @@
 
     document.getElementById("privToggle").addEventListener("change", function() {
       document.getElementById("privInput").value = this.checked ? 'True' : 'False';
+       const 
     });
 
     // Google Places autocomplete
