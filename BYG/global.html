@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
    <head>
-      
+     
       <title>Before You Go</title>
       <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
       <script src="https://cdn.tailwindcss.com"></script>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAddItemAutocomplete" async defer></script>
+
+
          <!-- Chat -->
          <style>
             .rating-stars {
@@ -13,12 +17,12 @@
                cursor: pointer;
                margin-bottom: 10px;
             }
-            
+           
             .rating-star {
                font-size: 1.25rem;
                margin-right: 0.25rem;
             }
-            
+           
             .comments-container {
                max-height: 200px;
                overflow-y: auto;
@@ -28,7 +32,7 @@
                margin-bottom: 10px;
                background-color: #f8f9fa;
             }
-            
+           
             .comment {
                border-left: 3px solid #007bff;
                padding: 8px 10px;
@@ -36,26 +40,22 @@
                background-color: white;
                border-radius: 4px;
             }
-            
+           
             .comment-header {
                display: flex;
                justify-content: space-between;
                font-size: 0.85rem;
                margin-bottom: 3px;
             }
-            
-            .section-title {
-               font-weight: bold;
-               margin-bottom: 8px;
-            }
          </style>
    </head>
    <body>
       {% include 'header.html' %}
-      {% if err_msg != '' %} 
+      {% if err_msg != '' %}
             <p>{{ err_msg }}</p>
       {% else %}
       <h2 class="title">Events</h2>
+
 
       <div class="group fixed bottom-6 right-6 z-40">
          <button type="button" onclick="openAddNewModal()" class="fixed bottom-6 right-6 bg-orange-500 hover:bg-orange-600 text-white p-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-40">
@@ -65,6 +65,7 @@
              </span>
          </button>
       </div>
+
 
       <div class="max-w-md mx-auto mt-6 mb-8">
          <form action="/global" method="get" class="flex space-x-2" id="searchForm">
@@ -79,6 +80,7 @@
          </form>
       </div>
 
+
       <div class="filter-container" style="text-align: center;">
          <form action="/global" method="get" class="filter-form">
             <label for="sort">Sort By:</label>
@@ -89,6 +91,7 @@
                <option value="oldest" {% if request.args.get('sort') == 'oldest' %}selected{% endif %}>Oldest First</option>
             </select>
 
+
             <label for="cat">Category:</label>
             <select name="cat" id="catInput" onchange="this.form.submit();">
                 <option value="" {% if request.args.get('cat') == '' %}selected{% endif %}>All Categories</option>
@@ -98,14 +101,14 @@
             </select>
          </form>
       </div>
-      
+     
       {% if events|length == 0 %}
          <p>No items found.</p>
       {% else %}
          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
          {% for event in events %}
             {% if event['priv'] == False %}
-               <div class="border-2 border-orange-400 rounded-lg p-6 w-60 bg-white duration-300 flex flex-col transition-all transition-colors duration-300 hover:bg-orange-50 hover:shadow-lg hover:translate-y-1">
+               <div class="border-2 border-orange-400 rounded-lg p-6 w-60 bg-orange-50 duration-300 flex flex-col transition-all transition-colors duration-300 hover:bg-orange-500 hover:shadow-lg hover:translate-y-1">
                      <div class="text-4xl mb-2 text-center">
                         {% if event['cat'] == 'food' %}🍽️
                         {% elif event['cat'] == 'adventure' %}🏔️
@@ -132,13 +135,14 @@
                           + Add to My List
                         </button>
                       </form>
-                      
-                     <button type="button" 
-                        onclick="dropDown('dropdown-{{ event['bucket_id'] }}')" 
+                     
+                     <button type="button"
+                        onclick="dropDown('dropdown-{{ event['bucket_id'] }}')"
                         class="btn btn-sm btn-outline-primary mt-2">
                         <span class="mr-1">View Details</span>
                         <i class="fas fa-chevron-down transition-transform" id="icon-{{ event['bucket_id'] }}"></i>
                      </button>
+
 
                      <div id="dropdown-{{ event['bucket_id'] }}" class="hidden mt-4 pt-4 border-t border-gray-200">
                         {% if event['contact'] and event['contact'] != 'None' %}
@@ -147,13 +151,14 @@
                             <span class="text-gray-700">{{ event['contact'] }}</span>
                           </div>
                         {% endif %}
-                        
+                       
                         {% if event['descrip'] and event['descrip'] != 'None' %}
                           <div class="mb-4">
                             <span class="font-medium">Description:</span>
                             <p class="text-gray-700">{{ event['descrip'] }}</p>
                           </div>
                         {% endif %}
+
 
                         <!-- Rating Section -->
                         <div class="rating-section">
@@ -167,7 +172,7 @@
                               Not yet rated
                            </div>
                         </div>
-                        
+                       
          
                         <div class="comments-section">
                            <div class="section-title">Comments:</div>
@@ -176,38 +181,47 @@
                            </div>
                            <form id="commentForm{{ event['bucket_id'] }}" class="comment-form">
                               <input type="hidden" name="event_id" value="{{ event['bucket_id'] }}">
-                              <textarea class="form-control" name="comment" placeholder="Add your comment..." rows="2" required></textarea>
-                              <button type="submit" class="btn btn-sm btn-outline-primary mt-2">
+                              <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-orange-500" name="comment" name="comment" placeholder="Add your comment..." rows="2" required></textarea>
+                              <button type="submit" class="mt-2 border border-orange-500 text-orange-500 hover:bg-orange-50 px-3 py-1 rounded text-sm">
                                  Add Comment
                               </button>
                            </form>
                         </div>          
-                        
+                       
                       </div>
 
+
                      <div class="mt-3">
-                        <button type="button" 
-                                 class="btn btn-sm btn-outline-primary"
-                                 onclick="toggleFriendForm('{{ event['bucket_id'] }}')">
-                           Do With Friends
+                        <button onclick="$('#friendForm{{event.bucket_id}}').toggleClass('hidden')"
+                                 class="px-3 py-2 border border-orange-500 text-orange-500 hover:bg-orange-50 rounded-md text-sm">
+                                 <i class="fas fa-share-alt mr-1"></i> Do With Friends
                         </button>
-                        
-                        <div id="friendForm{{ event['bucket_id'] }}" style="display: none; margin-top: 10px;" class="mt-3 p-3 bg-gray-100 rounded-lg">
-                              <form method="POST" action="{{ url_for('create_shared_event_route') }}">
+                       
+                        <div id="friendForm{{ event.bucket_id }}" class="mt-3 pt-3 border-t border-gray-200 hidden">
+                              <form action="/create_shared_event" method="POST" class="space-y-3">
                                  <input type="hidden" name="bucket_id" value="{{ event['bucket_id'] }}">
-                                 <div id="friendFields-{{ event['bucket_id'] }}">
-                                    <div class="input-group mb-2">
-                                          <input type="text" name="friend_netids[]" class="form-control" placeholder="Enter friend's netid" required>
-                                    </div>
+                                 
+                                 <div class="mb-2">
+                                    <input type="text" name="friend_netids[]" class="w-full px-3 py-2 text-sm border border-gray-300 rounded" placeholder="Enter friend's netid" required>
                                  </div>
+
+
                                  <div class="flex justify-between">
-                                    <button type="button" class="btn btn-sm btn-secondary" onclick="addFriendField('{{ event['bucket_id'] }}')">+ Add another friend</button>
-                                    <button type="submit" class="btn btn-sm btn-primary">Invite</button>
+                                    <button type="button" onclick="addFriend('{{ event['bucket_id'] }}')">
+                                       <i class="fas fa-plus mr-1"></i> Add friend
+                                    </button>
+
+
+                                    <button type="submit" class="bg-orange-500 text-white px-3 py-1 rounded text-sm hover:bg-orange-600">
+                                       Share Event
+                                    </button>
                                  </div>
                               </form>
                         </div>
 
-                  
+
+                 
+
 
                      {% if is_admin %}
                         <form action="/remove_from_global_list" method="POST">
@@ -220,39 +234,21 @@
                         </form>
                      {% endif %}
 
-                                      
+
+                                     
                      </div>
                   </div>
-                  
+                 
                {% endif %}
             {% endfor %}
          {% endif %}
       {% endif %}
-    
+   
+
+
 
 
     <script>
-      function addFriendField(bucketId) {
-         const fieldGroup = document.createElement("div");
-         fieldGroup.className = "input-group mb-2";
-         fieldGroup.innerHTML = `
-         <input type="text" name="friend_netids[]" class="form-control" placeholder="Enter another friend's netid" required>
-         <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">
-            <i class="fas fa-trash"></i>
-         </button>
-         `;
-         document.getElementById(`friendFields-${bucketId}`).appendChild(fieldGroup);
-      }
-
-      function startCommentRefresh() {
-         setInterval(() => {
-            document.querySelectorAll('[id^="comments"]').forEach(container => {
-               const eventId = container.id.replace('comments', '');
-               loadComments(eventId, true);
-            });
-         }, 30);
-      }  
-      
       document.addEventListener('DOMContentLoaded', function() {
       loadAllRatingsAndComments();
       startCommentRefresh();
@@ -261,11 +257,11 @@
          star.addEventListener('click', function() {
             const value = this.getAttribute('data-value');
             const eventId = this.getAttribute('data-event-id');
-            
+           
             const formData = new FormData();
             formData.append('event_id', eventId);
             formData.append('rating', value);
-            
+           
             fetch('/add_rating', {
             method: 'POST',
             body: formData
@@ -274,7 +270,7 @@
             .then(data => {
             if (data.success) {
                updateStars(eventId, value);
-               document.getElementById('avgRating' + eventId).textContent = 
+               document.getElementById('avgRating' + eventId).textContent =
                   `Average rating: ${data.avg_rating} out of 5`;
             }
             });
@@ -283,7 +279,7 @@
          star.addEventListener('mouseover', function() {
             const value = this.getAttribute('data-value');
             const eventId = this.getAttribute('data-event-id');
-            
+           
             const starsForEvent = document.querySelectorAll(`.rating-star[data-event-id="${eventId}"]`);
             starsForEvent.forEach(s => {
             if (s.getAttribute('data-value') <= value) {
@@ -305,19 +301,19 @@
             });
          });
       });
-      
+     
       document.querySelectorAll('.comment-form').forEach(form => {
          form.addEventListener('submit', function(e) {
             e.preventDefault();
             const eventId = this.querySelector('input[name="event_id"]').value;
             const comment = this.querySelector('textarea[name="comment"]').value;
-            
+           
             if (!comment.trim()) return;
-            
+           
             const formData = new FormData();
             formData.append('event_id', eventId);
             formData.append('comment', comment);
-            
+           
             fetch('/add_comment', {
             method: 'POST',
             body: formData
@@ -331,7 +327,7 @@
             });
          });
       });
-      
+     
       function startCommentRefresh() {
          setInterval(() => {
             document.querySelectorAll('[id^="comments"]').forEach(container => {
@@ -340,6 +336,7 @@
             });
          }, 30000);
       }
+
 
       function loadAllRatingsAndComments() {
          const eventIds = [];
@@ -353,7 +350,7 @@
             loadComments(eventId);
          });
       }
-      
+     
       function updateStars(eventId, rating) {
          const stars = document.querySelectorAll(`.rating-star[data-event-id="${eventId}"]`);
          stars.forEach(star => {
@@ -367,19 +364,19 @@
             }
          });
       }
-      
+     
       function loadComments(eventId) {
          fetch('/get_comments/' + eventId)
             .then(response => response.json())
             .then(data => {
             const container = document.getElementById('comments' + eventId);
             container.innerHTML = '';
-            
+           
             if (data.comments.length === 0) {
                container.innerHTML = '<div class="text-muted small">No comments yet</div>';
                return;
             }
-            
+           
             data.comments.forEach(comment => {
                addCommentToUI(eventId, comment, false);
             });
@@ -388,7 +385,7 @@
             console.error('Error loading comments:', error);
             });
       }
-      
+     
       function addCommentToUI(eventId, comment, prepend = true) {
          const container = document.getElementById('comments' + eventId);
          
@@ -413,13 +410,13 @@
             container.appendChild(commentEl);
          }
       }
-      
+     
       function loadRating(eventId) {
          fetch('/get_rating/' + eventId)
             .then(response => response.json())
             .then(data => {
             updateStars(eventId, data.user_rating);
-            
+           
             const avgRatingEl = document.getElementById('avgRating' + eventId);
             if (data.count > 0) {
                avgRatingEl.textContent = `Average rating: ${data.avg_rating} out of 5 (${data.count} ${data.count === 1 ? 'rating' : 'ratings'})`;
@@ -433,15 +430,26 @@
       }
       });
 
+
+      function addFriend(bucketId) {
+         const $container = $(`#friendForm${bucketId}`);
+         const $newField = $(`
+            <div class="mb-2">
+               <input type="text" name="friend_netids[]" class="w-full px-3 py-2 text-sm border border-gray-300 rounded" placeholder="Friend's NetID" required>
+            </div>
+         `);
+         $container.find('.flex.justify-between').before($newField);
+      }
+
+
       function toggleFriendForm(bucketId) {
          const form = document.getElementById(`friendForm${bucketId}`);
-         if (form.style.display === 'none') {
-            form.style.display = 'block';
-         } else {
-            form.style.display = 'none';
+         if (form) {
+            form.classList.toggle('hidden');
          }
       }
    </script>
+
 
    <script>
       function dropDown(dropDownId) {
@@ -450,6 +458,7 @@
          const bucketId = dropDownId.replace('dropdown-', '');
          const icon = document.getElementById('icon-' + bucketId);
 
+
          if(dropDown.classList.contains('hidden')) {
             icon.classList.remove('transform', 'rotate-180');
          } else {
@@ -457,10 +466,10 @@
          }
       }
    </script>
-  
-   <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAddItemAutocomplete" async defer></script>
-
    {% include 'new_item.html' %}
+
+
+
 
    <!--Default is public-->
    <script>
@@ -477,6 +486,7 @@
         }
       });
     </script>
+
 
    </body>
 </html>
