@@ -85,6 +85,7 @@
          <form action="/global" method="get" class="filter-form">
             <label for="sort">Sort By:</label>
             <select name="sort" id="sortInput" onchange="this.form.submit();">
+               <option value="">-- Sort By --</option>
                <option value="az" {% if request.args.get('sort') == 'az' %}selected{% endif %}>A to Z</option>
                <option value="za" {% if request.args.get('sort') == 'za' %}selected{% endif %}>Z to A</option>
                <option value="recent" {% if request.args.get('sort') == 'recent' %}selected{% endif %}>Most Recent</option>
@@ -94,6 +95,7 @@
 
             <label for="cat">Category:</label>
             <select name="cat" id="catInput" onchange="this.form.submit();">
+               <option value="">All Categories</option>
                 <option value="" {% if request.args.get('cat') == '' %}selected{% endif %}>All Categories</option>
                 {% for category in categories %}
                   <option value="{{ category }}" {% if category == request.args.get('cat') %}selected{% endif %}>{{ category }}</option>
@@ -426,14 +428,12 @@
 
    <script>
       function dropDown(bucketId) {
-         const details = dropDownId.replace('dropdown-' + bucketId);
-         const icon = document.getElementById('icon-' + bucketId);
+         const details = $('#dropdown-' + bucketId);
+         const icon = $('#icon-' + bucketId);
 
-
-         if(details.classList.contains('hidden')) {
-            detailsEl.classList.remove('hidden');
-            icon.classList.remove('fa-chevron-down');
-            icon.classList.remove('fa-chevron-up');
+         if(details.hasClass('hidden')) {
+            details.classList.removeClass('hidden');
+            icon.classList.removeClass('fa-chevron-down').addClass('fa-chevron-up');
 
             loadRating(bucketId);
             loadComments(bucketId);

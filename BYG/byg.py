@@ -25,10 +25,6 @@ except ImportError:
     from BYG.database import Bucket, UserBucket, create_shared_event
     import BYG.database as database
 
-from .database import get_shared_events_for_user
-from .database import mark_shared_event_completed
-from .database import remove_user_from_shared_event
-
 # Set the secret key
 app.secret_key = os.environ['APP_SECRET_KEY']
 
@@ -57,7 +53,7 @@ app = flask.Flask(__name__, template_folder='.')
 app.secret_key = os.environ['APP_SECRET_KEY']
 
 #-----------------------------------------------------------------------
-admins = ['jg2783', 'ie9117', 'cs-jiaweim']
+admins = ['jg2783', 'ie9117', 'cs-jiaweim', 'ie7780']
 
 def get_ampm():
     if time.strftime('%p') == 'AM':
