@@ -428,15 +428,15 @@
 
    <!--Default is public-->
    <script>
-      $document.ready( function() { 
-        if ($('#privToggle')) {
+      $(document).ready( function() { 
+        if ($('#privToggle').length) {
          $('#privToggle').prop('checked', false);
          $('#privToggle').val('False');
          if($('#public').length && $('#private').length) {
-            $('#public').addClass('mr-2 text-sm text-orange-600 font-medium');
-            $('#private').addClass('ml-2 text-sm text-gray-400');
+            $('#public').removeClass('mr-2 text-sm text-gray-400').addClass('mr-2 text-sm text-orange-600 font-medium');
+            $('#private').removeClass('ml-2 text-sm text-orange-600 font-medium').addClass('ml-2 text-sm text-gray-400');
           }
-        }
+         }
       });
     </script>
    </body>
