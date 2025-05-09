@@ -124,7 +124,7 @@
               {% if item.status == 'pending' %}
                 <div class="d-flex mt-3">
                   <form action="/admin/approve" method="POST" class="me-2">
-                    <!-- {{ csrf_token() }} -->
+                    
                     <input type="hidden" name="bucket_id" value="{{ item.bucket_id }}">
                     <button type="submit" class="btn btn-success btn-sm">
                       <i class="fas fa-check"></i> Approve
@@ -132,7 +132,7 @@
                   </form>
                   
                   <form action="/admin/reject" method="POST">
-                    <!-- {{ csrf_token() }} -->
+                    
                     <input type="hidden" name="bucket_id" value="{{ item.bucket_id }}">
                     <button type="submit" class="btn btn-danger btn-sm">
                       <i class="fas fa-times"></i> Reject
@@ -141,7 +141,7 @@
                 </div>
               {% elif item.status == 'rejected' %}
                 <form action="/admin/approve" method="POST" class="mt-3">
-                    <!-- {{ csrf_token() }} -->
+                    
                   <input type="hidden" name="bucket_id" value="{{ item.bucket_id }}">
                   <button type="submit" class="btn btn-outline-success btn-sm">
                     <i class="fas fa-redo"></i> Reconsider
@@ -149,7 +149,7 @@
                 </form>
               {% elif item.status == 'approved' %}
                 <form action="/admin/reject" method="POST" class="mt-3">
-                    <!-- {{ csrf_token() }} -->
+                    
                   <input type="hidden" name="bucket_id" value="{{ item.bucket_id }}">
                   <button type="submit" class="btn btn-outline-danger btn-sm">
                     <i class="fas fa-ban"></i> Revoke Approval
