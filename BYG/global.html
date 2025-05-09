@@ -224,92 +224,86 @@
 
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-      loadAllRatingsAndComments();
-      startCommentRefresh();
-      const stars = document.querySelectorAll('.rating-star');
-   stars.forEach(star => {
-         star.addEventListener('click', function() {
-            const value = this.getAttribute('data-value');
-            const eventId = this.getAttribute('data-event-id');
-           
+      $(document).ready(function() {
+         loadAllRatingsAndComments();
+         startCommentRefresh();
+         
+         $(document).on('click', '.rating-star', function() {
+            const value = $(this).data('value');
+            const eventId = $(this).data('event-id');
+         
             const formData = new FormData();
             formData.append('event_id', eventId);
             formData.append('rating', value);
            
-            fetch('/add_rating', {
-            method: 'POST',
-            body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-            if (data.success) {
-               updateStars(eventId, value);
-               document.getElementById('avgRating' + eventId).textContent =
-                  `Average rating: ${data.avg_rating} out of 5`;
-            }
+            $.ajax({
+               url: '/add_rating',
+               method: 'POST',
+               data: {
+               event_id: eventId,
+               rating: value
+               },
+               success: function(data) {
+               if (data.success) {
+                  updateStars(eventId, value);
+                  $('#avgRating' + eventId).text(`Average rating: ${data.avg_rating} out of 5`);
+               }
+               }
             });
          });
          
-         star.addEventListener('mouseover', function() {
-            const value = this.getAttribute('data-value');
-            const eventId = this.getAttribute('data-event-id');
-           
-            const starsForEvent = document.querySelectorAll(`.rating-star[data-event-id="${eventId}"]`);
-            starsForEvent.forEach(s => {
-            if (s.getAttribute('data-value') <= value) {
-               s.classList.remove('far');
-               s.classList.add('fas');
-            } else {
-               s.classList.remove('fas');
-               s.classList.add('far');
-            }
+         $(document).on('mouseover', '.rating-star', function() {
+            const value = $(this).data('value');
+            const eventId = $(this).data('event-id');
+            
+            $(`.rating-star[data-event-id="${eventId}"]`).each(function() {
+               if ($(this).data('value') <= value) {
+               $(this).removeClass('far').addClass('fas');
+               } else {
+               $(this).removeClass('fas').addClass('far');
+               }
             });
          });
          
-         star.addEventListener('mouseout', function() {
-            const eventId = this.getAttribute('data-event-id');
-            fetch('/get_rating/' + eventId)
-            .then(response => response.json())
-            .then(data => {
+         $(document).on('mouseout', '.rating-star', function() {
+            const eventId = $(this).data('event-id');
+            $.ajax({
+               url: '/get_rating/' + eventId,
+               method: 'GET',
+               success: function(data) {
                updateStars(eventId, data.user_rating);
+               }
             });
          });
-      });
      
-      document.querySelectorAll('.comment-form').forEach(form => {
-         form.addEventListener('submit', function(e) {
+         $(document).on('submit', '.comment-form', function(e) {
             e.preventDefault();
-            const eventId = this.querySelector('input[name="event_id"]').value;
-            const comment = this.querySelector('textarea[name="comment"]').value;
-           
+            const eventId = $(this).find('input[name="event_id"]').val();
+            const comment = $(this).find('textarea[name="comment"]').val();
+            
             if (!comment.trim()) return;
-           
-            const formData = new FormData();
-            formData.append('event_id', eventId);
-            formData.append('comment', comment);
-           
-            fetch('/add_comment', {
-            method: 'POST',
-        
-        
-        
-            body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-            if (data.success) {
-               addCommentToUI(eventId, data.comment);
-               this.querySelector('textarea').value = '';
-            }
+            
+            $.ajax({
+               url: '/add_comment',
+               method: 'POST',
+               data: {
+               event_id: eventId,
+               comment: comment
+               },
+               success: function(data) {
+               if (data.success) {
+                  $('textarea[name="comment"]').val('');
+                  addCommentToUI(eventId, data.comment);
+               }
+               }
             });
          });
       });
      
       function startCommentRefresh() {
-         setInterval(() => {
-            document.querySelectorAll('[id^="comments"]').forEach(container => {
-               const eventId = container.id.replace('comments', '');
+         setInterval(function() {
+            $('[id^="comments"]').each(function() {
+               const eventId = $(this).attr.('id').replace('comments', '');
                loadComments(eventId, true);
             });
          }, 30000);
@@ -317,97 +311,86 @@
 
 
       function loadAllRatingsAndComments() {
-         const eventIds = [];
-         document.querySelectorAll('[id^="avgRating"]').forEach(el => {
-            const id = el.id.replace('avgRating', '');
-            eventIds.push(id);
-         });
-         
-         eventIds.forEach(eventId => {
+         $('[id^="avgRating"]').each(function() {
+            const id = $(this).attr('id').replace('avgRating', '');
             loadRating(eventId);
             loadComments(eventId);
          });
       }
      
       function updateStars(eventId, rating) {
-         const stars = document.querySelectorAll(`.rating-star[data-event-id="${eventId}"]`);
-         stars.forEach(star => {
-            const value = star.getAttribute('data-value');
-            if (value <= rating) {
-            star.classList.remove('far');
-            star.classList.add('fas');
+         $(`.rating-star[data-event-id="${eventId}"]`).each(function() {
+            if ($(this).data('value') <= rating) {
+               $(this).data('value').removeClass('far').addClass('fas');
             } else {
-            star.classList.remove('fas');
-            star.classList.add('far');
+               $(this).data('value').removeClass('fas').addClass('far');
             }
          });
       }
      
       function loadComments(eventId) {
-         fetch('/get_comments/' + eventId)
-            .then(response => response.json())
-            .then(data => {
-            const container = document.getElementById('comments' + eventId);
-            container.innerHTML = '';
-           
-            if (data.comments.length === 0) {
-               container.innerHTML = '<div class="text-muted small">No comments yet</div>';
+         $.ajax({
+            url: '/get_comments/' + eventId,
+            method: 'GET',
+            success: function(data) {
+               const $container = $('#comments' + eventId);
+               $container.empty();
+               
+               if (data.comments.length === 0) {
+               $container.html('<div class="text-gray-400 text-sm italic">No comments yet</div>');
                return;
-            }
-           
-            data.comments.forEach(comment => {
+               }
+               
+               data.comments.forEach(function(comment) {
                addCommentToUI(eventId, comment, false);
-            });
-            })
-            .catch(error => {
-            console.error('Error loading comments:', error);
-            });
+               });
+            }
+         });
       }
      
       function addCommentToUI(eventId, comment, prepend = true) {
-         const container = document.getElementById('comments' + eventId);
+         const $container = $('comments' + eventId);
          
-         const noComments = container.querySelector('.text-muted.small');
-         if (noComments) {
-            container.removeChild(noComments);
-         }
-         
-         const commentEl = document.createElement('div');
-         commentEl.className = 'comment';
-         commentEl.innerHTML = `
-            <div class="comment-header">
-            <strong>${comment.user}</strong>
-            <small class="text-muted">${comment.date}</small>
+         const $comments = $('<div class="comment py-2 border-b border-gray-100"></div>');
+         $comments.html(`
+            <div class="flex justify-between">
+               <div>
+               <div class="comment-header">
+                  <strong class="text-sm">${comment.user}</strong>
+                  <small class="text-xs text-gray-500 ml-1">${comment.date}</small>
+               </div>
+               <p class="text-sm mt-1">${comment.text}</p>
+               </div>
+               <button type="button" onclick="reportComment(${comment.id})" class="text-xs text-gray-400 hover:text-red-500">
+               <i class="fas fa-flag"></i>
+               </button>
             </div>
-            <p class="mb-0">${comment.text}</p>
-         `;
+         `);
          
          if (prepend) {
-            container.insertBefore(commentEl, container.firstChild);
+            container.prepend($comments);
          } else {
-            container.appendChild(commentEl);
+            container.append($comments);
          }
       }
      
       function loadRating(eventId) {
-         fetch('/get_rating/' + eventId)
-            .then(response => response.json())
-            .then(data => {
-            updateStars(eventId, data.user_rating);
-           
-            const avgRatingEl = document.getElementById('avgRating' + eventId);
-            if (data.count > 0) {
-               avgRatingEl.textContent = `Average rating: ${data.avg_rating} out of 5 (${data.count} ${data.count === 1 ? 'rating' : 'ratings'})`;
-            } else {
-               avgRatingEl.textContent = 'Not yet rated';
+         $.ajax({
+            url: '/get_rating/' + eventId,
+            method: 'GET',
+            success: function(data) {
+                  updateStars(eventId, data.user_rating);
+            
+               const $avgRating = $('#avgRating' + eventId);
+               if (data.count > 0) {
+                  $avgRating.text(`Average rating: ${data.avg_rating} out of 5 (${data.count} ${data.count === 1 ? 'rating' : 'ratings'})`);
+               } else {
+                  $avgRating.text('Not yet rated');
+               }
             }
-            })
-            .catch(error => {
-            console.error('Error loading ratings:', error);
-            });
+         });
       }
-      });
-
+   
       function addFriend(bucketId) {
          const $container = $(`#friendForm${bucketId}`);
          const $newField = $(`
@@ -419,10 +402,7 @@
       }
 
       function toggleFriendForm(bucketId) {
-         const form = document.getElementById(`friendForm${bucketId}`);
-         if (form) {
-            form.classList.toggle('hidden');
-         }
+         (`#friendForm${bucketId}`).toggleClass('hidden');
       }
    </script>
 
@@ -434,38 +414,31 @@
 
          if(details.hasClass('hidden')) {
             details.removeClass('hidden');
-            icon.classList.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+            icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
 
             loadRating(bucketId);
             loadComments(bucketId);
          } else {
-            details.classList.addClass('hidden');
-            icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+            details.addClass('hidden');
+            icon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
          }
       }
    </script>
    {% include 'new_item.html' %}
 
-
-
-
    <!--Default is public-->
    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        if (document.getElementById('privToggle')) {
-          document.getElementById('privToggle').checked = false;
-          document.getElementById('privInput').value = 'False';
-          const pub = document.getElementById('public');
-          const priv = document.getElementById('private');
-          if(pub && priv) {
-            pub.className = 'mr-2 text-sm text-orange-600 font-medium';
-            priv.className = 'ml-2 text-sm text-gray-400';
+      $document.ready( function() { 
+        if ($('#privToggle')) {
+         $('#privToggle').prop('checked', false);
+         $('#privToggle').val('False');
+         if($('#public').length && $('#private').length) {
+            $('#public').addClass('mr-2 text-sm text-orange-600 font-medium');
+            $('#private').addClass('ml-2 text-sm text-gray-400');
           }
         }
       });
     </script>
-
-
    </body>
 </html>
 
