@@ -108,22 +108,30 @@
          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
          {% for event in events %}
             {% if event['priv'] == False %}
-               <div class="border-2 border-orange-400 rounded-lg p-6 w-60 bg-orange-50 duration-300 flex flex-col transition-all transition-colors duration-300 hover:bg-orange-500 hover:shadow-lg hover:translate-y-1">
-                     <div class="text-4xl mb-2 text-center">
-                        {% if event['cat'] == 'food' %}🍽️
-                        {% elif event['cat'] == 'adventure' %}🏔️
-                        {% elif event['cat'] == 'music' %}🎸
-                        {% elif event['cat'] == 'sports' %}🏀
-                        {% elif event['cat'] == 'events' %}🎉
-                        {% elif event['cat'] == 'academic' %}📚
-                        {% else %}✨{% endif %}
+               <div class="border border-gray-200 rounded-lg overflow-hidden bg-white shadow hover:shadow-md transition-shadow duration-300">
+                  <div class="p-4">
+                     <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-semibold text-gray-800 text-lg">
+                           {{ event['title'] }}
+                        <span class="ml-1">
+                           {% if event['cat'] == 'food' %}🍽️
+                           {% elif event['cat'] == 'adventure' %}🏔️
+                           {% elif event['cat'] == 'music' %}🎸
+                           {% elif event['cat'] == 'sports' %}🏀
+                           {% elif event['cat'] == 'events' %}🎉
+                           {% elif event['cat'] == 'academic' %}📚
+                           {% else %}✨{% endif %}
+                        </span>
+                        </h3>
+                        {% if event['cat'] %}
+                           <span class="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded-full">
+                           {{ event['category'] | capitalize }}
+                           </span>
+                        {% endif %}
                      </div>
-                     
-                     <p class="font-semibold mb-2 text-lg">{{ event['title'] }}</p>
-                     
-                     {% if event['loc'] %}
-                        <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt"></i> {{ event['loc'] }}</p>
-                     {% endif %}
+
+                     <p class="text-sm text-gray-600 mb-2">{{ event['loc'] }}</p>
+                     <p class="text-sm text-gray-700 line-clamp-2 mb-3">{{ event['descrip'] }}</p>
                      
                      <br>
                      <form action="/add_to_my_list" method="POST" class="w-full flex justify-center">
