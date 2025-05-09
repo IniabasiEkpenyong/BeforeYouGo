@@ -118,6 +118,8 @@ class Rating(Base):
 
 
 #-----------------------------------------------------------------------
+def escape_sql_wildcards(value):
+    return value.replace("_", r"\_").replace("%", r"\%")
 
 def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort='', exclude_ids=None, status='approved'):
     if exclude_ids is None:
@@ -145,6 +147,8 @@ def get_events(title='', cat='', loc='', lat=None, lng=None, descrip='', sort=''
             # Default sorting (A-Z)
             query = query.order_by(sqlalchemy.func.lower(Bucket.item))
 
+        descrip = escape_sql_wildcards(descrip)
+        title = escape_sql_wildcards(title)
         query = query.filter(
             ~Bucket.bucket_id.in_(exclude_ids),
             sqlalchemy.or_(
@@ -231,17 +235,25 @@ def toggle_subtask(subtask_id):
             return False, "Subtask not found"
         
         subtask.completed = not subtask.completed
+        all_subs = session.query(SubTask).filter_by(user_bucket_id=subtask.user_bucket_id).all()
+        completed = sum (1 for s in all_subs if s.completed)
+        total = len(all_subs)
+        progress = round((completed/total) * 100, 2) if total > 0 else 0
         
         user_bucket = session.query(UserBucket).filter_by(id=subtask.user_bucket_id).first()
         if user_bucket:
-            subtasks = session.query(SubTask).filter_by(user_bucket_id=user_bucket.id).all()
-            if subtasks and all(st.completed for st in subtasks):
+            if completed == total and total > 0:
                 user_bucket.completed = True
-            else:
+            elif user_bucket.completed and completed < total:
                 user_bucket.completed = False
         
         session.commit()
-        return True, subtask.completed
+        return True, {
+            "progress": progress, 
+            "completed": completed, 
+            "total": total,
+            "bucket_id": subtask.user_bucket_id
+        }
 
 def delete_subtask(subtask_id):
     with sqlalchemy.orm.Session(_engine) as session:
@@ -270,22 +282,38 @@ def create_shared_event(bucket_id, creator_netid, participant_netids, date=None)
         session.add(event)
         session.flush() 
 
-        for netid in set(participant_netids + [creator_netid]):
-            participant = SharedParticipant(shared_event_id=event.id, user_netid=netid)
-            session.add(participant)
+        creator_participant = SharedParticipant(
+            shared_event_id=event.id,
+            user_netid=creator_netid
+        )
+        session.add(creator_participant)
+        
+        for netid in participant_netids:
+            if netid and netid.strip() and netid.strip() != creator_netid:
+                participant = SharedParticipant(
+                    shared_event_id=event.id,
+                    user_netid=netid.strip()
+                )
+                session.add(participant)
 
         session.commit()
         return True, event.id
 
 def get_shared_events_for_user(user_netid):
     with sqlalchemy.orm.Session(_engine) as session:
-        shared_items = session.query(SharedEvent).options(
-            joinedload(SharedEvent.bucket),
-            joinedload(SharedEvent.participants)
-        ).join(SharedParticipant).filter(
-            SharedParticipant.user_netid == user_netid
-        ).all()
-        return shared_items
+        shared_events_query = (
+            session.query(SharedEvent)
+            .join(SharedParticipant)
+            .filter(SharedParticipant.user_netid == user_netid)
+            .options(
+                joinedload(SharedEvent.bucket),
+                joinedload(SharedEvent.participants)
+            )
+            .order_by(SharedEvent.is_completed, SharedEvent.date.desc())
+        )
+        
+    shared_events = shared_events_query.all()
+    return shared_events
 
 def mark_shared_event_completed(shared_event_id):
     with sqlalchemy.orm.Session(_engine) as session:
@@ -305,21 +333,20 @@ def remove_user_from_shared_event(shared_event_id, user_netid):
         ).first()
         if participant:
             session.delete(participant)
-            session.commit()
 
-        # Check if there are any participants left
-        remaining = session.query(SharedParticipant).filter_by(
-            shared_event_id=shared_event_id
-        ).count()
+            # Check if there are any participants left
+            remaining = session.query(SharedParticipant).filter_by(
+                shared_event_id=shared_event_id
+            ).count()
 
-        if remaining == 0:
-            # Delete the event itself
-            event = session.query(SharedEvent).filter_by(id=shared_event_id).first()
-            if event:
-                session.delete(event)
-                session.commit()
-            return True, "Event deleted"
-        return True, "Left event"
+            if remaining == 0:
+                # Delete the event itself
+                event = session.query(SharedEvent).filter_by(id=shared_event_id).first()
+                if event:
+                    session.delete(event)
+                    session.commit()
+                return True
+        return False
 
 
 def add_comment(bucket_id, user_netid, text):

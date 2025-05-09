@@ -8,81 +8,16 @@
   <!-- External CSS and JS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Inline Styles -->
   <style>
-    .title {
-        text-align: center;
-        margin-top: 20px;
-        color: #007bff;
+    #map {
+        height: 500px;
+        width: 100%;
+        margin-top: 30px;
     }
-
-    #map-container {
-    width: 80%;
-    max-width: 1000px;
-    margin: 30px auto;
-    border: 4px solid rgb(255, 111, 0);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: height 0.3s ease;
-    cursor: pointer;
-}
-
-#map {
-    width: 100%;
-    height: 300px;
-    transition: height 0.3s ease;
-}
-
-#map-container.expanded #map {
-    height: 500px;
-}
-
-
-    #search-box {
-        width: 300px;
-        margin: 10px auto;
-        display: block;
-        padding: 10px;
-        font-size: 16px;
-    }
-    .add-button, input[type="submit"] {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .add-button:hover, input[type="submit"]:hover {
-        background-color: #0056b3;
-    }
-
-    .cards-container {
-        margin: 20px auto;
-        max-width: 80%;
-    }
-
-    main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-    
-    .card {
-      min-height: 300px;
-    }
-  
   </style>
 </head>
 <body>
@@ -95,14 +30,14 @@
   {% if user_items|length == 0 %}
   <p class="text-center">You have no items in your personal list yet.</p>
   {% else %}
-  <div class="w-full max-w-xl mx-auto mt-4">
-    <p class="text-sm font-medium text-gray-700 text-center mb-1">Progress: {{ progress | int }}%</p>
-    <div class="w-full bg-gray-200 rounded-full h-3">
-      <div class="bg-orange-500 h-3 rounded-full transition-all duration-300" style="width: {{ progress }}%"></div>
+    <div class="w-full max-w-xl mx-auto mt-4">
+      <p class="text-sm font-medium text-gray-700 text-center mb-1">Progress: {{ progress | int }}%</p>
+      <div class="w-full bg-gray-200 rounded-full h-3">
+        <div class="bg-orange-500 h-3 rounded-full transition-all duration-300" style="width: {{ progress }}%"></div>
+      </div>
     </div>
-  </div>
   
-  </div><div class="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div class="cards-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     {% for ub, bucket in user_items %}
       <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full justify-between">
         
@@ -137,20 +72,21 @@
 
         <div class="flex flex-wrap gap-2 mt-auto">
           {% if not ub.completed %}
-            <button type="button" class="btn btn-sm btn-outline-primary flex-1 sm:flex-none"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#subtaskModal{{ ub.id }}">
+            <button type="button" class="flex-1 sm:flex-none bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 flex items-center justify-center gap-1"
+                    onclick="openModal('subtaskModal{{ ub.id }}')">
               <i class="fas fa-tasks"></i> Steps
             </button>
           {% endif %}
   
           <form action="{% if ub.completed %}/reset_completed{% else %}/mark_completed{% endif %}" method="POST" class="flex-1 sm:flex-none">
+            <!-- {{ csrf_token() }} -->
             <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
             <input type="submit" class="btn btn-sm btn-outline-success w-full sm:w-auto" 
                     value="{% if ub.completed %}Reset{% else %}Mark Completed{% endif %}">
           </form>
   
           <form action="/remove_from_my_list" method="POST" class="flex-1 sm:flex-none">
+            <!-- {{ csrf_token() }} -->
             <input type="hidden" name="user_bucket_id" value="{{ ub.id }}">
             <button type="submit" class="btn bg-red-600 text-white hover:bg-red-700">
                     <i class="fas fa-trash"></i>
@@ -168,18 +104,7 @@
 
   {% include 'shared_items.html' %}
 
-<<<<<<< HEAD
-  <!-- Map and Search Box -->
-  
-  <div>
-    <input type="hidden" id="search-box" type="text" placeholder="Search for a location" />
-    <div id="map-container" onclick="toggleMapSize()">
-      <div id="map"></div>
-  </div>
-  
-=======
   <div id="map"></div>
->>>>>>> e51a11132392501e1d7e77ac7e4261597506d5fe
 
   <script>
     let pins = {{ pins | tojson | safe }};
@@ -287,14 +212,15 @@
         const $checkbox = $(this);
         const $form = $(this).closest('form');
         const subtaskId = $checkbox.val();
+        const bucketId = $checkbox.data('bucket-id');
         const isCompleted = $checkbox.prop('checked');
         const formData = $form.serialize();
 
-        const $label = $checkbox.closest('.form-check').find('.form-check-label');
+        const $label = $checkbox.closest('.flex').find('label');
         if (isCompleted) {
-          $label.addClass('text-decoration-line-through');
+          $label.addClass('line-through text-gray-500');
         } else {
-          $label.removeClass('text-decoration-line-through');
+          $label.removeClass('line-through text-gray-500');
         }
         
         // Send AJAX request
@@ -311,39 +237,33 @@
               const $progressText = $('[data-progress-text="' + bucketId + '"]');
               const $subtaskCount = $('[data-subtask-count="' + bucketId + '"]');
               
-              if ($progressBar.length && $progressText.length && data.progress) {
+              if ($progressBar.length) {
                 // Update progress bar width
                 $progressBar.css('width', data.progress + '%');
-                $progressText.text(data.progress + '%');
-
-                if ($subtaskCount.length && data.completed_count !== undefined && data.total_count !== undefined) {
-                  $subtaskCount.text('Subtasks: ' + data.completed_count + '/' + data.total_count);
-                }
                 
-                // Update progress bar color
-                $progressBar.removeClass('bg-red-500 bg-yellow-500 bg-green-500');
-                if (data.progress < 33) {
+                $progressBar.removeClass('bg-red-500 bg-amber-500 bg-emerald-500');
+                if (data.progress <= 33.33) {
                   $progressBar.addClass('bg-red-500');
-                } else if (data.progress < 67) {
-                  $progressBar.addClass('bg-yellow-500');
+                } else if (data.progress <= 66.67) {
+                  $progressBar.addClass('bg-amber-500');
                 } else {
-                  $progressBar.addClass('bg-green-500');
+                  $progressBar.addClass('bg-emerald-500');
                 }
+              }
+              if($progressText.length) {
+                  $progressText.text((data.progress).toFixed(2) + '%');
+              }
 
-                if (data.overall_progress !== undefined) {
-                  const $overallBar = $('.bg-orange-500.h-3');
-                  $overallBar.css('width', data.overall_progress + '%');
-                  $('.text-sm.font-medium.text-gray-700').text('Progress: ' + 
-                    Math.round(data.overall_progress) + '%');
-                }
+              if($subtaskCount.length) {
+                $subtaskCount.text('Subtasks: ' + data.completed + '/' + data.total);
               }
             } else {
               // Revert checkbox if update failed
               $checkbox.prop('checked', !isCompleted);
               if (!isCompleted) {
-                $label.addClass('text-decoration-line-through');
+                $label.addClass('line-through text-gray-500');
               } else {
-                $label.removeClass('text-decoration-line-through');
+                $label.removeClass('line-through text-gray-500');
               }
               alert('Error updating subtask');
             }
@@ -352,9 +272,9 @@
             console.error('Error:', error);
             $checkbox.prop('checked', !isCompleted);
             if (!isCompleted) {
-              $label.addClass('text-decoration-line-through');
+              $label.addClass('line-through text-gray-500');
             } else {
-              $label.removeClass('text-decoration-line-through');
+              $label.removeClass('line-through text-gray-500');
             }
             alert('An error occurred when updating the subtask.');
           }

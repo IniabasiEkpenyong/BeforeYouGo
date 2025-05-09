@@ -12,6 +12,7 @@ import sqlalchemy.orm
 import os
 from flask import session, redirect, render_template, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_wtf import CSRFProtect
 
 
 # Import the app from package
@@ -54,6 +55,7 @@ app = flask.Flask(__name__, template_folder='.')
 
 # app.secret_key = 'secret_key_here'
 app.secret_key = os.environ['APP_SECRET_KEY']
+csrf = CSRFProtect(app)
 
 #-----------------------------------------------------------------------
 admins = ['jg2783', 'ie9117', 'cs-jiaweim']
@@ -200,15 +202,12 @@ def global_page():
         with sqlalchemy.orm.Session(database._engine) as session_db:
             pending_count = session_db.query(Bucket).filter_by(status='pending').count()
 
-    #TEMP hard coding until OIT whitelists
-    # username = 'jg2783'
-    # given_name = 'Judah'
-    print(database.get_all_categories())
     try:
         categories = database.get_all_categories()
-
     except:
         categories = []
+
+    shared_events = get_shared_events_for_user(user_netid)
 
     html_code = flask.render_template('global.html',
         ampm=get_ampm(),
@@ -222,6 +221,7 @@ def global_page():
         categories=categories,
         is_admin = is_admin,
         pending_count = pending_count,
+        shared_events=shared_events,
         api_key=os.getenv("GOOGLE_API_KEY")
     )
 
@@ -487,34 +487,6 @@ def exit_shared_event():
     success, msg = remove_user_from_shared_event(int(shared_event_id), user_netid)
     return flask.redirect("/my_bucket")
 
-
-# @app.route("/create_shared_event", methods=["POST"])
-# def create_shared_event_route():
-#     bucket_id = flask.request.form["bucket_id"]
-#     netids = flask.request.form.getlist("friend_netids[]")
-#     netids = [n.strip().lower() for n in netids if n.strip()]
-#     
-#     user_info = auth.authenticate()
-#     user_netid = user_info['user']
-# 
-#     # if not user_netid:
-#     #     return flask.redirect("/")
-#     if not user_netid or not bucket_id or not netids:
-#         return flask.redirect("/global")
-# 
-#     success, shared_event_id = database.create_shared_event(
-#         bucket_id=int(bucket_id),
-#         creator_netid=user_netid,
-#         participant_netids=netids
-#     )
-# 
-#     if success:
-#         flask.flash("Shared event created!")
-#     else:
-#         flask.flash("Something went wrong.")
-#     
-#     return flask.redirect("/global")
-
 @app.route("/create_shared_event", methods=["POST"])
 def create_shared_event_route():
     try:
@@ -728,44 +700,20 @@ def toggle_subtask():
     
     subtask_id = request.form.get('subtask_id')
     if not subtask_id:
-        return flask.redirect('/my_bucket')
-    
-    with sqlalchemy.orm.Session(database._engine) as session_db:
-        subtask = session_db.query(database.SubTask).join(UserBucket).filter(
-            database.SubTask.id == subtask_id,
-            UserBucket.user_netid == user_netid
-        ).first()
+        return flask.jsonify({'success': False, 'message': 'Subtask ID is required'})
         
-        if not subtask:
-            if flask.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return flask.jsonify({'success': False, 'error': 'Subtask not found'})
-            return flask.redirect('/my_bucket')
-        
-        user_bucket_id = subtask.user_bucket_id
-        database.toggle_subtask(subtask_id)
-        subtask = session_db.query(database.SubTask).filter_by(id=subtask_id).first()
-
-        subtasks = session_db.query(database.SubTask).filter_by(
-            user_bucket_id=user_bucket_id).all()
-        total_count = len(subtasks)
-        completed_count = sum(1 for st in subtasks if st.completed)
-        progress = 0 if total_count == 0 else (completed_count / total_count) * 100
-
-        user_items = session_db.query(UserBucket).filter_by(user_netid=user_netid).all()
-        total_items = len(user_items)
-        completed = sum(1 for item in user_items if item.completed)
-        overall_progress = 0 if total_items == 0 else (completed/total_items) * 100
+    success, result = database.toggle_subtask(subtask_id)
     
-    if flask.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return flask.jsonify({'success': True, 
-                              'bucket_id': user_bucket_id,
-                              'progress': progress,
-                              'completed_count': completed_count,
-                              'total_count': total_count,
-                              'completed': subtask.completed,
-                              'overall_progress': overall_progress})
-    
-    return flask.redirect('/my_bucket')
+    if success:
+        return flask.jsonify({
+            'success': True, 
+            'progress': result['progress'],
+            'completed': result['completed'],
+            'total': result['total'],
+            'bucket_id': result['bucket_id']
+        })
+    else:
+        return flask.jsonify({'success': False, 'message': result})
 
 @app.route('/delete_subtask', methods=['POST'])
 def delete_subtask():
