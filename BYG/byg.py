@@ -482,6 +482,8 @@ def exit_shared_event():
 
     if not shared_event_id:
         return flask.redirect("/my_bucket")
+    
+    
 
     # from database import remove_user_from_shared_event
     success, msg = remove_user_from_shared_event(int(shared_event_id), user_netid)
@@ -525,6 +527,7 @@ def create_shared_event_route():
 @app.route("/complete_shared_event", methods=["POST"])
 def complete_shared_event():
     shared_event_id = flask.request.form["shared_event_id"]
+    
     mark_shared_event_completed(shared_event_id)
     return flask.redirect("/my_bucket")
 
