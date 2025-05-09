@@ -202,7 +202,7 @@ def global_page():
     except:
         categories = []
 
-    shared_events = get_shared_events_for_user(user_netid)
+    shared_events = database.get_shared_events_for_user(user_netid)
 
     html_code = flask.render_template('global.html',
         ampm=get_ampm(),
@@ -400,7 +400,7 @@ def my_bucket():
         for ub, bucket in user_items if bucket.lat and bucket.lng
     ]
     
-    shared_events = get_shared_events_for_user(user_netid)
+    shared_events = database.get_shared_events_for_user(user_netid)
     
     # Pass it to a template
     return flask.render_template('my_bucket.html',
