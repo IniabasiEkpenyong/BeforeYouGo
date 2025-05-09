@@ -55,26 +55,27 @@
       {% if err_msg != '' %} 
             <p>{{ err_msg }}</p>
       {% else %}
-      <h2 class="title">Global Bucket List</h2>
+      <h2 class="title">Events</h2>
 
-      <div style="text-align: center; margin-bottom: 20px;">
-        
-        <form action="/show_item" method="post">
-            <input type="hidden" name="priv" value="False">
-            <input type="submit"  class="add-button" value="Create Global Bucket List Item" style="display: inline-block; max-width: 300px;text-decoration: none;">
-         </form>   
-        
-        <!-- <button class="add-button" onclick="openAddNewModal()">Create Public Bucket List Item</button> -->
+      <div class="group fixed bottom-6 right-6 z-40">
+         <button type="button" onclick="openAddNewModal()" class="fixed bottom-6 right-6 bg-orange-500 hover:bg-orange-600 text-white p-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-40">
+            <i class="fas fa-plus text-xl"></i>
+            <span class="absolute bottom-full right-0 transform translate-y-[-10px] mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
+               Create New Event
+             </span>
+         </button>
       </div>
 
-      <div class="container">
-         <form action="/global" method="get" class="search-form" id="searchForm">
-            <label for="search">Search:</label>
-            <!-- NOTE: I took out the word 'required '-->
+      <div class="max-w-md mx-auto mt-6 mb-8">
+         <form action="/global" method="get" class="flex space-x-2" id="searchForm">
             <input type="text" id="searchInput" name="search"
                 value="{{ request.args.get('search', '') }}"
-                placeholder="Search by Keyword">
-            <input type="submit" value="Search" id="submitButton">
+                placeholder="Search by Keyword"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <button type="submit" id="submitButton"
+                class="bg-orange-500 text-white px-4 py-2 rounded-r hover:bg-orange-600 rounded-r transition-colors">
+               <i class="fas fa-search"></i> Search
+            </button>
          </form>
       </div>
 
@@ -227,347 +228,256 @@
             {% endfor %}
          {% endif %}
       {% endif %}
-      
-    {% include 'globalMod.html' %}
-    {% include 'new_item.html' %}
-
-
-    <script>
-   function addFriendField(bucketId) {
-      const fieldGroup = document.createElement("div");
-      fieldGroup.className = "input-group mb-2";
-      fieldGroup.innerHTML = `
-      <input type="text" name="friend_netids[]" class="form-control" placeholder="Enter another friend's netid" required>
-      <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">
-         <i class="fas fa-trash"></i>
-      </button>
-      `;
-      document.getElementById(`friendFields-${bucketId}`).appendChild(fieldGroup);
-   }
-
-   function startCommentRefresh() {
-      setInterval(() => {
-         document.querySelectorAll('[id^="comments"]').forEach(container => {
-            const eventId = container.id.replace('comments', '');
-            loadComments(eventId, true);
-         });
-      }, 30);
-   }  
-   
-   document.addEventListener('DOMContentLoaded', function() {
-   loadAllRatingsAndComments();
-   startCommentRefresh();
-   const stars = document.querySelectorAll('.rating-star');
-stars.forEach(star => {
-      star.addEventListener('click', function() {
-         const value = this.getAttribute('data-value');
-         const eventId = this.getAttribute('data-event-id');
-         
-         const formData = new FormData();
-         formData.append('event_id', eventId);
-         formData.append('rating', value);
-         
-         fetch('/add_rating', {
-         method: 'POST',
-         body: formData
-         })
-         .then(response => response.json())
-         .then(data => {
-         if (data.success) {
-            updateStars(eventId, value);
-            document.getElementById('avgRating' + eventId).textContent = 
-               `Average rating: ${data.avg_rating} out of 5`;
-         }
-         });
-      });
-      
-      star.addEventListener('mouseover', function() {
-         const value = this.getAttribute('data-value');
-         const eventId = this.getAttribute('data-event-id');
-         
-         const starsForEvent = document.querySelectorAll(`.rating-star[data-event-id="${eventId}"]`);
-         starsForEvent.forEach(s => {
-         if (s.getAttribute('data-value') <= value) {
-            s.classList.remove('far');
-            s.classList.add('fas');
-         } else {
-            s.classList.remove('fas');
-            s.classList.add('far');
-         }
-         });
-      });
-      
-      star.addEventListener('mouseout', function() {
-         const eventId = this.getAttribute('data-event-id');
-         fetch('/get_rating/' + eventId)
-         .then(response => response.json())
-         .then(data => {
-            updateStars(eventId, data.user_rating);
-         });
-      });
-   });
-   
-   document.querySelectorAll('.comment-form').forEach(form => {
-      form.addEventListener('submit', function(e) {
-         e.preventDefault();
-         const eventId = this.querySelector('input[name="event_id"]').value;
-         const comment = this.querySelector('textarea[name="comment"]').value;
-         
-         if (!comment.trim()) return;
-         
-         const formData = new FormData();
-         formData.append('event_id', eventId);
-         formData.append('comment', comment);
-         
-         fetch('/add_comment', {
-         method: 'POST',
-         body: formData
-         })
-         .then(response => response.json())
-         .then(data => {
-         if (data.success) {
-            addCommentToUI(eventId, data.comment);
-            this.querySelector('textarea').value = '';
-         }
-         });
-      });
-   });
-   
-   function startCommentRefresh() {
-      setInterval(() => {
-         document.querySelectorAll('[id^="comments"]').forEach(container => {
-            const eventId = container.id.replace('comments', '');
-            loadComments(eventId, true);
-         });
-      }, 30000);
-   }
-
-   function loadAllRatingsAndComments() {
-      const eventIds = [];
-      document.querySelectorAll('[id^="avgRating"]').forEach(el => {
-         const id = el.id.replace('avgRating', '');
-         eventIds.push(id);
-      });
-      
-      eventIds.forEach(eventId => {
-         loadRating(eventId);
-         loadComments(eventId);
-      });
-   }
-   
-   function updateStars(eventId, rating) {
-      const stars = document.querySelectorAll(`.rating-star[data-event-id="${eventId}"]`);
-      stars.forEach(star => {
-         const value = star.getAttribute('data-value');
-         if (value <= rating) {
-         star.classList.remove('far');
-         star.classList.add('fas');
-         } else {
-         star.classList.remove('fas');
-         star.classList.add('far');
-         }
-      });
-   }
-   
-   function loadComments(eventId) {
-      fetch('/get_comments/' + eventId)
-         .then(response => response.json())
-         .then(data => {
-         const container = document.getElementById('comments' + eventId);
-         container.innerHTML = '';
-         
-         if (data.comments.length === 0) {
-            container.innerHTML = '<div class="text-muted small">No comments yet</div>';
-            return;
-         }
-         
-         data.comments.forEach(comment => {
-            addCommentToUI(eventId, comment, false);
-         });
-         })
-         .catch(error => {
-         console.error('Error loading comments:', error);
-         });
-   }
-   
-   function addCommentToUI(eventId, comment, prepend = true) {
-      const container = document.getElementById('comments' + eventId);
-      
-      const noComments = container.querySelector('.text-muted.small');
-      if (noComments) {
-         container.removeChild(noComments);
-      }
-      
-      const commentEl = document.createElement('div');
-      commentEl.className = 'comment';
-      commentEl.innerHTML = `
-         <div class="comment-header">
-         <strong>${comment.user}</strong>
-         <small class="text-muted">${comment.date}</small>
-         </div>
-         <p class="mb-0">${comment.text}</p>
-      `;
-      
-      if (prepend) {
-         container.insertBefore(commentEl, container.firstChild);
-      } else {
-         container.appendChild(commentEl);
-      }
-   }
-   
-   function loadRating(eventId) {
-      fetch('/get_rating/' + eventId)
-         .then(response => response.json())
-         .then(data => {
-         updateStars(eventId, data.user_rating);
-         
-         const avgRatingEl = document.getElementById('avgRating' + eventId);
-         if (data.count > 0) {
-            avgRatingEl.textContent = `Average rating: ${data.avg_rating} out of 5 (${data.count} ${data.count === 1 ? 'rating' : 'ratings'})`;
-         } else {
-            avgRatingEl.textContent = 'Not yet rated';
-         }
-         })
-         .catch(error => {
-         console.error('Error loading ratings:', error);
-         });
-   }
-   });
-
-   function toggleFriendForm(bucketId) {
-      const form = document.getElementById(`friendForm${bucketId}`);
-      if (form.style.display === 'none') {
-         form.style.display = 'block';
-      } else {
-         form.style.display = 'none';
-      }
-   }
-</script>
-
-<script>
-   function dropDown(dropDownId) {
-      const dropDown = document.getElementById(dropDownId);
-      dropDown.classList.toggle('hidden');
-      const bucketId = dropDownId.replace('dropdown-', '');
-      const icon = document.getElementById('icon-' + bucketId);
-
-      if(dropDown.classList.contains('hidden')) {
-         icon.classList.remove('transform', 'rotate-180');
-      } else {
-         icon.classList.add('transform', 'rotate-180');
-      }
-   }
-</script>
     
 
-  
-  <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAddItemAutocomplete" async defer></script>
 
-  
-<!--
     <script>
-        function addFriendField(bucketId) {
-          const container = document.getElementById(`friend-fields-${bucketId}`);
-          const newField = document.createElement('div');
-          newField.classList.add('input-group', 'mb-2');
-          newField.innerHTML = `
-            <input type="text" name="friend_netids" class="form-control" placeholder="Enter another friend's netid" required>
-            <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">🗑️</button>
-          `;
-          container.appendChild(newField);
-        }
-      </script>
-      
-    -->
-    <!--
-      
-      <script>
-        function addFriendField(button) {
-          const wrapper = button.closest('.modal-body').querySelector('.friend-fields');
-          const inputCount = wrapper.querySelectorAll('input').length;
-          const newIndex = inputCount + 1;
-      
-          const container = document.createElement('div');
-          container.className = "mb-3 d-flex align-items-center";
-          container.innerHTML = `
-            <input type="text" name="friend_netid_${newIndex}" class="form-control me-2" placeholder="Friend's NetID" required>
-            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeFriendField(this)">
-              <i class="fas fa-trash"></i>
-            </button>
-          `;
-          wrapper.appendChild(container);
-        }
-      
-        function removeFriendField(button) {
-          const container = button.parentElement;
-          container.remove();
-        }
-      </script>
-      -->
-
-
-
-
-
-      <!-- Old version 
-<div id="friendModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-      <h3 class="text-lg font-semibold mb-4">Share with Friends</h3>
-      <form id="friendForm" action="/create_shared_event" method="POST">
-        <input type="hidden" name="bucket_id" id="modal_bucket_id">
-        <div id="friendFields">
-          <div class="friend-field mb-2 flex items-center">
-            <input type="text" name="friend_netids[]" placeholder="Friend's NetID" class="flex-1 border rounded p-2" required>
-          </div>
-        </div>
-        <button type="button" id="addFriendBtn" class="text-blue-500 text-sm mb-2">+ Add another friend</button>
-        <div class="flex justify-end space-x-2">
-          <button type="button" id="cancelBtn" class="bg-gray-300 px-3 py-1 rounded">Cancel</button>
-          <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">Invite</button>
-        </div>
-      </form>
-    </div>
-  </div>
-  
-  <script>
-    const modal = document.getElementById('friendModal');
-    const modalBucketInput = document.getElementById('modal_bucket_id');
-    const addFriendBtn = document.getElementById('addFriendBtn');
-    const friendFields = document.getElementById('friendFields');
-    const cancelBtn = document.getElementById('cancelBtn');
-  
-    document.querySelectorAll('.open-friend-modal').forEach(btn => {
-      btn.addEventListener('click', () => {
-        modal.classList.remove('hidden');
-        modalBucketInput.value = btn.dataset.bucketid;
-      });
-    });
-  
-    addFriendBtn.addEventListener('click', () => {
-      const div = document.createElement('div');
-      div.classList.add('friend-field', 'mb-2', 'flex', 'items-center');
-      div.innerHTML = `
-        <input type="text" name="friend_netids[]" placeholder="Friend's NetID" class="flex-1 border rounded p-2" required>
-        <button type="button" class="remove-friend ml-2 text-red-500">🗑️</button>
-      `;
-      friendFields.appendChild(div);
-    });
-  
-    friendFields.addEventListener('click', (e) => {
-      if (e.target.classList.contains('remove-friend')) {
-        e.target.closest('.friend-field').remove();
+      function addFriendField(bucketId) {
+         const fieldGroup = document.createElement("div");
+         fieldGroup.className = "input-group mb-2";
+         fieldGroup.innerHTML = `
+         <input type="text" name="friend_netids[]" class="form-control" placeholder="Enter another friend's netid" required>
+         <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+            <i class="fas fa-trash"></i>
+         </button>
+         `;
+         document.getElementById(`friendFields-${bucketId}`).appendChild(fieldGroup);
       }
-    });
+
+      function startCommentRefresh() {
+         setInterval(() => {
+            document.querySelectorAll('[id^="comments"]').forEach(container => {
+               const eventId = container.id.replace('comments', '');
+               loadComments(eventId, true);
+            });
+         }, 30);
+      }  
+      
+      document.addEventListener('DOMContentLoaded', function() {
+      loadAllRatingsAndComments();
+      startCommentRefresh();
+      const stars = document.querySelectorAll('.rating-star');
+   stars.forEach(star => {
+         star.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            const eventId = this.getAttribute('data-event-id');
+            
+            const formData = new FormData();
+            formData.append('event_id', eventId);
+            formData.append('rating', value);
+            
+            fetch('/add_rating', {
+            method: 'POST',
+            body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+            if (data.success) {
+               updateStars(eventId, value);
+               document.getElementById('avgRating' + eventId).textContent = 
+                  `Average rating: ${data.avg_rating} out of 5`;
+            }
+            });
+         });
+         
+         star.addEventListener('mouseover', function() {
+            const value = this.getAttribute('data-value');
+            const eventId = this.getAttribute('data-event-id');
+            
+            const starsForEvent = document.querySelectorAll(`.rating-star[data-event-id="${eventId}"]`);
+            starsForEvent.forEach(s => {
+            if (s.getAttribute('data-value') <= value) {
+               s.classList.remove('far');
+               s.classList.add('fas');
+            } else {
+               s.classList.remove('fas');
+               s.classList.add('far');
+            }
+            });
+         });
+         
+         star.addEventListener('mouseout', function() {
+            const eventId = this.getAttribute('data-event-id');
+            fetch('/get_rating/' + eventId)
+            .then(response => response.json())
+            .then(data => {
+               updateStars(eventId, data.user_rating);
+            });
+         });
+      });
+      
+      document.querySelectorAll('.comment-form').forEach(form => {
+         form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const eventId = this.querySelector('input[name="event_id"]').value;
+            const comment = this.querySelector('textarea[name="comment"]').value;
+            
+            if (!comment.trim()) return;
+            
+            const formData = new FormData();
+            formData.append('event_id', eventId);
+            formData.append('comment', comment);
+            
+            fetch('/add_comment', {
+            method: 'POST',
+            body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+            if (data.success) {
+               addCommentToUI(eventId, data.comment);
+               this.querySelector('textarea').value = '';
+            }
+            });
+         });
+      });
+      
+      function startCommentRefresh() {
+         setInterval(() => {
+            document.querySelectorAll('[id^="comments"]').forEach(container => {
+               const eventId = container.id.replace('comments', '');
+               loadComments(eventId, true);
+            });
+         }, 30000);
+      }
+
+      function loadAllRatingsAndComments() {
+         const eventIds = [];
+         document.querySelectorAll('[id^="avgRating"]').forEach(el => {
+            const id = el.id.replace('avgRating', '');
+            eventIds.push(id);
+         });
+         
+         eventIds.forEach(eventId => {
+            loadRating(eventId);
+            loadComments(eventId);
+         });
+      }
+      
+      function updateStars(eventId, rating) {
+         const stars = document.querySelectorAll(`.rating-star[data-event-id="${eventId}"]`);
+         stars.forEach(star => {
+            const value = star.getAttribute('data-value');
+            if (value <= rating) {
+            star.classList.remove('far');
+            star.classList.add('fas');
+            } else {
+            star.classList.remove('fas');
+            star.classList.add('far');
+            }
+         });
+      }
+      
+      function loadComments(eventId) {
+         fetch('/get_comments/' + eventId)
+            .then(response => response.json())
+            .then(data => {
+            const container = document.getElementById('comments' + eventId);
+            container.innerHTML = '';
+            
+            if (data.comments.length === 0) {
+               container.innerHTML = '<div class="text-muted small">No comments yet</div>';
+               return;
+            }
+            
+            data.comments.forEach(comment => {
+               addCommentToUI(eventId, comment, false);
+            });
+            })
+            .catch(error => {
+            console.error('Error loading comments:', error);
+            });
+      }
+      
+      function addCommentToUI(eventId, comment, prepend = true) {
+         const container = document.getElementById('comments' + eventId);
+         
+         const noComments = container.querySelector('.text-muted.small');
+         if (noComments) {
+            container.removeChild(noComments);
+         }
+         
+         const commentEl = document.createElement('div');
+         commentEl.className = 'comment';
+         commentEl.innerHTML = `
+            <div class="comment-header">
+            <strong>${comment.user}</strong>
+            <small class="text-muted">${comment.date}</small>
+            </div>
+            <p class="mb-0">${comment.text}</p>
+         `;
+         
+         if (prepend) {
+            container.insertBefore(commentEl, container.firstChild);
+         } else {
+            container.appendChild(commentEl);
+         }
+      }
+      
+      function loadRating(eventId) {
+         fetch('/get_rating/' + eventId)
+            .then(response => response.json())
+            .then(data => {
+            updateStars(eventId, data.user_rating);
+            
+            const avgRatingEl = document.getElementById('avgRating' + eventId);
+            if (data.count > 0) {
+               avgRatingEl.textContent = `Average rating: ${data.avg_rating} out of 5 (${data.count} ${data.count === 1 ? 'rating' : 'ratings'})`;
+            } else {
+               avgRatingEl.textContent = 'Not yet rated';
+            }
+            })
+            .catch(error => {
+            console.error('Error loading ratings:', error);
+            });
+      }
+      });
+
+      function toggleFriendForm(bucketId) {
+         const form = document.getElementById(`friendForm${bucketId}`);
+         if (form.style.display === 'none') {
+            form.style.display = 'block';
+         } else {
+            form.style.display = 'none';
+         }
+      }
+   </script>
+
+   <script>
+      function dropDown(dropDownId) {
+         const dropDown = document.getElementById(dropDownId);
+         dropDown.classList.toggle('hidden');
+         const bucketId = dropDownId.replace('dropdown-', '');
+         const icon = document.getElementById('icon-' + bucketId);
+
+         if(dropDown.classList.contains('hidden')) {
+            icon.classList.remove('transform', 'rotate-180');
+         } else {
+            icon.classList.add('transform', 'rotate-180');
+         }
+      }
+   </script>
   
-    cancelBtn.addEventListener('click', () => {
-      modal.classList.add('hidden');
-      friendFields.innerHTML = `
-        <div class="friend-field mb-2 flex items-center">
-          <input type="text" name="friend_netids[]" placeholder="Friend's NetID" class="flex-1 border rounded p-2" required>
-        </div>
-      `;
-    });
-  </script> -->
+   <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAddItemAutocomplete" async defer></script>
+
+   {% include 'new_item.html' %}
+
+   <!--Default is public-->
+   <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('privToggle')) {
+          document.getElementById('privToggle').checked = false;
+          document.getElementById('privInput').value = 'False';
+          const pub = document.getElementById('public');
+          const priv = document.getElementById('private');
+          if(pub && priv) {
+            pub.className = 'mr-2 text-sm text-orange-600 font-medium';
+            priv.className = 'ml-2 text-sm text-gray-400';
+          }
+        }
+      });
+    </script>
+
    </body>
 </html>
 

@@ -295,6 +295,32 @@ def mark_shared_event_completed(shared_event_id):
             session.commit()
             return True
         return False
+    
+def remove_user_from_shared_event(shared_event_id, user_netid):
+    with sqlalchemy.orm.Session(_engine) as session:
+        # Remove the participant
+        participant = session.query(SharedParticipant).filter_by(
+            shared_event_id=shared_event_id,
+            user_netid=user_netid
+        ).first()
+        if participant:
+            session.delete(participant)
+            session.commit()
+
+        # Check if there are any participants left
+        remaining = session.query(SharedParticipant).filter_by(
+            shared_event_id=shared_event_id
+        ).count()
+
+        if remaining == 0:
+            # Delete the event itself
+            event = session.query(SharedEvent).filter_by(id=shared_event_id).first()
+            if event:
+                session.delete(event)
+                session.commit()
+            return True, "Event deleted"
+        return True, "Left event"
+
 
 def add_comment(bucket_id, user_netid, text):
     """Add a comment to a bucket list item."""

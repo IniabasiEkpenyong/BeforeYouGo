@@ -23,7 +23,8 @@
               <form action="/toggle_subtask" method="POST" class="subtask-form" style="display:inline;">
                 <input type="hidden" name="subtask_id" value="{{ subtask.id }}">
                 <div class="form-check">
-                  <input class="form-check-input subtask-checkbox" type="checkbox" 
+                  <input class="form-check-input subtask-checkbox" type="checkbox" value="{{ subtask.id }}"
+                          data-bucket-id="{{ ub.id }}"
                          {% if subtask.completed %}checked{% endif %}>
                   <label class="form-check-label {% if subtask.completed %}text-decoration-line-through{% endif %}">
                     {{ subtask.description }}

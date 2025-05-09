@@ -26,6 +26,7 @@ except ImportError:
 
 from .database import get_shared_events_for_user
 from .database import mark_shared_event_completed
+from .database import remove_user_from_shared_event
 
 # Set the secret key
 app.secret_key = os.environ['APP_SECRET_KEY']
@@ -82,21 +83,7 @@ def debug_locations():
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def start_page():
-
-    user_info = auth.authenticate()    
-    username = user_info['user']    
-    given_name = auth.get_name(user_info)
-
-    #TEMP hard coding until OIT whitelists
-    # username = 'jg2783'
-    # given_name = 'Judah'
-
-    html_code = flask.render_template('index.html',
-        ampm=get_ampm(),
-        current_time=get_current_time(),
-        username = username,
-        given_name = given_name
-    )
+    html_code = flask.render_template('index.html')
 
     response = flask.make_response(html_code)
     return response
@@ -112,12 +99,23 @@ def home_page():
         with sqlalchemy.orm.Session(database._engine) as session_db:
             pending_count = session_db.query(Bucket).filter_by(status='pending').count()
 
+    with sqlalchemy.orm.Session(database._engine) as session_db:
+        user_bucket_ids = session_db.query(UserBucket.bucket_id).filter_by(user_netid=user_info['user']).all()
+        user_bucket_ids = [id for (id,) in user_bucket_ids]
+
+        new_items = session_db.query(Bucket).filter(
+            Bucket.bucket_id.notin_(user_bucket_ids),
+            Bucket.priv == False,
+            Bucket.status == 'approved'
+        ).order_by(sqlalchemy.desc(Bucket.created_at)).limit(3).all()
+
     html_code = flask.render_template('home.html',
         ampm=get_ampm(),
         net_id=user_info['user'],
         given_name = given_name,
         is_admin=is_admin,
-        pending_count = pending_count
+        pending_count = pending_count,
+        new_items=new_items
     )
 
     response = flask.make_response(html_code)
@@ -476,6 +474,18 @@ def reset_completed():
 
     return flask.redirect('/my_bucket')
 
+@app.route("/exit_shared_event", methods=["POST"])
+def exit_shared_event():
+    user_info = auth.authenticate()
+    user_netid = user_info['user']
+    shared_event_id = flask.request.form.get("shared_event_id")
+
+    if not shared_event_id:
+        return flask.redirect("/my_bucket")
+
+    # from database import remove_user_from_shared_event
+    success, msg = remove_user_from_shared_event(int(shared_event_id), user_netid)
+    return flask.redirect("/my_bucket")
 
 
 # @app.route("/create_shared_event", methods=["POST"])
@@ -638,7 +648,7 @@ def show_item():
                 )
 
 @app.route('/create_item', methods=['POST'])
-def add__item():
+def add_item():
     # Get form data
     title = request.form.get('title')
     contact = request.form.get('contact')
@@ -691,7 +701,6 @@ def add__item():
         return flask.redirect('/global')
     
 # Add these routes after your existing routes
-
 @app.route('/add_subtask', methods=['POST'])
 def add_subtask():
     user_info = auth.authenticate()
@@ -727,13 +736,34 @@ def toggle_subtask():
             UserBucket.user_netid == user_netid
         ).first()
         
-        if subtask:
-            database.toggle_subtask(subtask_id)
+        if not subtask:
+            if flask.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return flask.jsonify({'success': False, 'error': 'Subtask not found'})
+            return flask.redirect('/my_bucket')
+        
+        user_bucket_id = subtask.user_bucket_id
+        database.toggle_subtask(subtask_id)
+        subtask = session_db.query(database.SubTask).filter_by(id=subtask_id).first()
+
+        subtasks = session_db.query(database.SubTask).filter_by(
+            user_bucket_id=user_bucket_id).all()
+        total_count = len(subtasks)
+        completed_count = sum(1 for st in subtasks if st.completed)
+        progress = 0 if total_count == 0 else (completed_count / total_count) * 100
+
+        user_items = session_db.query(UserBucket).filter_by(user_netid=user_netid).all()
+        total_items = len(user_items)
+        completed = sum(1 for item in user_items if item.completed)
+        overall_progress = 0 if total_items == 0 else (completed/total_items) * 100
     
     if flask.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return flask.jsonify({'success': True, 
-                        
-                              'completed': subtask.completed})
+                              'bucket_id': user_bucket_id,
+                              'progress': progress,
+                              'completed_count': completed_count,
+                              'total_count': total_count,
+                              'completed': subtask.completed,
+                              'overall_progress': overall_progress})
     
     return flask.redirect('/my_bucket')
 
@@ -898,7 +928,7 @@ def logout_app():
     session.clear()
     
     # Redirect to the home page or login page
-    return flask.render_template('loggedout.html')
+    return flask.render_template('index.html')
 
 @app.route('/logoutcas')
 def logout_cas():
@@ -909,7 +939,7 @@ def logout_cas():
     # This might involve redirecting to a CAS logout URL
     
     # Redirect to the home page or login page
-    return flask.render_template('loggedout.html')
+    return flask.render_template('index.html')
 
 
 if __name__ == "__main__":
