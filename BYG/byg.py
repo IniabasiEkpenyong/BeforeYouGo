@@ -200,15 +200,12 @@ def global_page():
         with sqlalchemy.orm.Session(database._engine) as session_db:
             pending_count = session_db.query(Bucket).filter_by(status='pending').count()
 
-    #TEMP hard coding until OIT whitelists
-    # username = 'jg2783'
-    # given_name = 'Judah'
-    print(database.get_all_categories())
     try:
         categories = database.get_all_categories()
-
     except:
         categories = []
+
+    shared_events = get_shared_events_for_user(user_netid)
 
     html_code = flask.render_template('global.html',
         ampm=get_ampm(),
@@ -222,6 +219,7 @@ def global_page():
         categories=categories,
         is_admin = is_admin,
         pending_count = pending_count,
+        shared_events=shared_events,
         api_key=os.getenv("GOOGLE_API_KEY")
     )
 
@@ -486,34 +484,6 @@ def exit_shared_event():
     # from database import remove_user_from_shared_event
     success, msg = remove_user_from_shared_event(int(shared_event_id), user_netid)
     return flask.redirect("/my_bucket")
-
-
-# @app.route("/create_shared_event", methods=["POST"])
-# def create_shared_event_route():
-#     bucket_id = flask.request.form["bucket_id"]
-#     netids = flask.request.form.getlist("friend_netids[]")
-#     netids = [n.strip().lower() for n in netids if n.strip()]
-#     
-#     user_info = auth.authenticate()
-#     user_netid = user_info['user']
-# 
-#     # if not user_netid:
-#     #     return flask.redirect("/")
-#     if not user_netid or not bucket_id or not netids:
-#         return flask.redirect("/global")
-# 
-#     success, shared_event_id = database.create_shared_event(
-#         bucket_id=int(bucket_id),
-#         creator_netid=user_netid,
-#         participant_netids=netids
-#     )
-# 
-#     if success:
-#         flask.flash("Shared event created!")
-#     else:
-#         flask.flash("Something went wrong.")
-#     
-#     return flask.redirect("/global")
 
 @app.route("/create_shared_event", methods=["POST"])
 def create_shared_event_route():
