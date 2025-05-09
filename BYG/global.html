@@ -432,15 +432,14 @@
          const icon = $('#icon-' + bucketId);
 
          if(details.hasClass('hidden')) {
-            details.classList.removeClass('hidden');
+            details.removeClass('hidden');
             icon.classList.removeClass('fa-chevron-down').addClass('fa-chevron-up');
 
             loadRating(bucketId);
             loadComments(bucketId);
          } else {
-            details.classList.remove('hidden');
-            icon.classList.remove('fa-chevron-down');
-            icon.classList.remove('fa-chevron-up');
+            details.classList.addClass('hidden');
+            icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
          }
       }
    </script>
