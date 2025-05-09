@@ -459,12 +459,18 @@
 
    {% include 'new_item.html' %}
 
-   <!--Default is publix-->
+   <!--Default is public-->
    <script>
       document.addEventListener('DOMContentLoaded', function() {
         if (document.getElementById('privToggle')) {
           document.getElementById('privToggle').checked = false;
           document.getElementById('privInput').value = 'False';
+          const pub = document.getElementById('public');
+          const priv = document.getElementById('private');
+          if(pub && priv) {
+            pub.className = 'mr-2 text-sm text-orange-600 font-medium';
+            priv.className = 'ml-2 text-sm text-gray-400';
+          }
         }
       });
     </script>
