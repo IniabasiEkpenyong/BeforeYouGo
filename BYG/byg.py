@@ -739,6 +739,7 @@ def delete_subtask():
 def admin_dashboard():
     # Verify the user is an admin
     user_info = auth.authenticate()
+    given_name = auth.get_name(user_info)
     user_netid = user_info['user']
     
     if user_netid not in admins:
@@ -767,6 +768,7 @@ def admin_dashboard():
                                items=items, 
                                status=status, 
                                counts=counts,
+                               given_name = given_name,
                                ampm=get_ampm(),
                                current_time=get_current_time())
 
